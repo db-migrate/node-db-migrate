@@ -1,0 +1,23 @@
+{
+  "name": "db-migrate",
+  "description": "Database migration framework for node.js",
+  "keywords": ["database", "db", "migrate", "migration", "sqlite", "mysql"],
+  "homepage": "https://github.com/nearinfinity/node-db-migrate",
+  "version": "0.0.1",
+  "engines": { "node" : ">=0.6.0" },
+  "maintainers": [
+    { "name": "Jeff Kunkle", "email": "jeff.kunkle@nearinfinity.com" }
+  ],
+  "bugs": { "url": "https://github.com/nearinfinity/node-db-migrate/issues" },
+  "licenses": [ { "type" : "MIT" } ],
+  "repositories": [
+    { "type": "git", "url": "https://github.com/nearinfinity/node-db-migrate.git" }
+  ],
+  "dependencies": {
+    "sqlite3": "~2.1.1",
+    "mysql": "~0.9.5"
+  },
+  "devDependencies": {
+    "vows": "~0.5.13"
+  }
+}
