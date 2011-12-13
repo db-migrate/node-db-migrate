@@ -18,6 +18,7 @@
     "mysql": "~0.9.5"
   },
   "devDependencies": {
-    "vows": "~0.5.13"
+    "vows": "~0.5.13",
+    "db-info": "~0.0.1"
   }
 }
