@@ -2,11 +2,12 @@
 
 var optimist = require('optimist');
 var cli = require('../lib/cli.js');
+var config = require('../lib/config.js');
 
 var argv = optimist
     .default({
       verbose: false,
-      db: './database.json',
+      db: process.cwd() + '/database.json',
       env: 'dev' })
     .usage('Usage: db-migrate [up|down|create] migrationName [options]')
     .alias('e', 'env')
@@ -24,6 +25,17 @@ if (argv.help || argv._.length == 0) {
 }
 
 var action = argv._.shift();
+
+try {
+  config.load(argv.db);
+  config.setCurrent(argv.env);
+} catch(e) {
+  console.error(e.message);
+  process.exit(1);
+}
+if(argv.verbose) {
+  console.log("using config:", config.getCurrent());
+}
 
 switch(action) {
   case 'create':
