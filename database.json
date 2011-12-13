@@ -1,0 +1,11 @@
+{
+  "development": {
+    "driver": "sqlite3",
+    "filename": ":memory:"
+  },
+
+  "test": {
+    "driver": "sqlite3",
+    "filename": ":memory:"
+  }
+}
