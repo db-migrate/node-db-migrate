@@ -1,2 +1,4 @@
 test
 migrations
+node_modules
+database.json
