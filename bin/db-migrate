@@ -1,0 +1,56 @@
+#!/usr/bin/env node
+
+var optimist = require('optimist');
+var cli = require('../lib/cli.js');
+
+var argv = optimist
+    .default({
+      verbose: false,
+      db: './database.json',
+      env: 'dev' })
+    .usage('Usage: db-migrate [up|down|create] migrationName [options]')
+    .alias('e', 'env')
+    .alias('v', 'verbose')
+    .alias('h', 'help')
+    .alias('h', '?')
+    .describe('env', 'The environment to run the migrations under (dev, test, prod).')
+    .describe('db', 'Location of the database.json file.')
+    .describe('verbose', 'Verbose mode.')
+    .argv
+
+if (argv.help || argv._.length == 0) {
+  optimist.showHelp();
+  process.exit(1);
+}
+
+var action = argv._.shift();
+
+switch(action) {
+  case 'create':
+    if(argv._.length == 0) {
+      console.error("*** 'migrationName' is required.");
+      optimist.showHelp();
+      process.exit(1);
+    }
+    argv.title = argv._.shift();
+    cli.create(argv);
+    break;
+
+  case 'up':
+  case 'down':
+    if(argv._.length > 0) {
+      argv.destination = argv._.shift();
+    }
+    if(action == 'up') {
+      cli.up(argv);
+    } else {
+      cli.down(argv);
+    }
+    break;
+
+  default:
+    console.error("*** invalid action, must be [up|down|create].");
+    optimist.showHelp();
+    process.exit(1);
+    break;
+}
