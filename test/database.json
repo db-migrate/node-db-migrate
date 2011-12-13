@@ -1,5 +1,5 @@
 {
-  "development": {
+  "dev": {
     "driver": "sqlite3",
     "filename": ":memory:"
   },
