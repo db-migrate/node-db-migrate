@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 
 var optimist = require('optimist');
+var fs = require('fs');
 var cli = require('../lib/cli.js');
 var config = require('../lib/config.js');
 
 function loadConfig() {
   try {
-    config.load(argv.db);
+    config.load(argv.config);
     config.setCurrent(argv.env);
   } catch(e) {
     console.error(e.message);
@@ -17,10 +18,44 @@ function loadConfig() {
   }
 }
 
+function run() {
+  var action = argv._.shift();
+  switch(action) {
+    case 'create':
+      if(argv._.length == 0) {
+        console.error("*** 'migrationName' is required.");
+        optimist.showHelp();
+        process.exit(1);
+      }
+      argv.title = argv._.shift();
+      cli.create(argv);
+      break;
+
+    case 'up':
+    case 'down':
+      loadConfig();
+      if(argv._.length > 0) {
+        argv.destination = argv._.shift().toString();
+      }
+      if(action == 'up') {
+        cli.up(argv);
+      } else {
+        cli.down(argv);
+      }
+      break;
+
+    default:
+      console.error("*** invalid action, must be [up|down|create].");
+      optimist.showHelp();
+      process.exit(1);
+      break;
+  }
+}
+
 var argv = optimist
     .default({
       verbose: false,
-      db: process.cwd() + '/database.json',
+      config: process.cwd() + '/database.json',
       'migrations-dir': process.cwd() + '/migrations',
       count: Number.MAX_VALUE,
       env: 'dev' })
@@ -34,7 +69,7 @@ var argv = optimist
     .describe('env', 'The environment to run the migrations under (dev, test, prod).')
     .describe('migrations-dir', 'The directory containing your migration files.')
     .describe('count', 'Max number of migrations to run.')
-    .describe('db', 'Location of the database.json file.')
+    .describe('config', 'Location of the database.json file.')
     .describe('verbose', 'Verbose mode.')
     .argv
 
@@ -45,34 +80,14 @@ if (argv.help || argv._.length == 0) {
 
 global.verbose = argv.verbose;
 
-var action = argv._.shift();
-switch(action) {
-  case 'create':
-    if(argv._.length == 0) {
-      console.error("*** 'migrationName' is required.");
-      optimist.showHelp();
-      process.exit(1);
-    }
-    argv.title = argv._.shift();
-    cli.create(argv);
-    break;
+fs.stat(argv['migrations-dir'], function(err, stat) {
+  if(err) {
+    fs.mkdir(argv['migrations-dir'], function(err) {
+      if(err) { console.error(err); return; }
+      run();
+    });
+    return;
+  }
 
-  case 'up':
-  case 'down':
-    loadConfig();
-    if(argv._.length > 0) {
-      argv.destination = argv._.shift();
-    }
-    if(action == 'up') {
-      cli.up(argv);
-    } else {
-      cli.down(argv);
-    }
-    break;
-
-  default:
-    console.error("*** invalid action, must be [up|down|create].");
-    optimist.showHelp();
-    process.exit(1);
-    break;
-}
+  run();
+});
