@@ -24,6 +24,8 @@ if (argv.help || argv._.length == 0) {
   process.exit(1);
 }
 
+global.verbose = argv.verbose;
+
 var action = argv._.shift();
 
 try {
@@ -33,7 +35,7 @@ try {
   console.error(e.message);
   process.exit(1);
 }
-if(argv.verbose) {
+if(verbose) {
   console.log("using config:", config.getCurrent());
 }
 
