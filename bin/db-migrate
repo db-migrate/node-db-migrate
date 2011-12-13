@@ -22,15 +22,18 @@ var argv = optimist
       verbose: false,
       db: process.cwd() + '/database.json',
       'migrations-dir': process.cwd() + '/migrations',
+      count: Number.MAX_VALUE,
       env: 'dev' })
     .usage('Usage: db-migrate [up|down|create] migrationName [options]')
     .alias('e', 'env')
     .alias('m', 'migrations-dir')
+    .alias('c', 'count')
     .alias('v', 'verbose')
     .alias('h', 'help')
     .alias('h', '?')
     .describe('env', 'The environment to run the migrations under (dev, test, prod).')
     .describe('migrations-dir', 'The directory containing your migration files.')
+    .describe('count', 'Max number of migrations to run.')
     .describe('db', 'Location of the database.json file.')
     .describe('verbose', 'Verbose mode.')
     .argv
