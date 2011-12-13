@@ -4,6 +4,19 @@ var optimist = require('optimist');
 var cli = require('../lib/cli.js');
 var config = require('../lib/config.js');
 
+function loadConfig() {
+  try {
+    config.load(argv.db);
+    config.setCurrent(argv.env);
+  } catch(e) {
+    console.error(e.message);
+    process.exit(1);
+  }
+  if(verbose) {
+    console.log("using config:", config.getCurrent());
+  }
+}
+
 var argv = optimist
     .default({
       verbose: false,
@@ -27,18 +40,6 @@ if (argv.help || argv._.length == 0) {
 global.verbose = argv.verbose;
 
 var action = argv._.shift();
-
-try {
-  config.load(argv.db);
-  config.setCurrent(argv.env);
-} catch(e) {
-  console.error(e.message);
-  process.exit(1);
-}
-if(verbose) {
-  console.log("using config:", config.getCurrent());
-}
-
 switch(action) {
   case 'create':
     if(argv._.length == 0) {
@@ -52,6 +53,7 @@ switch(action) {
 
   case 'up':
   case 'down':
+    loadConfig();
     if(argv._.length > 0) {
       argv.destination = argv._.shift();
     }
