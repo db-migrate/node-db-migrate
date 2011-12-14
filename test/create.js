@@ -41,9 +41,10 @@ vows.describe('create').addBatch({
 
     'file': {
       topic: function(migration) {
-        migration.write();
-        fs.stat(migration.path, function(err, stat) {
-          this.callback(migration, err, stat);
+        migration.write(function() {
+          fs.stat(migration.path, function(err, stat) {
+            this.callback(migration, err, stat);
+          }.bind(this));
         }.bind(this));
       },
 

@@ -1,1 +1,1 @@
-module.exports = require('./lib/cli');
+exports.dataType = require('./lib/data_type');
