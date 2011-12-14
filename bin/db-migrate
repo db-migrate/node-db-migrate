@@ -60,17 +60,30 @@ var argv = optimist
       count: Number.MAX_VALUE,
       env: 'dev' })
     .usage('Usage: db-migrate [up|down|create] migrationName [options]')
+
+    .describe('env', 'The environment to run the migrations under (dev, test, prod).')
     .alias('e', 'env')
+    .string('e')
+
+    .describe('migrations-dir', 'The directory containing your migration files.')
     .alias('m', 'migrations-dir')
+    .string('m')
+
+    .describe('count', 'Max number of migrations to run.')
     .alias('c', 'count')
+    .string('c')
+
+    .describe('verbose', 'Verbose mode.')
     .alias('v', 'verbose')
+    .boolean('v')
+
     .alias('h', 'help')
     .alias('h', '?')
-    .describe('env', 'The environment to run the migrations under (dev, test, prod).')
-    .describe('migrations-dir', 'The directory containing your migration files.')
-    .describe('count', 'Max number of migrations to run.')
+    .boolean('h')
+
     .describe('config', 'Location of the database.json file.')
-    .describe('verbose', 'Verbose mode.')
+    .string('config')
+
     .argv
 
 if (argv.help || argv._.length == 0) {
