@@ -16,10 +16,10 @@ vows.describe('sqlite3').addBatch({
           intg: dataType.INTEGER,
           rel: dataType.REAL,
           dt: dataType.DATE_TIME
-        }, function() {
+        }, {}, function() {
           this.callback(null, driver);
         }.bind(this));
-      }.bind(this)); 
+      }.bind(this));
     },
 
     'has resulting table': {
@@ -71,12 +71,12 @@ vows.describe('sqlite3').addBatch({
       sqlite3Driver.connect({filename: ':memory:'}, function(err, driver) {
         driver.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
-        }, function() {
+        }, {}, function() {
           driver.dropTable('event', function() {
             this.callback(null, driver);
           }.bind(this));
         }.bind(this));
-      }.bind(this)); 
+      }.bind(this));
     },
 
     'has resulting table': {
@@ -96,12 +96,12 @@ vows.describe('sqlite3').addBatch({
       sqlite3Driver.connect({filename: ':memory:'}, function(err, driver) {
         driver.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
-        }, function() {
+        }, {}, function() {
           driver.renameTable('event', 'functions', function() {
             this.callback(null, driver);
           }.bind(this));
         }.bind(this));
-      }.bind(this)); 
+      }.bind(this));
     },
 
     'has resulting table': {
@@ -122,12 +122,12 @@ vows.describe('sqlite3').addBatch({
       sqlite3Driver.connect({filename: ':memory:'}, function(err, driver) {
         driver.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
-        }, function() {
+        }, {}, function() {
           driver.addColumn('event', 'title', 'string', function(err) {
             this.callback(null, driver);
           }.bind(this));
         }.bind(this));
-      }.bind(this)); 
+      }.bind(this));
     },
 
     'has resulting column': {
@@ -148,12 +148,13 @@ vows.describe('sqlite3').addBatch({
       sqlite3Driver.connect({filename: ':memory:'}, function(err, driver) {
         driver.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
-        }, function() {
+          title: { type: dataType.STRING },
+        }, {}, function() {
           driver.addIndex('event', 'event_title', 'title', function(err) {
             this.callback(null, driver);
           }.bind(this));
         }.bind(this));
-      }.bind(this)); 
+      }.bind(this));
     },
 
     'has resulting table': {
@@ -173,14 +174,14 @@ vows.describe('sqlite3').addBatch({
       sqlite3Driver.connect({filename: ':memory:'}, function(err, driver) {
         driver.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
-        }, function() {
+        }, {}, function() {
           driver.addIndex('event', 'event_title', 'title', function(err) {
             driver.removeIndex('event_title', function(err) {
               this.callback(null, driver);
             }.bind(this));
           }.bind(this));
         }.bind(this));
-      }.bind(this)); 
+      }.bind(this));
     },
 
     'has resulting table': {
@@ -196,4 +197,3 @@ vows.describe('sqlite3').addBatch({
   }
 
 }).export(module);
-
