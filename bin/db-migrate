@@ -38,8 +38,14 @@ function run() {
         argv.destination = argv._.shift().toString();
       }
       if(action == 'up') {
+        if(!argv.count) {
+          argv.count = Number.MAX_VALUE;
+        }
         cli.up(argv);
       } else {
+        if(!argv.destination && !argv.count) {
+          argv.count = 1;
+        }
         cli.down(argv);
       }
       break;
@@ -57,7 +63,6 @@ var argv = optimist
       verbose: false,
       config: process.cwd() + '/database.json',
       'migrations-dir': process.cwd() + '/migrations',
-      count: Number.MAX_VALUE,
       env: 'dev' })
     .usage('Usage: db-migrate [up|down|create] migrationName [options]')
 
