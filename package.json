@@ -19,7 +19,6 @@
     "mysql": "~0.9.5",
     "optimist": "~0.3.0",
     "async": "~0.1.15",
-    "underscore": "~1.2.3"
   },
   "devDependencies": {
     "vows": "~0.5.13",
