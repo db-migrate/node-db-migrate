@@ -1,18 +1,19 @@
-
-var config = require('./lib/config');
+var driver = require('./lib/driver');
 var Migrator = require('./lib/migrator');
+
 exports.dataType = require('./lib/data_type');
 
-exports.connect = function(options, callback) {
-  config['__connect'] = options;
-  config.setCurrent('__connect');
-  var env = config.getCurrent();
-  var driver = require('./lib/driver');
-  driver.connect(env, function(err, db) {
+exports.connect = function(config, callback) {
+  driver.connect(config, function(err, db) {
     if (err) { callback(err); return; }
-    db.createMigrationsTable(function(err) {
-      if (err) { callback(err); return; }
-      callback(null, new Migrator(db));
-    });
+    callback(null, new Migrator(db, config['migrations-dir']));
   });
-}
+};
+
+exports.createMigration = function(title, callback) {
+  var migration = new Migration(title, new Date());
+  migration.write(function(err) {
+    if (err) { callback(err); return; }
+    callback(null, migration);
+  });
+};

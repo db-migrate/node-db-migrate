@@ -2,61 +2,11 @@
 
 var optimist = require('optimist');
 var fs = require('fs');
-var cli = require('../lib/cli.js');
 var config = require('../lib/config.js');
-
-function loadConfig() {
-  try {
-    config.load(argv.config);
-    config.setCurrent(argv.env);
-  } catch(e) {
-    console.error(e.message);
-    process.exit(1);
-  }
-  if(verbose) {
-    console.log("using config:", config.getCurrent());
-  }
-}
-
-function run() {
-  var action = argv._.shift();
-  switch(action) {
-    case 'create':
-      if(argv._.length == 0) {
-        console.error("*** 'migrationName' is required.");
-        optimist.showHelp();
-        process.exit(1);
-      }
-      argv.title = argv._.shift();
-      cli.create(argv);
-      break;
-
-    case 'up':
-    case 'down':
-      loadConfig();
-      if(argv._.length > 0) {
-        argv.destination = argv._.shift().toString();
-      }
-      if(action == 'up') {
-        if(!argv.count) {
-          argv.count = Number.MAX_VALUE;
-        }
-        cli.up(argv);
-      } else {
-        if(!argv.destination && !argv.count) {
-          argv.count = 1;
-        }
-        cli.down(argv);
-      }
-      break;
-
-    default:
-      console.error("*** invalid action, must be [up|down|create].");
-      optimist.showHelp();
-      process.exit(1);
-      break;
-  }
-}
+var index = require('../index');
+var log = require('../lib/log');
+var util = require('util');
+var path = require('path');
 
 var argv = optimist
     .default({
@@ -101,7 +51,7 @@ global.verbose = argv.verbose;
 fs.stat(argv['migrations-dir'], function(err, stat) {
   if(err) {
     fs.mkdir(argv['migrations-dir'], function(err) {
-      if(err) { console.error(err); return; }
+      if(err) { log.error(err); return; }
       run();
     });
     return;
@@ -109,3 +59,83 @@ fs.stat(argv['migrations-dir'], function(err, stat) {
 
   run();
 });
+
+function loadConfig() {
+  try {
+    config.load(argv.config);
+    config.setCurrent(argv.env);
+  } catch(e) {
+    log.error(e.message);
+    process.exit(1);
+  }
+  if(verbose) {
+    log.info("Using config:", config.getCurrent());
+  }
+}
+
+function run() {
+  var action = argv._.shift();
+  switch(action) {
+    case 'create':
+      if(argv._.length == 0) {
+        log.error("'migrationName' is required.");
+        optimist.showHelp();
+        process.exit(1);
+      }
+      argv.title = argv._.shift();
+      index.createMigration(argv.title, function(err, migration) {
+        if (err) {
+          log.error(err);
+        } else {
+          log.info(util.format('Created migration at %s', migration.path));
+        }
+      });
+      break;
+
+    case 'up':
+    case 'down':
+      loadConfig();
+      if(argv._.length > 0) {
+        argv.destination = argv._.shift().toString();
+      }
+      if(action == 'up') {
+        if(!argv.count) {
+          argv.count = Number.MAX_VALUE;
+        }
+        index.connect(config.getCurrent(), function(err, migrator) {
+          if (err) { log.error(err); return; }
+          migrator.migrationsDir = path.resolve(argv['migrations-dir']);
+          migrator.driver.createMigrationsTable(function(err) {
+            if (err) { log.error(err); return; }
+            migrator.up(argv, onComplete);
+          });
+        });
+      } else {
+        if(!argv.destination && !argv.count) {
+          argv.count = 1;
+        }
+        index.connect(config.getCurrent(), function(err, migrator) {
+          migrator.migrationsDir = path.resolve(argv['migrations-dir']);
+          migrator.driver.createMigrationsTable(function(err) {
+            if (err) { log.error(err); return; }
+            migrator.down(argv, onComplete);
+          });
+        });
+      }
+      break;
+
+    default:
+      log.error('Invalid Action: Must be [up|down|create].');
+      optimist.showHelp();
+      process.exit(1);
+      break;
+  }
+}
+
+function onComplete(err) {
+  if (err) {
+    log.error(err);
+  } else {
+    log.info('Done');
+  }
+}
