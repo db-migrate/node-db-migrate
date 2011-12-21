@@ -64,9 +64,7 @@ The second creates `./migrations/20111219120005-add-owners.js`, which we can pop
         db.dropTable('owners', callback);
       };
 
-Executing multiple statements against the database within a single
-migration requires a bit more care. You can either nest the migrations
-like:
+Executing multiple statements against the database within a single migration requires a bit more care. You can either nest the migrations like:
 
       exports.up = function(db, callback){
         db.createTable('pets', {
@@ -117,17 +115,14 @@ or use the async library to simplify things a bit, such as:
 
 ## Running Migrations
 
-When first running the migrations, all will be executed in sequence. A
-table named `migrations` will also be created in your database to track
-which migrations have been applied.
+When first running the migrations, all will be executed in sequence. A table named `migrations` will also be created in your database to track which migrations have been applied.
 
       $ db-migrate up
       [INFO] Processed migration 20111219120000-add-pets
       [INFO] Processed migration 20111219120005-add-owners
       [INFO] Done
 
-Subsequent attempts to run these migrations will result in the following
-output
+Subsequent attempts to run these migrations will result in the following output
 
       $ db-migrate up
       [INFO] No migrations to run
@@ -139,9 +134,7 @@ If we were to create another migration using `db-migrate create`, and then execu
       [INFO] Processed migration 20111220120210-add-kennels
       [INFO] Done
 
-You can also run migrations incrementally by specifying a date
-substring. The example below will run all migrations created on or
-before December 19, 2011:
+You can also run migrations incrementally by specifying a date substring. The example below will run all migrations created on or before December 19, 2011:
 
       $ db-migrate up 20111219
       [INFO] Processed migration 20111219120000-add-pets
@@ -154,15 +147,11 @@ You can also run a specific number of migrations with the -c option:
       [INFO] Processed migration 20111219120000-add-pets
       [INFO] Done
 
-All of the down migrations work identically to the up migrations by
-substituting the word `down` for `up`.
+All of the down migrations work identically to the up migrations by substituting the word `down` for `up`.
 
 ## Configuration
 
-db-migrate supports the concept of environments. For example, you might
-have a dev, test, and prod environment where you need to run the
-migrations at different times. Environment settings are loaded from a
-database.json file like the one shown below:
+db-migrate supports the concept of environments. For example, you might have a dev, test, and prod environment where you need to run the migrations at different times. Environment settings are loaded from a database.json file like the one shown below:
     
     {
       "dev": {
@@ -182,23 +171,17 @@ database.json file like the one shown below:
       }
     }
 
-You can pass the -e or --env option to db-migrate to select the
-environment you want to run migrations against. The --config option can
-be used to specify the path to your database.json file if it's not in
-the current working directory.
+You can pass the -e or --env option to db-migrate to select the environment you want to run migrations against. The --config option can be used to specify the path to your database.json file if it's not in the current working directory.
 
     db-migrate up --config config/database.json -e prod
 
-The above will run all migrations that haven't yet been run in the
-prod environment, grabbing the settings from config/database.json.
+The above will run all migrations that haven't yet been run in the prod environment, grabbing the settings from config/database.json.
 
 ## Defaults
 
 ## Migrations
 
-Below are examples of all the different migrations supported by
-db-migrate. Please note that not all migrations are supported by all
-databases. For example, SQLite does not support dropping columns.
+Below are examples of all the different migrations supported by db-migrate. Please note that not all migrations are supported by all databases. For example, SQLite does not support dropping columns.
 
 ### createTable(tableName, columnSpec, callback)
 
@@ -235,17 +218,27 @@ __Column Specs__
 
 The following options are available on column specs
 
-* type - the column data type. Supported types can be found in
-  lib/data_type.js
-* primaryKey - true to set the column as a primary key. Compound primary
-  keys are supported by setting the `primaryKey` option to true on
-  multiple columns
+* type - the column data type. Supported types can be found in lib/data_type.js
+* primaryKey - true to set the column as a primary key. Compound primary keys are supported by setting the `primaryKey` option to true on multiple columns
 * autoIncrement - true to mark the column as auto incrementing
 * notNull - true to mark the column as non-nullable
 * unique - true to add unique constraint to the column
 * defaultValue - set the column default value
 
 ### dropTable(tableName, [options,] callback)
+
+Drop a database table
+
+__Arguments__
+
+* tableName - name of the table to drop
+* options - table options
+* callback(err) - callback that will be invoked after dropping the table
+
+__Table Options__
+
+* ifExists - Only drop the table if it already exists
+
 ### renameTable(tableName, newTableName, callback)
 ### addColumn(tableName, columnName, columnSpec, callback)
 ### removeColumn(tableName, columnName, callback)
