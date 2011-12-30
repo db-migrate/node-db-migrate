@@ -52,6 +52,8 @@ function createMigrationDir(dir, callback) {
   fs.stat(dir, function(err, stat) {
     if (err) {
       fs.mkdir(dir, callback);
+    } else {
+      callback();
     }
   });
 }
