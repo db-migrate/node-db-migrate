@@ -14,7 +14,7 @@ Usage: db-migrate [up|down|create] migrationName [options]
 Options:
   --env, -e             The environment to run the migrations under.    [default: "dev"]
   --migrations-dir, -m  The directory containing your migration files.  [default: "./migrations"]
-  --count, -c           Max number of migrations to run.                              
+  --count, -c           Max number of migrations to run.
   --verbose, -v         Verbose mode.                                   [default: false]
   --config              Location of the database.json file.             [default: "./database.json"]
 ```
@@ -152,7 +152,7 @@ All of the down migrations work identically to the up migrations by substituting
 ## Configuration
 
 db-migrate supports the concept of environments. For example, you might have a dev, test, and prod environment where you need to run the migrations at different times. Environment settings are loaded from a database.json file like the one shown below:
-    
+
     {
       "dev": {
         "driver": "sqlite3",
@@ -240,16 +240,99 @@ __Table Options__
 * ifExists - Only drop the table if it already exists
 
 ### renameTable(tableName, newTableName, callback)
+
+Rename a database table
+
+__Arguments__
+
+* tableName - existing table name
+* options - new table name
+* callback(err) - callback that will be invoked after renaming the table
+
 ### addColumn(tableName, columnName, columnSpec, callback)
+
+Add a column to a database table
+
+__Arguments__
+
+* tableName - name of table to add a column to
+* columnName - name of the column to add
+* columnSpec - a hash of column definitions
+* callback(err) - callback that will be invoked after adding the column
+
+Column spec is the same as that described in createTable
+
 ### removeColumn(tableName, columnName, callback)
+
+Remove a column from an existing database table
+
+* tableName - name of table to add a column to
+* columnName - name of the column to add
+* callback(err) - callback that will be invoked after removing the column
+
 ### renameColumn(tableName, oldColumnName, newColumnName, callback)
+
+Rename a column
+
+__Arguments__
+
+* tableName - table containing column to rename
+* oldColumnName - existing column name
+* newColumnName - new name of the column
+* callback(err) - callback that will be invoked after renaming the column
+
 ### changeColumn(tableName, columnName, columnSpec, callback)
+
+Change the definition of a column
+
+__Arguments__
+
+* tableName - table containing column to change
+* columnName - existing column name
+* columnSpec - a hash containing the column spec
+* callback(err) - callback that will be invoked after changing the column
+
 ### addIndex(tableName, indexName, columns, callback)
+
+Add an index
+
+__Arguments__
+
+* tableName - table to add the index too
+* indexName - the name of the index
+* columns - an array of column names contained in the index
+* callback(err) - callback that will be invoked after adding the index
+
 ### removeIndex(indexName, callback)
+
+Remove an index
+
+__Arguments__
+
+* indexName - the name of the index
+* callback(err) - callback that will be invoked after removing the index
+
 ### runSql(sql, [params,] callback)
+
+Run arbitrary SQL
+
+__Arguments__
+
+* sql - the SQL query string, possibly with ? replacement parameters
+* params - zero or more ? replacement parameters
+* callback(err) - callback that will be invoked after executing the SQL
+
 ### all(sql, [params,] callback)
 
-## License 
+Execute a select statement
+
+__Arguments__
+
+* sql - the SQL query string, possibly with ? replacement parameters
+* params - zero or more ? replacement parameters
+* callback(err, results) - callback that will be invoked after executing the SQL
+
+## License
 
 (The MIT License)
 
