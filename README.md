@@ -42,7 +42,7 @@ The first call creates `./migrations/20111219120000-add-pets.js`, which we can p
 
       exports.up = function(db, callback){
         db.createTable('pets', {
-          id: { type: 'integer', primaryKey: true },
+          id: { type: 'int', primaryKey: true },
           name: 'string'
         }, callback);
       };
@@ -55,7 +55,7 @@ The second creates `./migrations/20111219120005-add-owners.js`, which we can pop
 
       exports.up = function(db, callback){
         db.createTable('owners', {
-          id: { type: 'integer', primaryKey: true },
+          id: { type: 'int', primaryKey: true },
           name: 'string'
         }, callback);
       };
@@ -68,14 +68,14 @@ Executing multiple statements against the database within a single migration req
 
       exports.up = function(db, callback){
         db.createTable('pets', {
-          id: { type: 'integer', primaryKey: true },
+          id: { type: 'int', primaryKey: true },
           name: 'string'
         }, createOwners);
 
         function createOwners(err) {
           if (err) { callback(err); return; }
           db.createTable('owners', {
-            id: { type: 'integer', primaryKey: true },
+            id: { type: 'int', primaryKey: true },
             name: 'string'
           }, callback);
         }
@@ -95,11 +95,11 @@ or use the async library to simplify things a bit, such as:
       exports.up = function(db, callback){
         async.series([
           db.createTable.bind(db, 'pets', {
-            id: { type: 'integer', primaryKey: true },
+            id: { type: 'int', primaryKey: true },
             name: 'string'
           }),
           db.createTable.bind(db, 'owners', {
-            id: { type: 'integer', primaryKey: true },
+            id: { type: 'int', primaryKey: true },
             name: 'string'
           })
         ], callback);
@@ -198,7 +198,7 @@ __Examples__
     // with no table options
     exports.up = function(db, callback) {
       db.createTable('pets', {
-        id: { type: 'integer', primaryKey: true, autoIncrement: true },
+        id: { type: 'int', primaryKey: true, autoIncrement: true },
         name: 'string'  // shorthand notation
       }, callback);
     }
@@ -207,7 +207,7 @@ __Examples__
     exports.up = function(db, callback) {
       db.createTable('pets', {
         columns: {
-          id: { type: 'integer', primaryKey: true, autoIncrement: true },
+          id: { type: 'int', primaryKey: true, autoIncrement: true },
           name: 'string'  // shorthand notation
         },
         ifNotExists: true
