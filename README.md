@@ -179,7 +179,7 @@ The above will run all migrations that haven't yet been run in the prod environm
 
 ## Defaults
 
-## Migrations
+## Migrations API
 
 Below are examples of all the different migrations supported by db-migrate. Please note that not all migrations are supported by all databases. For example, SQLite does not support dropping columns.
 
