@@ -1,30 +1,28 @@
 var vows = require('vows');
 var assert = require('assert');
-var sqlite3 = require('sqlite3');
+//var sqlite3 = require('sqlite3');
 var dbInfo = require('db-info');
 var dataType = require('../../lib/data_type');
-var sqlite3Driver = require('../../lib/driver/sqlite3');
+var driver = require('../../lib/driver');
 
 vows.describe('sqlite3').addBatch({
   'createTable': {
     topic: function() {
-      sqlite3Driver.connect({filename: ':memory:'}, function(err, driver) {
-        driver.createTable('event', {
+      driver.connect({driver: 'sqlite3', filename: ':memory:'}, function(err, db) {
+        db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
           str: { type: dataType.STRING, unique: true },
           txt: { type: dataType.TEXT, notNull: true, defaultValue: "foo" },
           intg: dataType.INTEGER,
           rel: dataType.REAL,
           dt: dataType.DATE_TIME
-        }, {}, function() {
-          this.callback(null, driver);
-        }.bind(this));
+        }, this.callback.bind(this, null, db));
       }.bind(this));
     },
 
     'has resulting table': {
-      topic: function(driver) {
-        dbInfo.getInfo({db: driver.connection, driver: 'sqlite3'}, this.callback);
+      topic: function(db) {
+        dbInfo.getInfo({db: db.connection, driver: 'sqlite3'}, this.callback);
       },
 
       'with 6 columns': function(err, info) {
@@ -68,20 +66,18 @@ vows.describe('sqlite3').addBatch({
 
   'dropTable': {
     topic: function() {
-      sqlite3Driver.connect({filename: ':memory:'}, function(err, driver) {
-        driver.createTable('event', {
+      driver.connect({driver: 'sqlite3', filename: ':memory:'}, function(err, db) {
+        db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
-        }, {}, function() {
-          driver.dropTable('event', function() {
-            this.callback(null, driver);
-          }.bind(this));
+        }, function() {
+          db.dropTable('event', this.callback.bind(this, null, db));
         }.bind(this));
       }.bind(this));
     },
 
     'has resulting table': {
-      topic: function(driver) {
-        dbInfo.getInfo({db: driver.connection, driver: 'sqlite3'}, this.callback);
+      topic: function(db) {
+        dbInfo.getInfo({db: db.connection, driver: 'sqlite3'}, this.callback);
       },
 
       'that no longer exists': function(err, info) {
@@ -93,20 +89,18 @@ vows.describe('sqlite3').addBatch({
 
   'renameTable': {
     topic: function() {
-      sqlite3Driver.connect({filename: ':memory:'}, function(err, driver) {
-        driver.createTable('event', {
+      driver.connect({driver: 'sqlite3', filename: ':memory:'}, function(err, db) {
+        db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
-        }, {}, function() {
-          driver.renameTable('event', 'functions', function() {
-            this.callback(null, driver);
-          }.bind(this));
+        }, function() {
+          db.renameTable('event', 'functions', this.callback.bind(this, null, db));
         }.bind(this));
       }.bind(this));
     },
 
     'has resulting table': {
-      topic: function(driver) {
-        dbInfo.getInfo({db: driver.connection, driver: 'sqlite3'}, this.callback);
+      topic: function(db) {
+        dbInfo.getInfo({db: db.connection, driver: 'sqlite3'}, this.callback);
       },
 
       'that has been renamed': function(err, info) {
@@ -119,20 +113,18 @@ vows.describe('sqlite3').addBatch({
 
   'addColumn': {
     topic: function() {
-      sqlite3Driver.connect({filename: ':memory:'}, function(err, driver) {
-        driver.createTable('event', {
+      driver.connect({driver: 'sqlite3', filename: ':memory:'}, function(err, db) {
+        db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
-        }, {}, function() {
-          driver.addColumn('event', 'title', 'string', function(err) {
-            this.callback(null, driver);
-          }.bind(this));
+        }, function() {
+          db.addColumn('event', 'title', 'string', this.callback.bind(this, null, db));
         }.bind(this));
       }.bind(this));
     },
 
     'has resulting column': {
-      topic: function(driver) {
-        dbInfo.getInfo({db: driver.connection, driver: 'sqlite3'}, this.callback);
+      topic: function(db) {
+        dbInfo.getInfo({db: db.connection, driver: 'sqlite3'}, this.callback);
       },
 
       'with additional column': function(err, info) {
@@ -145,21 +137,19 @@ vows.describe('sqlite3').addBatch({
 
   'addIndex': {
     topic: function() {
-      sqlite3Driver.connect({filename: ':memory:'}, function(err, driver) {
-        driver.createTable('event', {
+      driver.connect({driver: 'sqlite3', filename: ':memory:'}, function(err, db) {
+        db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
           title: { type: dataType.STRING },
-        }, {}, function() {
-          driver.addIndex('event', 'event_title', 'title', function(err) {
-            this.callback(null, driver);
-          }.bind(this));
+        }, function() {
+          db.addIndex('event', 'event_title', 'title', this.callback.bind(this, null, db));
         }.bind(this));
       }.bind(this));
     },
 
     'has resulting table': {
-      topic: function(driver) {
-        dbInfo.getInfo({db: driver.connection, driver: 'sqlite3'}, this.callback);
+      topic: function(db) {
+        dbInfo.getInfo({db: db.connection, driver: 'sqlite3'}, this.callback);
       },
 
       'with additional index': function(err, info) {
@@ -171,22 +161,20 @@ vows.describe('sqlite3').addBatch({
 
   'removeIndex': {
     topic: function() {
-      sqlite3Driver.connect({filename: ':memory:'}, function(err, driver) {
-        driver.createTable('event', {
+      driver.connect({driver: 'sqlite3', filename: ':memory:'}, function(err, db) {
+        db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
-        }, {}, function() {
-          driver.addIndex('event', 'event_title', 'title', function(err) {
-            driver.removeIndex('event_title', function(err) {
-              this.callback(null, driver);
-            }.bind(this));
+        }, function() {
+          db.addIndex('event', 'event_title', 'title', function(err) {
+            db.removeIndex('event_title', this.callback.bind(this, null, db));
           }.bind(this));
         }.bind(this));
       }.bind(this));
     },
 
     'has resulting table': {
-      topic: function(driver) {
-        dbInfo.getInfo({db: driver.connection, driver: 'sqlite3'}, this.callback);
+      topic: function(db) {
+        dbInfo.getInfo({db: db.connection, driver: 'sqlite3'}, this.callback);
       },
 
       'without index': function(err, info) {
