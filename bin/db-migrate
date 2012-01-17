@@ -12,8 +12,7 @@ var argv = optimist
     .default({
       verbose: false,
       config: process.cwd() + '/database.json',
-      'migrations-dir': process.cwd() + '/migrations',
-      env: 'dev' })
+      'migrations-dir': process.cwd() + '/migrations' })
     .usage('Usage: db-migrate [up|down|create] migrationName [options]')
 
     .describe('env', 'The environment to run the migrations under (dev, test, prod).')
@@ -60,8 +59,7 @@ function createMigrationDir(dir, callback) {
 
 function loadConfig() {
   try {
-    config.load(argv.config);
-    config.setCurrent(argv.env);
+    config.load(argv.config, argv.env);
   } catch(e) {
     log.error(e.message);
     process.exit(1);
