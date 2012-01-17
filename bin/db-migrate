@@ -102,7 +102,7 @@ function executeUp() {
     migrator.migrationsDir = path.resolve(argv['migrations-dir']);
     migrator.driver.createMigrationsTable(function(err) {
       if (err) { log.error(err); return; }
-      migrator.up(argv, onComplete);
+      migrator.up(argv, onComplete.bind(this, migrator));
     });
   });
 }
@@ -115,17 +115,18 @@ function executeDown() {
     migrator.migrationsDir = path.resolve(argv['migrations-dir']);
     migrator.driver.createMigrationsTable(function(err) {
       if (err) { log.error(err); return; }
-      migrator.down(argv, onComplete);
+      migrator.down(argv, onComplete.bind(this, migrator));
     });
   });
 }
 
-function onComplete(err) {
+function onComplete(migrator, err) {
   if (err) {
     log.error(err);
   } else {
     log.info('Done');
   }
+  migrator.driver.close();
 }
 
 function run() {
