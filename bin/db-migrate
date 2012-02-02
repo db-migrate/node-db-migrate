@@ -12,8 +12,7 @@ var argv = optimist
     .default({
       verbose: false,
       config: process.cwd() + '/database.json',
-      'migrations-dir': process.cwd() + '/migrations',
-      env: 'dev' })
+      'migrations-dir': process.cwd() + '/migrations' })
     .usage('Usage: db-migrate [up|down|create] migrationName [options]')
 
     .describe('env', 'The environment to run the migrations under (dev, test, prod).')
@@ -60,8 +59,7 @@ function createMigrationDir(dir, callback) {
 
 function loadConfig() {
   try {
-    config.load(argv.config);
-    config.setCurrent(argv.env);
+    config.load(argv.config, argv.env);
   } catch(e) {
     log.error(e.message);
     process.exit(1);
@@ -104,7 +102,7 @@ function executeUp() {
     migrator.migrationsDir = path.resolve(argv['migrations-dir']);
     migrator.driver.createMigrationsTable(function(err) {
       if (err) { log.error(err); return; }
-      migrator.up(argv, onComplete);
+      migrator.up(argv, onComplete.bind(this, migrator));
     });
   });
 }
@@ -117,17 +115,18 @@ function executeDown() {
     migrator.migrationsDir = path.resolve(argv['migrations-dir']);
     migrator.driver.createMigrationsTable(function(err) {
       if (err) { log.error(err); return; }
-      migrator.down(argv, onComplete);
+      migrator.down(argv, onComplete.bind(this, migrator));
     });
   });
 }
 
-function onComplete(err) {
+function onComplete(migrator, err) {
   if (err) {
     log.error(err);
   } else {
     log.info('Done');
   }
+  migrator.driver.close();
 }
 
 function run() {
