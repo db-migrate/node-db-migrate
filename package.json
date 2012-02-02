@@ -16,8 +16,6 @@
     { "type": "git", "url": "https://github.com/nearinfinity/node-db-migrate.git" }
   ],
   "dependencies": {
-    "sqlite3": "~2.1.1",
-    "mysql": "~0.9.5",
     "optimist": "~0.3.0",
     "async": "~0.1.15"
   },
