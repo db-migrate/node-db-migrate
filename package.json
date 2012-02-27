@@ -2,6 +2,7 @@
   "name": "db-migrate",
   "description": "Database migration framework for node.js",
   "author": "Jeff Kunkle <jeff.kunkle@nearinfinity.com>",
+  "bin": "./bin/db-migrate",
   "keywords": ["database", "db", "migrate", "migration", "sqlite", "mysql"],
   "homepage": "https://github.com/nearinfinity/node-db-migrate",
   "version": "0.0.4",
