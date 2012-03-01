@@ -4,7 +4,7 @@ Database migration framework for node.js
 
 ## Installation
 
-    $ npm install db-migrate
+    $ npm install -g db-migrate
 
 ## Usage
 
