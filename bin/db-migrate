@@ -79,13 +79,14 @@ function executeCreate() {
   createMigrationDir(argv['migrations-dir'], function(err) {
     if (err) {
       log.error('Failed to create migration directory at ', argv['migrations-dir'], err);
-      return;
+      process.exit(1);
     }
 
     argv.title = argv._.shift();
     index.createMigration(argv.title, function(err, migration) {
       if (err) {
         log.error(err);
+        process.exit(1);
       } else {
         log.info(util.format('Created migration at %s', migration.path));
       }
@@ -98,10 +99,16 @@ function executeUp() {
     argv.count = Number.MAX_VALUE;
   }
   index.connect(config.getCurrent(), function(err, migrator) {
-    if (err) { log.error(err); return; }
+    if (err) {
+      log.error(err);
+      process.exit(1);
+    }
     migrator.migrationsDir = path.resolve(argv['migrations-dir']);
     migrator.driver.createMigrationsTable(function(err) {
-      if (err) { log.error(err); return; }
+      if (err) {
+        log.error(err);
+        process.exit(1);
+      }
       migrator.up(argv, onComplete.bind(this, migrator));
     });
   });
@@ -112,21 +119,30 @@ function executeDown() {
     argv.count = 1;
   }
   index.connect(config.getCurrent(), function(err, migrator) {
+    if (err) {
+      log.error(err);
+      process.exit(1);
+    }
     migrator.migrationsDir = path.resolve(argv['migrations-dir']);
     migrator.driver.createMigrationsTable(function(err) {
-      if (err) { log.error(err); return; }
+      if (err) {
+        log.error(err);
+        process.exit(1);
+      }
       migrator.down(argv, onComplete.bind(this, migrator));
     });
   });
 }
 
 function onComplete(migrator, err) {
+  migrator.driver.close();
+
   if (err) {
     log.error(err);
+    process.exit(1);
   } else {
     log.info('Done');
   }
-  migrator.driver.close();
 }
 
 function run() {
