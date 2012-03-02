@@ -7,6 +7,12 @@ var index = require('../index');
 var log = require('../lib/log');
 var util = require('util');
 var path = require('path');
+var assert = require('assert');
+
+process.on('uncaughtException', function(err) {
+  log.error(err);
+  process.exit(1);
+});
 
 var argv = optimist
     .default({
@@ -58,12 +64,7 @@ function createMigrationDir(dir, callback) {
 }
 
 function loadConfig() {
-  try {
-    config.load(argv.config, argv.env);
-  } catch(e) {
-    log.error(e.message);
-    process.exit(1);
-  }
+  config.load(argv.config, argv.env);
   if(verbose) {
     log.info("Using config:", config.getCurrent());
   }
@@ -84,12 +85,8 @@ function executeCreate() {
 
     argv.title = argv._.shift();
     index.createMigration(argv.title, function(err, migration) {
-      if (err) {
-        log.error(err);
-        process.exit(1);
-      } else {
-        log.info(util.format('Created migration at %s', migration.path));
-      }
+      assert.ifError(err);
+      log.info(util.format('Created migration at %s', migration.path));
     });
   })
 }
@@ -99,16 +96,10 @@ function executeUp() {
     argv.count = Number.MAX_VALUE;
   }
   index.connect(config.getCurrent(), function(err, migrator) {
-    if (err) {
-      log.error(err);
-      process.exit(1);
-    }
+    assert.ifError(err);
     migrator.migrationsDir = path.resolve(argv['migrations-dir']);
     migrator.driver.createMigrationsTable(function(err) {
-      if (err) {
-        log.error(err);
-        process.exit(1);
-      }
+      assert.ifError(err);
       migrator.up(argv, onComplete.bind(this, migrator));
     });
   });
@@ -119,16 +110,10 @@ function executeDown() {
     argv.count = 1;
   }
   index.connect(config.getCurrent(), function(err, migrator) {
-    if (err) {
-      log.error(err);
-      process.exit(1);
-    }
+    assert.ifError(err);
     migrator.migrationsDir = path.resolve(argv['migrations-dir']);
     migrator.driver.createMigrationsTable(function(err) {
-      if (err) {
-        log.error(err);
-        process.exit(1);
-      }
+      assert.ifError(err);
       migrator.down(argv, onComplete.bind(this, migrator));
     });
   });
@@ -136,13 +121,8 @@ function executeDown() {
 
 function onComplete(migrator, err) {
   migrator.driver.close();
-
-  if (err) {
-    log.error(err);
-    process.exit(1);
-  } else {
-    log.info('Done');
-  }
+  assert.ifError(err);
+  log.info('Done');
 }
 
 function run() {
