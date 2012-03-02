@@ -5,7 +5,7 @@
   "bin": "./bin/db-migrate",
   "keywords": ["database", "db", "migrate", "migration", "sqlite", "mysql"],
   "homepage": "https://github.com/nearinfinity/node-db-migrate",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "engines": { "node" : ">=0.6.0" },
   "maintainers": [
     { "name": "Jeff Kunkle", "email": "jeff.kunkle@nearinfinity.com" },
