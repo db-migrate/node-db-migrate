@@ -4,18 +4,15 @@
   "author": "Jeff Kunkle <jeff.kunkle@nearinfinity.com>",
   "bin": "./bin/db-migrate",
   "keywords": ["database", "db", "migrate", "migration", "sqlite", "mysql"],
-  "homepage": "https://github.com/nearinfinity/node-db-migrate",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "engines": { "node" : ">=0.6.0" },
   "maintainers": [
     { "name": "Jeff Kunkle", "email": "jeff.kunkle@nearinfinity.com" },
     { "name": "Joe Ferner", "email": "joe.ferner@nearinfinity.com" }
   ],
   "bugs": { "url": "https://github.com/nearinfinity/node-db-migrate/issues" },
-  "licenses": [ { "type" : "MIT" } ],
-  "repositories": [
-    { "type": "git", "url": "https://github.com/nearinfinity/node-db-migrate.git" }
-  ],
+  "license": "MIT",
+  "repository": { "type": "git", "url": "https://github.com/nearinfinity/node-db-migrate.git" },
   "dependencies": {
     "optimist": "~0.3.0",
     "async": "~0.1.15"
