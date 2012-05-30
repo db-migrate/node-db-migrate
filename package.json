@@ -4,7 +4,7 @@
   "author": "Jeff Kunkle <jeff.kunkle@nearinfinity.com>",
   "bin": "./bin/db-migrate",
   "keywords": ["database", "db", "migrate", "migration", "sqlite", "mysql"],
-  "version": "0.0.6",
+  "version": "0.1.0",
   "engines": { "node" : ">=0.6.0" },
   "maintainers": [
     { "name": "Jeff Kunkle", "email": "jeff.kunkle@nearinfinity.com" },
@@ -18,7 +18,10 @@
     "async": "~0.1.15"
   },
   "devDependencies": {
-    "vows": "~0.5.13",
+    "vows": "~0.6.2",
     "db-info": "~0.0.1"
+  },
+  "scripts": {
+    "test": "vows"
   }
 }
