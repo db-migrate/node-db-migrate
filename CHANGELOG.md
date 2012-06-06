@@ -9,3 +9,10 @@ New Features:
 Fix:
 
   - Fixed migration table creation for PostgreSQL (via Brandon Keene)
+
+## 0.1.2
+
+Fix:
+
+  - Fix string type for PostgreSQL #14 (via Matt Huggins)
+  - Fix renameTable method for PostgreSQL #15 (via Roman Ostolosh)
