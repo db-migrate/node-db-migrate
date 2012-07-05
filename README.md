@@ -6,6 +6,12 @@ Database migration framework for node.js
 
     $ npm install -g db-migrate
 
+## Supported Databases
+
+* Mysql (https://github.com/felixge/node-mysql)
+* PostgreSQL (https://github.com/brianc/node-postgres)
+* sqlite3 (https://github.com/developmentseed/node-sqlite3)
+
 ## Usage
 
 ```
@@ -168,6 +174,14 @@ db-migrate supports the concept of environments. For example, you might have a d
         "driver": "mysql",
         "user": "root",
         "password": "root"
+      },
+      
+      "pg": {
+        "driver": "pg",
+        "user": "test",
+        "password": "test",
+        "host": "localhost",
+        "database": "mydb"
       }
     }
 
