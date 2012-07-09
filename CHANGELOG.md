@@ -22,3 +22,9 @@ Fix:
 Fix:
   - Respect column length specification on column defs #16 (via Matt Huggins)
   - Allow default environment to be dev or development #17 (via Matt Huggins)
+
+## 0.1.4
+
+Fix:
+  - Fix migration table creation error on PostgreSQL >= 9.1 #20
+  - Document length property on columns #19 (via Glen Mailer)
