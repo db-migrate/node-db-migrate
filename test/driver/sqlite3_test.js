@@ -67,7 +67,7 @@ vows.describe('sqlite3').addBatch({
 
       'that has text str column that is unique': function(err, columns) {
         var column = findByName(columns, 'str');
-        assert.equal(column.getDataType(), 'TEXT');
+        assert.equal(column.getDataType(), 'VARCHAR(255)');
 //        assert.equal(column.isUnique(), true);
       },
 
@@ -193,7 +193,7 @@ vows.describe('sqlite3').addBatch({
         assert.equal(columns.length, 2);
         var column = findByName(columns, 'title');
         assert.equal(column.getName(), 'title');
-        assert.equal(column.getDataType(), 'TEXT');
+        assert.equal(column.getDataType(), 'VARCHAR(255)');
       }
     }
   }

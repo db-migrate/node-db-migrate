@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "vows": "~0.6.2",
-    "db-info": "~0.0.1"
+    "db-meta": "~0.3.2"
   },
   "scripts": {
     "test": "vows"
