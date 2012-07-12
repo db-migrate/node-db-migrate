@@ -28,3 +28,10 @@ Fix:
 Fix:
   - Fix migration table creation error on PostgreSQL >= 9.1 #20
   - Document length property on columns #19 (via Glen Mailer)
+
+## 0.1.5
+
+Fix:
+  - Add testing for all supported database drivers
+  - Fix dropTable on PostgreSQL #21
+  - Implement removeColumn and changeColumn for MySQL
