@@ -1,16 +1,16 @@
+var fs = require('fs');
 var vows = require('vows');
 var assert = require('assert');
-//var sqlite3 = require('sqlite3');
-var dbInfo = require('db-info');
+var dbmeta = require('db-meta');
 var dataType = require('../../lib/data_type');
 var driver = require('../../lib/driver');
 
 vows.describe('sqlite3').addBatch({
   'createTable': {
     topic: function() {
-      driver.connect({driver: 'sqlite3', filename: ':memory:'}, function(err, db) {
+      driver.connect({ driver: 'sqlite3', filename: 'test.db' }, function(err, db) {
         db.createTable('event', {
-          id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
+          id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true, notNull: true },
           str: { type: dataType.STRING, unique: true },
           txt: { type: dataType.TEXT, notNull: true, defaultValue: "foo" },
           intg: dataType.INTEGER,
@@ -20,151 +20,230 @@ vows.describe('sqlite3').addBatch({
       }.bind(this));
     },
 
-    'has resulting table': {
+    teardown: function(db) {
+      fs.unlink('test.db', this.callback);
+    },
+
+    'has resulting table metadata': {
       topic: function(db) {
-        dbInfo.getInfo({db: db.connection, driver: 'sqlite3'}, this.callback);
+        dbmeta('sqlite3', 'test.db', function (err, meta) {
+          if (err) {
+            return this.callback(err);
+          }
+          meta.getTables(this.callback);
+        }.bind(this));
       },
 
-      'with 6 columns': function(err, info) {
-        assert.isNotNull(info);
-        var count = 0;
-        for (var column in info.tables.event.columns) { count++ }
-        assert.equal(count, 6);
+      'containing the event table': function (err, tables) {
+        assert.isNull(err);
+        var table = findByName(tables, 'event');
+        assert.isNotNull(table);
+        assert.equal(table.getName(), 'event');
+      }
+    },
+
+    'has column metadata for the event table': {
+      topic: function(db) {
+        dbmeta('sqlite3', 'test.db', function (err, meta) {
+          if (err) {
+            return this.callback(err);
+          }
+          meta.getColumns('event', this.callback);
+        }.bind(this));
       },
 
-      'that has integer id column that is primary key, non-nullable, and auto increments': function(err, info) {
-        assert.equal(info.tables.event.columns.id.type, 'integer');
-        assert.equal(info.tables.event.columns.id.primaryKey, true);
-        assert.equal(info.tables.event.columns.id.notNull, true);
-        assert.equal(info.tables.event.columns.id.autoIncrement, true);
+      'with 6 columns': function(err, columns) {
+        assert.isNotNull(columns);
+        assert.equal(columns.length, 6);
       },
 
-      'that has text str column that is unique': function(err, info) {
-        assert.equal(info.tables.event.columns.str.type, 'text');
-        assert.equal(info.tables.event.columns.str.unique, true);
+      'that has integer id column that is primary key, non-nullable, and auto increments': function(err, columns) {
+        var column = findByName(columns, 'id');
+        assert.equal(column.getDataType(), 'INTEGER');
+        assert.equal(column.isPrimaryKey(), true);
+        assert.equal(column.isNullable(), false);
+//        assert.equal(column.isAutoIncrementing(), true);
       },
 
-      'that has text txt column that is non-nullable': function(err, info) {
-        assert.equal(info.tables.event.columns.txt.type, 'text');
-        assert.equal(info.tables.event.columns.txt.notNull, true);
-        assert.equal(info.tables.event.columns.txt.defaultValue, 'foo');
+      'that has text str column that is unique': function(err, columns) {
+        var column = findByName(columns, 'str');
+        assert.equal(column.getDataType(), 'TEXT');
+//        assert.equal(column.isUnique(), true);
       },
 
-      'that has integer intg column': function(err, info) {
-        assert.equal(info.tables.event.columns.intg.type, 'integer');
+      'that has text txt column that is non-nullable': function(err, columns) {
+        var column = findByName(columns, 'txt');
+        assert.equal(column.getDataType(), 'TEXT');
+        assert.equal(column.isNullable(), false);
+//        assert.equal(column.getDefaultValue(), 'foo');
       },
 
-      'that has real rel column': function(err, info) {
-        assert.equal(info.tables.event.columns.rel.type, 'real');
+      'that has integer intg column': function(err, columns) {
+        var column = findByName(columns, 'intg');
+        assert.equal(column.getDataType(), 'INTEGER');
+        assert.equal(column.isNullable(), true);
       },
 
-      'that has integer dt column': function(err, info) {
-        assert.equal(info.tables.event.columns.dt.type, 'integer');
+      'that has real rel column': function(err, columns) {
+        var column = findByName(columns, 'rel');
+        assert.equal(column.getDataType(), 'REAL');
+        assert.equal(column.isNullable(), true);
       },
+
+      'that has integer dt column': function(err, columns) {
+        var column = findByName(columns, 'dt');
+        assert.equal(column.getDataType(), 'INTEGER');
+        assert.equal(column.isNullable(), true);
+      }
     }
-  },
-
+  }
+}).addBatch({
   'dropTable': {
     topic: function() {
-      driver.connect({driver: 'sqlite3', filename: ':memory:'}, function(err, db) {
+      driver.connect({ driver: 'sqlite3', filename: 'test.db' }, function(err, db) {
         db.createTable('event', {
-          id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
-        }, function() {
+          id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true }
+        }, function(err) {
+          if (err) {
+            return this.callback(err);
+          }
           db.dropTable('event', this.callback.bind(this, null, db));
         }.bind(this));
       }.bind(this));
     },
 
-    'has resulting table': {
-      topic: function(db) {
-        dbInfo.getInfo({db: db.connection, driver: 'sqlite3'}, this.callback);
+    'has table metadata': {
+      topic: function() {
+        dbmeta('sqlite3', 'test.db', function (err, meta) {
+          if (err) {
+            return this.callback(err);
+          }
+          meta.getTables(this.callback);
+        }.bind(this));
       },
 
-      'that no longer exists': function(err, info) {
-        assert.isNotNull(info);
-        assert.isUndefined(info.tables.event);
+      'containing no tables': function(err, tables) {
+        assert.isNotNull(tables);
+        assert.equal(tables.length, 1);
       }
     }
-  },
-
+  }
+}).addBatch({
   'renameTable': {
     topic: function() {
-      driver.connect({driver: 'sqlite3', filename: ':memory:'}, function(err, db) {
+      driver.connect({ driver: 'sqlite3', filename: 'test.db' }, function(err, db) {
         db.createTable('event', {
-          id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
+          id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true }
         }, function() {
           db.renameTable('event', 'functions', this.callback.bind(this, null, db));
         }.bind(this));
       }.bind(this));
     },
 
-    'has resulting table': {
-      topic: function(db) {
-        dbInfo.getInfo({db: db.connection, driver: 'sqlite3'}, this.callback);
+    teardown: function(db) {
+      fs.unlink('test.db', this.callback);
+    },
+
+    'has table metadata': {
+      topic: function() {
+        dbmeta('sqlite3', 'test.db', function (err, meta) {
+          if (err) {
+            return this.callback(err);
+          }
+          meta.getTables(this.callback);
+        }.bind(this));
       },
 
-      'that has been renamed': function(err, info) {
-        assert.isNotNull(info);
-        assert.isUndefined(info.tables.event);
-        assert.isDefined(info.tables.functions);
+      'containing the functions table': function(err, tables) {
+        assert.isNotNull(tables);
+        var table = findByName(tables, 'functions');
+        assert.equal(table.getName(), 'functions');
+        assert.isNull(findByName(tables, 'event'));
       }
     }
-  },
-
+  }
+}).addBatch({
   'addColumn': {
     topic: function() {
-      driver.connect({driver: 'sqlite3', filename: ':memory:'}, function(err, db) {
+      driver.connect({ driver: 'sqlite3', filename: 'test.db' }, function(err, db) {
         db.createTable('event', {
-          id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
+          id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true }
         }, function() {
           db.addColumn('event', 'title', 'string', this.callback.bind(this, null, db));
         }.bind(this));
       }.bind(this));
     },
 
-    'has resulting column': {
+    teardown: function(db) {
+      fs.unlink('test.db', this.callback);
+    },
+
+    'has column metadata': {
       topic: function(db) {
-        dbInfo.getInfo({db: db.connection, driver: 'sqlite3'}, this.callback);
+        dbmeta('sqlite3', 'test.db', function (err, meta) {
+          if (err) {
+            return this.callback(err);
+          }
+          meta.getColumns('event', this.callback);
+        }.bind(this));
       },
 
-      'with additional column': function(err, info) {
-        assert.isNotNull(info);
-        assert.isDefined(info.tables.event.columns.title);
-        assert.equal(info.tables.event.columns.title.type, 'text');
+      'with additional title column': function(err, columns) {
+        assert.isNotNull(columns);
+        assert.equal(columns.length, 2);
+        var column = findByName(columns, 'title');
+        assert.equal(column.getName(), 'title');
+        assert.equal(column.getDataType(), 'TEXT');
       }
     }
-  },
-
+  }
+// removeColumn
+// renameColumn
+// changeColumn
+}).addBatch({
   'addIndex': {
     topic: function() {
-      driver.connect({driver: 'sqlite3', filename: ':memory:'}, function(err, db) {
+      driver.connect({ driver: 'sqlite3', filename: 'test.db' }, function(err, db) {
         db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
-          title: { type: dataType.STRING },
+          title: { type: dataType.STRING }
         }, function() {
           db.addIndex('event', 'event_title', 'title', this.callback.bind(this, null, db));
         }.bind(this));
       }.bind(this));
     },
 
-    'has resulting table': {
+    teardown: function(db) {
+      fs.unlink('test.db', this.callback);
+    },
+
+    'has resulting index metadata': {
       topic: function(db) {
-        dbInfo.getInfo({db: db.connection, driver: 'sqlite3'}, this.callback);
+        dbmeta('sqlite3', 'test.db', function (err, meta) {
+          if (err) {
+            return this.callback(err);
+          }
+          meta.getIndexes('event', this.callback);
+        }.bind(this));
       },
 
-      'with additional index': function(err, info) {
-        assert.isNotNull(info);
-        assert.isDefined(info.tables.event.indexes.event_title);
+      'with additional index': function(err, indexes) {
+        assert.isNotNull(indexes);
+        var index = findByName(indexes, 'event_title');
+        assert.equal(index.getName(), 'event_title');
+        assert.equal(index.getTableName(), 'event');
+        assert.equal(index.getColumnName(), 'title');
       }
     }
-  },
-
+  }
+}).addBatch({
   'removeIndex': {
     topic: function() {
-      driver.connect({driver: 'sqlite3', filename: ':memory:'}, function(err, db) {
+      driver.connect({ driver: 'sqlite3', filename: 'test.db' }, function(err, db) {
         db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
-        }, function() {
+          title: { type: dataType.STRING }
+        }, function(err) {
           db.addIndex('event', 'event_title', 'title', function(err) {
             db.removeIndex('event_title', this.callback.bind(this, null, db));
           }.bind(this));
@@ -172,16 +251,33 @@ vows.describe('sqlite3').addBatch({
       }.bind(this));
     },
 
-    'has resulting table': {
+    teardown: function(db) {
+      fs.unlink('test.db', this.callback);
+    },
+
+    'has resulting index metadata': {
       topic: function(db) {
-        dbInfo.getInfo({db: db.connection, driver: 'sqlite3'}, this.callback);
+        dbmeta('sqlite3', 'test.db', function (err, meta) {
+          if (err) {
+            return this.callback(err);
+          }
+          meta.getIndexes('event', this.callback);
+        }.bind(this));
       },
 
-      'without index': function(err, info) {
-        assert.isNotNull(info);
-        assert.isUndefined(info.tables.event.indexes.event_title);
+      'without index': function(err, indexes) {
+        assert.isNotNull(indexes);
+        assert.equal(indexes.length, 0);
       }
     }
   }
-
 }).export(module);
+
+function findByName(columns, name) {
+  for (var i = 0; i < columns.length; i++) {
+    if (columns[i].getName() === name) {
+      return columns[i];
+    }
+  }
+  return null;
+}
