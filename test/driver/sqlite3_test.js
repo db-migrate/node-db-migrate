@@ -237,6 +237,42 @@ vows.describe('sqlite3').addBatch({
     }
   }
 }).addBatch({
+  'insert': {
+    topic: function() {
+      driver.connect({ driver: 'sqlite3', filename: 'test.db' }, function(err, db) {
+        db.createTable('event', {
+          id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
+          title: { type: dataType.STRING }
+        }, function() {
+          db.insert('event', 'event_title', 'title', this.callback.bind(this, null, db));
+        }.bind(this));
+      }.bind(this));
+    },
+
+    teardown: function(db) {
+      fs.unlink('test.db', this.callback);
+    },
+
+    'has resulting index metadata': {
+      topic: function(db) {
+        dbmeta('sqlite3', 'test.db', function (err, meta) {
+          if (err) {
+            return this.callback(err);
+          }
+          meta.getIndexes('event', this.callback);
+        }.bind(this));
+      },
+
+      'with additional index': function(err, indexes) {
+        assert.isNotNull(indexes);
+        var index = findByName(indexes, 'event_title');
+        assert.equal(index.getName(), 'event_title');
+        assert.equal(index.getTableName(), 'event');
+        assert.equal(index.getColumnName(), 'title');
+      }
+    }
+  }
+}).addBatch({
   'removeIndex': {
     topic: function() {
       driver.connect({ driver: 'sqlite3', filename: 'test.db' }, function(err, db) {
