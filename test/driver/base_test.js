@@ -41,6 +41,10 @@ vows.describe('base').addBatch({
       }, Error);
 
       assert.throws(function() {
+        base.insert();
+      }, Error);
+
+      assert.throws(function() {
         base.removeIndex();
       }, Error);
 
