@@ -7,7 +7,7 @@ var driver = require('../../lib/driver');
 vows.describe('pg').addBatch({
   'createTable': {
     topic: function() {
-      driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) {
+      driver.connect({ driver: 'pg', user:'postgres', database: 'db_migrate_test', password:'1234' }, function(err, db) {
         db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
           str: { type: dataType.STRING, unique: true },
@@ -25,7 +25,7 @@ vows.describe('pg').addBatch({
 
     'has table metadata': {
       topic: function(db) {
-        dbmeta('pg', { database: 'db_migrate_test' }, function (err, meta) {
+        dbmeta('pg', { user:'postgres', password:'1234', database: 'db_migrate_test' }, function (err, meta) {
           if (err) {
             return this.callback(err);
           }
@@ -41,7 +41,7 @@ vows.describe('pg').addBatch({
 
     'has column metadata for the event table': {
       topic: function(db) {
-        dbmeta('pg', { database: 'db_migrate_test' }, function (err, meta) {
+        dbmeta('pg', { user:'postgres', password:'1234', database: 'db_migrate_test' }, function (err, meta) {
           if (err) {
             return this.callback(err);
           }
@@ -97,7 +97,7 @@ vows.describe('pg').addBatch({
 }).addBatch({
   'dropTable': {
     topic: function() {
-      driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) {
+      driver.connect({ driver: 'pg', user:'postgres', password:'1234', database: 'db_migrate_test' }, function(err, db) {
         db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true }
         }, function(err) {
@@ -111,7 +111,7 @@ vows.describe('pg').addBatch({
 
     'has table metadata': {
       topic: function() {
-        dbmeta('pg', { database: 'db_migrate_test' }, function (err, meta) {
+        dbmeta('pg', { user:'postgres', password:'1234', database: 'db_migrate_test' }, function (err, meta) {
           if (err) {
             return this.callback(err);
           }
@@ -128,7 +128,7 @@ vows.describe('pg').addBatch({
 }).addBatch({
   'renameTable': {
     topic: function() {
-      driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) {
+      driver.connect({ driver: 'pg', user:'postgres', password:'1234', database: 'db_migrate_test' }, function(err, db) {
         db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true }
         }, function() {
@@ -143,7 +143,7 @@ vows.describe('pg').addBatch({
 
     'has table metadata': {
       topic: function() {
-        dbmeta('pg', { database: 'db_migrate_test' }, function (err, meta) {
+        dbmeta('pg', { user:'postgres', password:'1234', database: 'db_migrate_test' }, function (err, meta) {
           if (err) {
             return this.callback(err);
           }
@@ -161,7 +161,7 @@ vows.describe('pg').addBatch({
 }).addBatch({
   'addColumn': {
     topic: function() {
-      driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) {
+      driver.connect({ driver: 'pg', user:'postgres', password:'1234', database: 'db_migrate_test' }, function(err, db) {
         db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true }
         }, function() {
@@ -176,7 +176,7 @@ vows.describe('pg').addBatch({
 
     'has column metadata': {
       topic: function(db) {
-        dbmeta('pg', { database: 'db_migrate_test' }, function (err, meta) {
+        dbmeta('pg', { user:'postgres', password:'1234', database: 'db_migrate_test' }, function (err, meta) {
           if (err) {
             return this.callback(err);
           }
@@ -196,7 +196,7 @@ vows.describe('pg').addBatch({
 }).addBatch({
   'removeColumn': {
     topic: function() {
-      driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) {
+      driver.connect({ driver: 'pg', user:'postgres', password:'1234', database: 'db_migrate_test' }, function(err, db) {
         db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true }
         }, function() {
@@ -213,7 +213,7 @@ vows.describe('pg').addBatch({
 
     'has column metadata': {
       topic: function(db) {
-        dbmeta('pg', { database: 'db_migrate_test' }, function (err, meta) {
+        dbmeta('pg', { user:'postgres', password:'1234', database: 'db_migrate_test' }, function (err, meta) {
           if (err) {
             return this.callback(err);
           }
@@ -231,7 +231,7 @@ vows.describe('pg').addBatch({
 }).addBatch({
   'renameColumn': {
     topic: function() {
-      driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) {
+      driver.connect({ driver: 'pg', user:'postgres', password:'1234', database: 'db_migrate_test' }, function(err, db) {
         db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true }
         }, function() {
@@ -248,7 +248,7 @@ vows.describe('pg').addBatch({
 
     'has column metadata': {
       topic: function(db) {
-        dbmeta('pg', { database: 'db_migrate_test' }, function (err, meta) {
+        dbmeta('pg', { user:'postgres', password:'1234', database: 'db_migrate_test' }, function (err, meta) {
           if (err) {
             return this.callback(err);
           }
@@ -267,7 +267,7 @@ vows.describe('pg').addBatch({
 }).addBatch({
   'changeColumn': {
     topic: function() {
-      driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) {
+      driver.connect({ driver: 'pg', user:'postgres', password:'1234', database: 'db_migrate_test' }, function(err, db) {
         db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
           txt: { type: dataType.TEXT, notNull: true, defaultValue: "foo" }
@@ -284,7 +284,7 @@ vows.describe('pg').addBatch({
 
     'has column metadata': {
       topic: function(db) {
-        dbmeta('pg', { database: 'db_migrate_test' }, function (err, meta) {
+        dbmeta('pg', { user:'postgres', password:'1234', database: 'db_migrate_test' }, function (err, meta) {
           if (err) {
             return this.callback(err);
           }
@@ -305,7 +305,7 @@ vows.describe('pg').addBatch({
 }).addBatch({
   'addIndex': {
     topic: function() {
-      driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) {
+      driver.connect({ driver: 'pg', user:'postgres', password:'1234', database: 'db_migrate_test', password: '1234' }, function(err, db) {
         db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
           title: { type: dataType.STRING }
@@ -321,7 +321,7 @@ vows.describe('pg').addBatch({
 
     'has resulting index metadata': {
       topic: function(db) {
-        dbmeta('pg', { database: 'db_migrate_test' }, function (err, meta) {
+        dbmeta('pg', { user:'postgres', password:'1234', database: 'db_migrate_test' }, function (err, meta) {
           if (err) {
             return this.callback(err);
           }
@@ -339,47 +339,39 @@ vows.describe('pg').addBatch({
       }
     }
   }
-// }).addBatch({
-//   'insert': {
-//     topic: function() {
-//       driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) {
-//         db.createTable('event', {
-//           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
-//           title: { type: dataType.STRING }
-//         }, function() {
-//         db.insert('event', 'event_title', 'title', this.callback.bind(this, null, db));
-//         }.bind(this));
-//       }.bind(this));
-//     },
+}).addBatch({
+  'insert': {
+    topic: function() {
+      driver.connect({ driver: 'pg', user:'postgres', password:'1234', database: 'db_migrate_test' }, function(err, db) {
+        db.createTable('event', {
+          id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
+          title: { type: dataType.STRING }
+        }, function(err) {
+        db.insert('event', ['id','title'], [2,'title'], this.callback.bind(this, null, db));
+        }.bind(this));
+      }.bind(this));
+    },
 
-//     teardown: function(db) {
-//       db.dropTable('event', this.callback);
-//     },
+    teardown: function(db) {
+      db.dropTable('event', this.callback);
+    },
 
-//     'has resulting index metadata': {
-//       topic: function(db) {
-//         dbmeta('pg', { database: 'db_migrate_test' }, function (err, meta) {
-//           if (err) {
-//             return this.callback(err);
-//           }
-//           meta.getIndexes('event', this.callback);
-//         }.bind(this));
-//       },
-
-//       'with additional index': function(err, indexes) {
-//         assert.isNotNull(indexes);
-//         assert.equal(indexes.length, 2);
-//         var index = findByName(indexes, 'event_title');
-//         assert.equal(index.getName(), 'event_title');
-//         assert.equal(index.getTableName(), 'event');
-//         assert.equal(index.getColumnName(), 'title');
-//       }
-//     }
-//   }
+    'has additional row': {
+      topic: function(db) {
+        driver.connect({ driver: 'pg', user:'postgres', password:'1234', database: 'db_migrate_test' }, this.callback.bind(this,null,db));
+      },
+      
+    'with additional row' : function(db) { 
+      db.runSql("SELECT * from event", function(err, data){
+        assert.equal(data.rowCount, 1);
+      });
+      }
+    }
+  } 
 }).addBatch({
   'removeIndex': {
     topic: function() {
-      driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) {
+      driver.connect({ driver: 'pg', user:'postgres', password:'1234', database: 'db_migrate_test' }, function(err, db) {
         db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true }
         }, function() {
@@ -396,7 +388,7 @@ vows.describe('pg').addBatch({
 
     'has resulting index metadata': {
       topic: function(db) {
-        dbmeta('pg', { database: 'db_migrate_test' }, function (err, meta) {
+        dbmeta('pg', { user:'postgres', password:'1234', database: 'db_migrate_test' }, function (err, meta) {
           if (err) {
             return this.callback(err);
           }
