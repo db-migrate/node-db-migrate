@@ -66,7 +66,8 @@ function createMigrationDir(dir, callback) {
 function loadConfig() {
   config.load(argv.config, argv.env);
   if(verbose) {
-    log.info("Using config:", config.getCurrent());
+    var current = config.getCurrent();
+    log.info("Using", current.env, "settings:", current.settings);
   }
 }
 
@@ -95,7 +96,7 @@ function executeUp() {
   if(!argv.count) {
     argv.count = Number.MAX_VALUE;
   }
-  index.connect(config.getCurrent(), function(err, migrator) {
+  index.connect(config.getCurrent().settings, function(err, migrator) {
     assert.ifError(err);
     migrator.migrationsDir = path.resolve(argv['migrations-dir']);
     migrator.driver.createMigrationsTable(function(err) {
@@ -109,7 +110,7 @@ function executeDown() {
   if(!argv.destination && !argv.count) {
     argv.count = 1;
   }
-  index.connect(config.getCurrent(), function(err, migrator) {
+  index.connect(config.getCurrent().settings, function(err, migrator) {
     assert.ifError(err);
     migrator.migrationsDir = path.resolve(argv['migrations-dir']);
     migrator.driver.createMigrationsTable(function(err) {
