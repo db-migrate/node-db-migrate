@@ -360,7 +360,7 @@ vows.describe('mysql').addBatch({
 
     'has additional row': {
       topic: function(db) {
-        driver.connect({ driver: 'pg', user:'postgres', password:'1234', database: 'db_migrate_test' }, this.callback.bind(this,null,db));
+        driver.connect({ driver: 'mysql', database: 'db_migrate_test' }, this.callback.bind(this,null,db));
       },
       
     'with additional row' : function(db) { 
