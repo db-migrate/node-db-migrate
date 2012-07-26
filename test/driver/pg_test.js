@@ -340,6 +340,35 @@ vows.describe('pg').addBatch({
     }
   }
 }).addBatch({
+  'insert': {
+    topic: function() {
+      driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) {
+        db.createTable('event', {
+          id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
+          title: { type: dataType.STRING }
+        }, function(err) {
+        db.insert('event', ['id','title'], [2,'title'], this.callback.bind(this, null, db));
+        }.bind(this));
+      }.bind(this));
+    },
+
+    teardown: function(db) {
+      db.dropTable('event', this.callback);
+    },
+
+    'has additional row': {
+      topic: function(db) {
+        driver.connect({ driver: 'pg', database: 'db_migrate_test' }, this.callback.bind(this,null,db));
+      },
+      
+    'with additional row' : function(db) { 
+      db.runSql("SELECT * from event", function(err, data){
+        assert.equal(data.rowCount, 1);
+      });
+      }
+    }
+  } 
+}).addBatch({
   'removeIndex': {
     topic: function() {
       driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) {
