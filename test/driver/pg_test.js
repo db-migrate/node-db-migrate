@@ -7,7 +7,7 @@ var driver = require('../../lib/driver');
 vows.describe('pg').addBatch({
   'createTable': {
     topic: function() {
-      driver.connect({ driver: 'pg', user:'postgres', database: 'db_migrate_test', password:'1234' }, function(err, db) {
+      driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) {
         db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
           str: { type: dataType.STRING, unique: true },
@@ -305,7 +305,7 @@ vows.describe('pg').addBatch({
 }).addBatch({
   'addIndex': {
     topic: function() {
-      driver.connect({ driver: 'pg', user:'postgres', password:'1234', database: 'db_migrate_test', password: '1234' }, function(err, db) {
+      driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) {
         db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
           title: { type: dataType.STRING }
