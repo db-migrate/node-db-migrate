@@ -67,7 +67,7 @@ vows.describe('sqlite3').addBatch({
 
       'that has text str column that is unique': function(err, columns) {
         var column = findByName(columns, 'str');
-        assert.equal(column.getDataType(), 'VARCHAR(255)');
+        assert.equal(column.getDataType(), 'VARCHAR');
 //        assert.equal(column.isUnique(), true);
       },
 
@@ -193,7 +193,7 @@ vows.describe('sqlite3').addBatch({
         assert.equal(columns.length, 2);
         var column = findByName(columns, 'title');
         assert.equal(column.getName(), 'title');
-        assert.equal(column.getDataType(), 'VARCHAR(255)');
+        assert.equal(column.getDataType(), 'VARCHAR');
       }
     }
   }
@@ -293,6 +293,25 @@ vows.describe('sqlite3').addBatch({
         assert.equal(indexes.length, 0);
       }
     }
+  }
+}).addBatch({
+  'createMigrationsTable': {
+    topic: function(){
+      driver.connect({driver: 'sqlite3', filename: 'test.db'}, function(err,db){
+        db.createMigrationsTable(this.callback.bind(this,null,db));
+      }.bind(this));
+    },
+
+    teardown: function(db) {
+      fs.unlink('test.db', this.callback);
+    },
+
+      'has migrations table' :function(nan, db, err, res) {
+        assert.equal(err,null);
+        assert.isNotNull(res);
+        console.log(res);
+    }
+  
   }
 }).export(module);
 
