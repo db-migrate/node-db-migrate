@@ -318,16 +318,6 @@ __Arguments__
 * columns - an array of column names contained in the index
 * callback(err) - callback that will be invoked after adding the index
 
-### insert(tableName, columnNameArray, valueArray, callback)
-
-Insert an item into a given column
-
-__Arguments__
-
-* tableName - table to insert the item into
-* columnNameArray - the array existing column names for each item being inserted
-* valueArray - the array of values to be inserted into the associated column
-* callback(err) - callback that will be invoked once the insert has been completed.
 ### removeIndex(indexName, callback)
 
 Remove an index
