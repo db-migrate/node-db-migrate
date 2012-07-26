@@ -356,18 +356,12 @@ vows.describe('pg').addBatch({
       db.dropTable('event', this.callback);
     },
 
-    'has additional row': {
-      topic: function(db) {
-        driver.connect({ driver: 'pg', database: 'db_migrate_test' }, this.callback.bind(this,null,db));
-      },
-      
-    'with additional row' : function(db) { 
-      db.runSql("SELECT * from event", function(err, data){
+    'with additional row' : function(db) {
+      db.runSql("SELECT * from event", function(err, data) {
         assert.equal(data.rowCount, 1);
       });
-      }
     }
-  } 
+  }
 }).addBatch({
   'removeIndex': {
     topic: function() {

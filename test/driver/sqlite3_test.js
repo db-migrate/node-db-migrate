@@ -253,16 +253,10 @@ vows.describe('sqlite3').addBatch({
       fs.unlink('test.db', this.callback);
     },
 
-    'has additional row': {
-      topic: function(db) {
-        driver.connect({ driver: 'sqlite3', filename: 'test.db' }, this.callback.bind(this,null,db));
-      },
-      
-    'with additional row' : function(db) { 
-      db.all("SELECT * from event;", function(err, data){
+    'with additional row' : function(db) {
+      db.all("SELECT * from event;", function(err, data) {
         assert.equal(data.length, 1);
       });
-      }
     }
   }
 }).addBatch({
