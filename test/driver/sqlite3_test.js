@@ -244,7 +244,7 @@ vows.describe('sqlite3').addBatch({
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
           title: { type: dataType.STRING }
         }, function() {
-          db.insert('event', 'event_title', 'title', this.callback.bind(this, null, db));
+          db.insert('event', ['id','title'], [2,'title'], this.callback.bind(this, null, db));
         }.bind(this));
       }.bind(this));
     },
@@ -253,22 +253,15 @@ vows.describe('sqlite3').addBatch({
       fs.unlink('test.db', this.callback);
     },
 
-    'has resulting index metadata': {
+    'has additional row': {
       topic: function(db) {
-        dbmeta('sqlite3', 'test.db', function (err, meta) {
-          if (err) {
-            return this.callback(err);
-          }
-          meta.getIndexes('event', this.callback);
-        }.bind(this));
+        driver.connect({ driver: 'sqlite3', filename: 'test.db' }, this.callback.bind(this,null,db));
       },
-
-      'with additional index': function(err, indexes) {
-        assert.isNotNull(indexes);
-        var index = findByName(indexes, 'event_title');
-        assert.equal(index.getName(), 'event_title');
-        assert.equal(index.getTableName(), 'event');
-        assert.equal(index.getColumnName(), 'title');
+      
+    'with additional row' : function(db) { 
+      db.all("SELECT * from event;", function(err, data){
+        assert.equal(data.length, 1);
+      });
       }
     }
   }
