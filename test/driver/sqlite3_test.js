@@ -309,7 +309,6 @@ vows.describe('sqlite3').addBatch({
       'has migrations table' :function(nan, db, err, res) {
         assert.equal(err,null);
         assert.isNotNull(res);
-        console.log(res);
     }
   
   }
