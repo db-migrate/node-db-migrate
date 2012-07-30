@@ -413,7 +413,6 @@ vows.describe('mysql').addBatch({
       'has migrations table' :function(nan, db, err, res) {
         assert.equal(err,null);
         assert.isNotNull(res);
-        assert
     }
   }
 }).export(module);
