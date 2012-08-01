@@ -369,10 +369,11 @@ vows.describe('mysql').addBatch({
     topic: function() {
       driver.connect({ driver: 'mysql', database: 'db_migrate_test' }, function(err, db) {
         db.createTable('event', {
-          id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true }
+          id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
+          title: { type: dataType.STRING }
         }, function() {
           db.addIndex('event', 'event_title', 'title', function(err) {
-            db.removeIndex('event_title', this.callback.bind(this, null, db));
+            db.removeIndex('event','event_title', this.callback.bind(this, null, db));
           }.bind(this));
         }.bind(this));
       }.bind(this));
