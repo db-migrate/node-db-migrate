@@ -296,9 +296,9 @@ vows.describe('sqlite3').addBatch({
   }
 }).addBatch({
   'createMigrationsTable': {
-    topic: function(){
-      driver.connect({driver: 'sqlite3', filename: 'test.db'}, function(err,db){
-        db.createMigrationsTable(this.callback.bind(this,null,db));
+    topic: function() {
+      driver.connect({ driver: 'sqlite3', filename: 'test.db' }, function(err,db) {
+        db.createMigrationsTable(this.callback.bind(this, null, db));
       }.bind(this));
     },
 
@@ -306,11 +306,10 @@ vows.describe('sqlite3').addBatch({
       fs.unlink('test.db', this.callback);
     },
 
-      'has migrations table' :function(nan, db, err, res) {
-        assert.equal(err,null);
-        assert.isNotNull(res);
+    'has migrations table' : function(err, res) {
+      assert.isNull(err);
+      assert.isNotNull(res);
     }
-  
   }
 }).export(module);
 

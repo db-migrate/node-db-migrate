@@ -398,9 +398,9 @@ vows.describe('pg').addBatch({
   }
 }).addBatch({
   'createMigrationsTable': {
-    topic: function(){
-      driver.connect({ driver: 'pg', database: 'db_migrate_test'}, function(err,db){
-        db.createMigrationsTable(this.callback.bind(this,null,db));
+    topic: function() {
+      driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err,db) {
+        db.createMigrationsTable(this.callback.bind(this, null, db));
       }.bind(this));
     },
 
@@ -408,10 +408,10 @@ vows.describe('pg').addBatch({
       db.dropTable('migrations', this.callback);
     },
 
-      'has migrations table' :function(nan, db, err, res) {
-        assert.equal(err,null);
-        assert.isNotNull(res);
-    } 
+    'has migrations table' : function(err, res) {
+      assert.isNull(err);
+      assert.isNotNull(res);
+    }
   }
 }).export(module);
 
