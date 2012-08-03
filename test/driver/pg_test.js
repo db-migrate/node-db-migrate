@@ -15,11 +15,11 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db, 
           intg: dataType.INTEGER,
           rel: dataType.REAL,
           dt: dataType.DATE_TIME
-        }, this.callback.bind(this, null, db));
+        }, this.callback.bind(this, null));
       },
 
       'has table metadata': {
-        topic: function(db) {
+        topic: function() {
           dbmeta('pg', { connection:db.connection}, function (err, meta) {
             if (err) {
               return this.callback(err);
@@ -35,7 +35,7 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db, 
       },
 
       'has column metadata for the event table': {
-        topic: function(db) {
+        topic: function() {
           dbmeta('pg', { connection:db.connection}, function (err, meta) {
             if (err) {
               return this.callback(err);
@@ -54,20 +54,20 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db, 
           assert.equal(column.getDataType(), 'INTEGER');
           assert.equal(column.isPrimaryKey(), true);
           assert.equal(column.isNullable(), false);
-         // assert.equal(column.isAutoIncrementing(), true);
+          assert.equal(column.isAutoIncrementing(), true);
         },
 
         'that has text str column that is unique': function(err, columns) {
           var column = findByName(columns, 'str');
           assert.equal(column.getDataType(), 'CHARACTER VARYING');
-         // assert.equal(column.isUnique(), true);
+          assert.equal(column.isUnique(), true);
         },
 
         'that has text txt column that is non-nullable': function(err, columns) {
           var column = findByName(columns, 'txt');
           assert.equal(column.getDataType(), 'TEXT');
           assert.equal(column.isNullable(), false);
-         // assert.equal(column.getDefaultValue(), 'foo');
+      // assert.equal(column.getDefaultValue(), 'foo');
         },
 
         'that has integer intg column': function(err, columns) {
@@ -89,7 +89,7 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db, 
         }
       },
 
-      teardown: function(db) {
+      teardown: function() {
         db.dropTable('event', this.callback);
       }
     }
@@ -102,7 +102,7 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db, 
           if (err) {
             return this.callback(err);
           }
-          db.dropTable('event', this.callback.bind(this, null, db));
+          db.dropTable('event', this.callback.bind(this, null));
         }.bind(this));
       },
 
@@ -128,7 +128,7 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db, 
         db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true }
         }, function() {
-          db.renameTable('event', 'functions', this.callback.bind(this, null, db));
+          db.renameTable('event', 'functions', this.callback.bind(this, null));
         }.bind(this));
       },
 
@@ -148,7 +148,8 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db, 
           assert.equal(tables[0].getName(), 'functions');
         }
       },
-      teardown: function(db) {
+
+      teardown: function() {
         db.dropTable('functions', this.callback);
       }
     }
@@ -158,12 +159,12 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db, 
         db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true }
         }, function() {
-          db.addColumn('event', 'title', 'string', this.callback.bind(this, null, db));
+          db.addColumn('event', 'title', 'string', this.callback.bind(this, null));
         }.bind(this));
       },
 
       'has column metadata': {
-        topic: function(db) {
+        topic: function() {
           dbmeta('pg', { connection:db.connection}, function (err, meta) {
             if (err) {
               return this.callback(err);
@@ -180,7 +181,8 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db, 
           assert.equal(column.getDataType(), 'CHARACTER VARYING');
         }
       },
-      teardown: function(db) {
+
+      teardown: function() {
         db.dropTable('event', this.callback);
       }
     }
@@ -191,13 +193,13 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db, 
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true }
         }, function() {
           db.addColumn('event', 'title', 'string', function(err) {
-            db.removeColumn('event', 'title', this.callback.bind(this, null, db));
+            db.removeColumn('event', 'title', this.callback.bind(this, null));
           }.bind(this));
         }.bind(this));
       },
 
       'has column metadata': {
-        topic: function(db) {
+        topic: function() {
           dbmeta('pg', { connection:db.connection}, function (err, meta) {
             if (err) {
               return this.callback(err);
@@ -212,7 +214,8 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db, 
           assert.notEqual(columns[0].getName(), 'title');
         }
       },
-      teardown: function(db) {
+
+      teardown: function() {
         db.dropTable('event', this.callback);
       }
     }
@@ -223,13 +226,13 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db, 
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true }
         }, function() {
           db.addColumn('event', 'title', 'string', function(err) {
-            db.renameColumn('event', 'title', 'new_title', this.callback.bind(this, null, db));
+            db.renameColumn('event', 'title', 'new_title', this.callback.bind(this, null));
           }.bind(this));
         }.bind(this));
       },
 
       'has column metadata': {
-        topic: function(db) {
+        topic: function() {
           dbmeta('pg', { connection:db.connection}, function (err, meta) {
             if (err) {
               return this.callback(err);
@@ -246,7 +249,7 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db, 
         }
       },
 
-      teardown: function(db) {
+      teardown: function() {
         db.dropTable('event', this.callback);
       }
     }
@@ -258,12 +261,12 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db, 
           txt: { type: dataType.TEXT, notNull: true, defaultValue: "foo" }
         }, function() {
           var spec = { notNull: false, defaultValue: "foo2" };
-          db.changeColumn('event', 'txt', spec, this.callback.bind(this, null, db));
+          db.changeColumn('event', 'txt', spec, this.callback.bind(this, null));
         }.bind(this));
       },
 
       'has column metadata': {
-        topic: function(db) {
+        topic: function() {
           dbmeta('pg', { connection:db.connection}, function (err, meta) {
             if (err) {
               return this.callback(err);
@@ -282,7 +285,7 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db, 
         }
       },
 
-      teardown: function(db) {
+      teardown: function() {
         db.dropTable('event', this.callback);
       }
     }
@@ -293,12 +296,12 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db, 
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
           title: { type: dataType.STRING }
         }, function() {
-          db.addIndex('event', 'event_title', 'title', this.callback.bind(this, null, db));
+          db.addIndex('event', 'event_title', 'title', this.callback.bind(this, null));
         }.bind(this));
       },
 
       'has resulting index metadata': {
-        topic: function(db) {
+        topic: function() {
           dbmeta('pg', { connection:db.connection}, function (err, meta) {
             if (err) {
               return this.callback(err);
@@ -317,7 +320,7 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db, 
         }
       },
 
-      teardown: function(db) {
+      teardown: function() {
         db.dropTable('event', this.callback);
       }
     }
@@ -328,17 +331,17 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db, 
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
           title: { type: dataType.STRING }
         }, function(err) {
-          db.insert('event', ['id','title'], [2,'title'], this.callback.bind(this, null, db));
+          db.insert('event', ['id','title'], [2,'title'], this.callback.bind(this, null));
         }.bind(this));
       },
 
-      'with additional row' : function(db) {
+      'with additional row' : function() {
         db.runSql("SELECT * from event", function(err, data) {
           assert.equal(data.rowCount, 1);
         });
       },
 
-      teardown: function(db) {
+      teardown: function() {
         db.dropTable('event', this.callback);
       }
     }
@@ -349,13 +352,13 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db, 
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true }
         }, function() {
           db.addIndex('event', 'event_title', 'title', function(err) {
-            db.removeIndex('event_title', this.callback.bind(this, null, db));
+            db.removeIndex('event_title', this.callback.bind(this, null));
           }.bind(this));
         }.bind(this));
       },
 
       'has resulting index metadata': {
-        topic: function(db) {
+        topic: function() {
           dbmeta('pg', { connection:db.connection}, function (err, meta) {
             if (err) {
               return this.callback(err);
@@ -370,26 +373,64 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db, 
         }
       },
 
-      teardown: function(db) {
+      teardown: function() {
         db.dropTable('event', this.callback);
       }
     }
   }).addBatch({
     'createMigrationsTable': {
+    topic: function() {
+        db.createMigrationsTable(this.callback.bind(this, null));
+    },
+
+    'has migrations table': {
       topic: function() {
-        db.createMigrationsTable(this.callback.bind(this, null, db));
-      },
+          dbmeta('pg', { connection:db.connection}, function (err, meta) {
+            if (err) {
+              return this.callback(err);
+            }
+            meta.getTables(this.callback);
+          }.bind(this)); 
+        },
 
-      'has migrations table' : function(err, res) {
+      'has migrations table' : function(err, tables) {
         assert.isNull(err);
-        assert.isNotNull(res);
+        assert.isNotNull(tables);
+        assert.equal(tables.length,1);
+        assert.equal(tables[0].getName(), 'migrations');
       },
 
-      teardown: function(db) {
-        db.dropTable('migrations', this.callback);
+      'that has columns':{
+        topic:function(){
+          dbmeta('pg', { connection:db.connection}, function (err, meta) {
+            if (err) {
+              return this.callback(err);
+            }
+            meta.getColumns('migrations', this.callback);
+          }.bind(this));
+        },
+
+        'with names': function(err, columns){
+          assert.isNotNull(columns);
+          assert.equal(columns.length, 3);
+          var column = findByName(columns, 'id');
+          assert.equal(column.getName(), 'id');
+          assert.equal(column.getDataType(), 'INTEGER');
+          column = findByName(columns, 'name');
+          assert.equal(column.getName(), 'name');
+          assert.equal(column.getDataType(), 'CHARACTER VARYING');
+          column = findByName(columns, 'run_on');
+          assert.equal(column.getName(), 'run_on');
+          assert.equal(column.getDataType(), 'TIMESTAMP WITHOUT TIME ZONE');
+        }
       }
+    },
+
+    teardown: function() {
+      db.dropTable('migrations', this.callback);
     }
-  }).export(module);
+  }
+}).export(module);
 });
 
 function findByName(columns, name) {

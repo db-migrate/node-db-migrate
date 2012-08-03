@@ -410,10 +410,48 @@ vows.describe('mysql').addBatch({
     teardown: function(db) {
       db.dropTable('migrations', this.callback);
     },
+    
+    'has migrations table': {
+      topic: function(db) {
+        dbmeta('mysql', { database: 'db_migrate_test' }, function (err, meta) {
+          if (err) {
+            return this.callback(err);
+          }
+          meta.getTables(this.callback);
+        }.bind(this));
+      },
 
-    'has migrations table' : function(err, res) {
-      assert.isNull(err);
-      assert.isNotNull(res);
+      'has migrations table' : function(err, tables) {
+        assert.isNull(err);
+        assert.isNotNull(tables);
+        assert.equal(tables.length,1);
+        assert.equal(tables[0].getName(), 'migrations');
+      },
+
+      'that has columns':{
+        topic:function(db){
+          dbmeta('mysql', { database: 'db_migrate_test' }, function (err, meta) {
+            if (err) {
+              return this.callback(err);
+            }
+            meta.getColumns('migrations',this.callback);
+          }.bind(this));
+        },
+
+        'with names': function(err, columns){
+          assert.isNotNull(columns);
+          assert.equal(columns.length, 3);
+          var column = findByName(columns, 'id');
+          assert.equal(column.getName(), 'id');
+          assert.equal(column.getDataType(), 'INT');
+          column = findByName(columns, 'name');
+          assert.equal(column.getName(), 'name');
+          assert.equal(column.getDataType(), 'VARCHAR');
+          column = findByName(columns, 'run_on');
+          assert.equal(column.getName(), 'run_on');
+          assert.equal(column.getDataType(), 'DATETIME');
+        }
+      }
     }
   }
 }).export(module);
