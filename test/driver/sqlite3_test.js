@@ -305,11 +305,47 @@ vows.describe('sqlite3').addBatch({
     teardown: function(db) {
       fs.unlink('test.db', this.callback);
     },
-
-    'has migrations table' : function(err, res) {
+    
+    'has migrations table': {
+      topic: function(db) {
+        dbmeta('sqlite3', 'test.db', function (err, meta) {
+          if (err) {
+            return this.callback(err);
+          }
+          meta.getTables(this.callback);
+        }.bind(this));
+      },
+      'has migrations table' : function(err, tables) {
       assert.isNull(err);
-      assert.isNotNull(res);
+      assert.isNotNull(tables);
+      assert.equal(tables.length,2);
+      assert.equal(tables[0].getName(), 'migrations');
+      },
+      'that has columns':{
+        topic:function(db){
+           dbmeta('sqlite3', 'test.db', function (err, meta) {
+          if (err) {
+            return this.callback(err);
+          }
+          meta.getColumns('migrations',this.callback);
+        }.bind(this));
+        },
+        'with names': function(err, columns){
+        assert.isNotNull(columns);
+        assert.equal(columns.length, 3);
+        var column = findByName(columns, 'id');
+        assert.equal(column.getName(), 'id');
+        assert.equal(column.getDataType(), 'INTEGER');
+        column = findByName(columns, 'name');
+        assert.equal(column.getName(), 'name');
+        assert.equal(column.getDataType(), 'VARCHAR (255)');
+        column = findByName(columns, 'run_on');
+        assert.equal(column.getName(), 'run_on');
+        assert.equal(column.getDataType(), 'INTEGER');
+        }
+      }
     }
+    
   }
 }).export(module);
 
