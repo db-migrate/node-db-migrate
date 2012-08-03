@@ -54,20 +54,20 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db, 
           assert.equal(column.getDataType(), 'INTEGER');
           assert.equal(column.isPrimaryKey(), true);
           assert.equal(column.isNullable(), false);
-         // assert.equal(column.isAutoIncrementing(), true);
+          assert.equal(column.isAutoIncrementing(), true);
         },
 
         'that has text str column that is unique': function(err, columns) {
           var column = findByName(columns, 'str');
           assert.equal(column.getDataType(), 'CHARACTER VARYING');
-         // assert.equal(column.isUnique(), true);
+          assert.equal(column.isUnique(), true);
         },
 
         'that has text txt column that is non-nullable': function(err, columns) {
           var column = findByName(columns, 'txt');
           assert.equal(column.getDataType(), 'TEXT');
           assert.equal(column.isNullable(), false);
-         // assert.equal(column.getDefaultValue(), 'foo');
+      // assert.equal(column.getDefaultValue(), 'foo');
         },
 
         'that has integer intg column': function(err, columns) {
@@ -148,6 +148,7 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db, 
           assert.equal(tables[0].getName(), 'functions');
         }
       },
+
       teardown: function() {
         db.dropTable('functions', this.callback);
       }
@@ -180,6 +181,7 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db, 
           assert.equal(column.getDataType(), 'CHARACTER VARYING');
         }
       },
+
       teardown: function() {
         db.dropTable('event', this.callback);
       }
@@ -212,6 +214,7 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db, 
           assert.notEqual(columns[0].getName(), 'title');
         }
       },
+
       teardown: function() {
         db.dropTable('event', this.callback);
       }
@@ -389,12 +392,14 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db, 
             meta.getTables(this.callback);
           }.bind(this)); 
         },
+
       'has migrations table' : function(err, tables) {
-      assert.isNull(err);
-      assert.isNotNull(tables);
-      assert.equal(tables.length,1);
-      assert.equal(tables[0].getName(), 'migrations');
+        assert.isNull(err);
+        assert.isNotNull(tables);
+        assert.equal(tables.length,1);
+        assert.equal(tables[0].getName(), 'migrations');
       },
+
       'that has columns':{
         topic:function(){
           dbmeta('pg', { connection:db.connection}, function (err, meta) {
@@ -404,24 +409,26 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db, 
             meta.getColumns('migrations', this.callback);
           }.bind(this));
         },
+
         'with names': function(err, columns){
-        assert.isNotNull(columns);
-        assert.equal(columns.length, 3);
-        var column = findByName(columns, 'id');
-        assert.equal(column.getName(), 'id');
-        assert.equal(column.getDataType(), 'INTEGER');
-        column = findByName(columns, 'name');
-        assert.equal(column.getName(), 'name');
-        assert.equal(column.getDataType(), 'CHARACTER VARYING');
-        column = findByName(columns, 'run_on');
-        assert.equal(column.getName(), 'run_on');
-        assert.equal(column.getDataType(), 'TIMESTAMP WITHOUT TIME ZONE');
+          assert.isNotNull(columns);
+          assert.equal(columns.length, 3);
+          var column = findByName(columns, 'id');
+          assert.equal(column.getName(), 'id');
+          assert.equal(column.getDataType(), 'INTEGER');
+          column = findByName(columns, 'name');
+          assert.equal(column.getName(), 'name');
+          assert.equal(column.getDataType(), 'CHARACTER VARYING');
+          column = findByName(columns, 'run_on');
+          assert.equal(column.getName(), 'run_on');
+          assert.equal(column.getDataType(), 'TIMESTAMP WITHOUT TIME ZONE');
         }
       }
     },
+
     teardown: function() {
       db.dropTable('migrations', this.callback);
-    },
+    }
   }
 }).export(module);
 });
