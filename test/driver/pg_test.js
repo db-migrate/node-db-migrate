@@ -396,6 +396,23 @@ vows.describe('pg').addBatch({
       }
     }
   }
+}).addBatch({
+  'createMigrationsTable': {
+    topic: function() {
+      driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err,db) {
+        db.createMigrationsTable(this.callback.bind(this, null, db));
+      }.bind(this));
+    },
+
+    teardown: function(db) {
+      db.dropTable('migrations', this.callback);
+    },
+
+    'has migrations table' : function(err, res) {
+      assert.isNull(err);
+      assert.isNotNull(res);
+    }
+  }
 }).export(module);
 
 function findByName(columns, name) {
