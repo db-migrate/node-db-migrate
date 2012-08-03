@@ -35,3 +35,16 @@ Fix:
   - Add testing for all supported database drivers
   - Fix dropTable on PostgreSQL #21
   - Implement removeColumn and changeColumn for MySQL
+
+## 0.2.0
+
+New Feature:
+  - Expose currently running environment name #22
+  - Added an insert method to the API #23
+  - Add support for unknown column data types #34
+
+Fix:
+  - Fixed error creating migration table #26
+  - Fixed removeIndex error in MySQL #37
+  - Fixed issue with tests using too many connections under PostgreSQL
+  - Fixed error running migrations under sqlite3 #27
