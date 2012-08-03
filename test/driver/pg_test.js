@@ -4,10 +4,10 @@ var dbmeta = require('db-meta');
 var dataType = require('../../lib/data_type');
 var driver = require('../../lib/driver');
 
-vows.describe('pg').addBatch({
-  'createTable': {
-    topic: function() {
-      driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) {
+driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db, conn) {
+  vows.describe('pg').addBatch({
+    'createTable': {
+      topic: function() {
         db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
           str: { type: dataType.STRING, unique: true },
@@ -16,88 +16,86 @@ vows.describe('pg').addBatch({
           rel: dataType.REAL,
           dt: dataType.DATE_TIME
         }, this.callback.bind(this, null, db));
-      }.bind(this));
-    },
-
-    teardown: function(db) {
-      db.dropTable('event', this.callback);
-    },
-
-    'has table metadata': {
-      topic: function(db) {
-        dbmeta('pg', { database: 'db_migrate_test' }, function (err, meta) {
-          if (err) {
-            return this.callback(err);
-          }
-          meta.getTables(this.callback);
-        }.bind(this));
       },
 
-      'containing the event table': function(err, tables) {
-        assert.equal(tables.length, 1);
-        assert.equal(tables[0].getName(), 'event');
-      }
-    },
+      'has table metadata': {
+        topic: function(db) {
+          dbmeta('pg', { connection:db.connection}, function (err, meta) {
+            if (err) {
+              return this.callback(err);
+            }
+            meta.getTables(this.callback);
+          }.bind(this));
+        },
 
-    'has column metadata for the event table': {
-      topic: function(db) {
-        dbmeta('pg', { database: 'db_migrate_test' }, function (err, meta) {
-          if (err) {
-            return this.callback(err);
-          }
-          meta.getColumns('event', this.callback);
-        }.bind(this));
+        'containing the event table': function(err, tables) {
+          assert.equal(tables.length, 1);
+          assert.equal(tables[0].getName(), 'event');
+        }
       },
 
-      'with 6 columns': function(err, columns) {
-        assert.isNotNull(columns);
-        assert.equal(columns.length, 6);
+      'has column metadata for the event table': {
+        topic: function(db) {
+          dbmeta('pg', { connection:db.connection}, function (err, meta) {
+            if (err) {
+              return this.callback(err);
+            }
+            meta.getColumns('event', this.callback);
+          }.bind(this));
+        },
+
+        'with 6 columns': function(err, columns) {
+          assert.isNotNull(columns);
+          assert.equal(columns.length, 6);
+        },
+
+        'that has integer id column that is primary key, non-nullable, and auto increments': function(err, columns) {
+          var column = findByName(columns, 'id');
+          assert.equal(column.getDataType(), 'INTEGER');
+          assert.equal(column.isPrimaryKey(), true);
+          assert.equal(column.isNullable(), false);
+         // assert.equal(column.isAutoIncrementing(), true);
+        },
+
+        'that has text str column that is unique': function(err, columns) {
+          var column = findByName(columns, 'str');
+          assert.equal(column.getDataType(), 'CHARACTER VARYING');
+         // assert.equal(column.isUnique(), true);
+        },
+
+        'that has text txt column that is non-nullable': function(err, columns) {
+          var column = findByName(columns, 'txt');
+          assert.equal(column.getDataType(), 'TEXT');
+          assert.equal(column.isNullable(), false);
+         // assert.equal(column.getDefaultValue(), 'foo');
+        },
+
+        'that has integer intg column': function(err, columns) {
+          var column = findByName(columns, 'intg');
+          assert.equal(column.getDataType(), 'INTEGER');
+          assert.equal(column.isNullable(), true);
+        },
+
+        'that has real rel column': function(err, columns) {
+          var column = findByName(columns, 'rel');
+          assert.equal(column.getDataType(), 'REAL');
+          assert.equal(column.isNullable(), true);
+        },
+
+        'that has integer dt column': function(err, columns) {
+          var column = findByName(columns, 'dt');
+          assert.equal(column.getDataType(), 'TIMESTAMP WITHOUT TIME ZONE');
+          assert.equal(column.isNullable(), true);
+        }
       },
 
-      'that has integer id column that is primary key, non-nullable, and auto increments': function(err, columns) {
-        var column = findByName(columns, 'id');
-        assert.equal(column.getDataType(), 'INTEGER');
-        assert.equal(column.isPrimaryKey(), true);
-        assert.equal(column.isNullable(), false);
-//        assert.equal(column.isAutoIncrementing(), true);
-      },
-
-      'that has text str column that is unique': function(err, columns) {
-        var column = findByName(columns, 'str');
-        assert.equal(column.getDataType(), 'CHARACTER VARYING');
-//        assert.equal(column.isUnique(), true);
-      },
-
-      'that has text txt column that is non-nullable': function(err, columns) {
-        var column = findByName(columns, 'txt');
-        assert.equal(column.getDataType(), 'TEXT');
-        assert.equal(column.isNullable(), false);
-//        assert.equal(column.getDefaultValue(), 'foo');
-      },
-
-      'that has integer intg column': function(err, columns) {
-        var column = findByName(columns, 'intg');
-        assert.equal(column.getDataType(), 'INTEGER');
-        assert.equal(column.isNullable(), true);
-      },
-
-      'that has real rel column': function(err, columns) {
-        var column = findByName(columns, 'rel');
-        assert.equal(column.getDataType(), 'REAL');
-        assert.equal(column.isNullable(), true);
-      },
-
-      'that has integer dt column': function(err, columns) {
-        var column = findByName(columns, 'dt');
-        assert.equal(column.getDataType(), 'TIMESTAMP WITHOUT TIME ZONE');
-        assert.equal(column.isNullable(), true);
+      teardown: function(db) {
+        db.dropTable('event', this.callback);
       }
     }
-  }
-}).addBatch({
-  'dropTable': {
-    topic: function() {
-      driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) {
+  }).addBatch({
+    'dropTable': {
+      topic: function() {
         db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true }
         }, function(err) {
@@ -106,97 +104,89 @@ vows.describe('pg').addBatch({
           }
           db.dropTable('event', this.callback.bind(this, null, db));
         }.bind(this));
-      }.bind(this));
-    },
-
-    'has table metadata': {
-      topic: function() {
-        dbmeta('pg', { database: 'db_migrate_test' }, function (err, meta) {
-          if (err) {
-            return this.callback(err);
-          }
-          meta.getTables(this.callback);
-        }.bind(this));
       },
 
-      'containing no tables': function(err, tables) {
-        assert.isNotNull(tables);
-        assert.equal(tables.length, 0);
+      'has table metadata': {
+        topic: function() {
+          dbmeta('pg', { connection:db.connection}, function (err, meta) {
+            if (err) {
+              return this.callback(err);
+            }
+            meta.getTables(this.callback);
+          }.bind(this));
+        },
+
+        'containing no tables': function(err, tables) {
+          assert.isNotNull(tables);
+          assert.equal(tables.length, 0);
+        }
       }
     }
-  }
-}).addBatch({
-  'renameTable': {
-    topic: function() {
-      driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) {
+  }).addBatch({
+    'renameTable': {
+      topic: function() {
         db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true }
         }, function() {
           db.renameTable('event', 'functions', this.callback.bind(this, null, db));
         }.bind(this));
-      }.bind(this));
-    },
-
-    teardown: function(db) {
-      db.dropTable('functions', this.callback);
-    },
-
-    'has table metadata': {
-      topic: function() {
-        dbmeta('pg', { database: 'db_migrate_test' }, function (err, meta) {
-          if (err) {
-            return this.callback(err);
-          }
-          meta.getTables(this.callback);
-        }.bind(this));
       },
 
-      'containing the functions table': function(err, tables) {
-        assert.isNotNull(tables);
-        assert.equal(tables.length, 1);
-        assert.equal(tables[0].getName(), 'functions');
+      'has table metadata': {
+        topic: function() {
+          dbmeta('pg', { connection:db.connection}, function (err, meta) {
+            if (err) {
+              return this.callback(err);
+            }
+            meta.getTables(this.callback);
+          }.bind(this));
+        },
+
+        'containing the functions table': function(err, tables) {
+          assert.isNotNull(tables);
+          assert.equal(tables.length, 1);
+          assert.equal(tables[0].getName(), 'functions');
+        }
+      },
+      teardown: function(db) {
+        db.dropTable('functions', this.callback);
       }
     }
-  }
-}).addBatch({
-  'addColumn': {
-    topic: function() {
-      driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) {
+  }).addBatch({
+    'addColumn': {
+      topic: function() {
         db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true }
         }, function() {
           db.addColumn('event', 'title', 'string', this.callback.bind(this, null, db));
         }.bind(this));
-      }.bind(this));
-    },
-
-    teardown: function(db) {
-      db.dropTable('event', this.callback);
-    },
-
-    'has column metadata': {
-      topic: function(db) {
-        dbmeta('pg', { database: 'db_migrate_test' }, function (err, meta) {
-          if (err) {
-            return this.callback(err);
-          }
-          meta.getColumns('event', this.callback);
-        }.bind(this));
       },
 
-      'with additional title column': function(err, columns) {
-        assert.isNotNull(columns);
-        assert.equal(columns.length, 2);
-        var column = findByName(columns, 'title');
-        assert.equal(column.getName(), 'title');
-        assert.equal(column.getDataType(), 'CHARACTER VARYING');
+      'has column metadata': {
+        topic: function(db) {
+          dbmeta('pg', { connection:db.connection}, function (err, meta) {
+            if (err) {
+              return this.callback(err);
+            }
+            meta.getColumns('event', this.callback);
+          }.bind(this));
+        },
+
+        'with additional title column': function(err, columns) {
+          assert.isNotNull(columns);
+          assert.equal(columns.length, 2);
+          var column = findByName(columns, 'title');
+          assert.equal(column.getName(), 'title');
+          assert.equal(column.getDataType(), 'CHARACTER VARYING');
+        }
+      },
+      teardown: function(db) {
+        db.dropTable('event', this.callback);
       }
     }
-  }
-}).addBatch({
-  'removeColumn': {
-    topic: function() {
-      driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) {
+  }).addBatch({
+    'removeColumn': {
+      topic: function() {
         db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true }
         }, function() {
@@ -204,34 +194,31 @@ vows.describe('pg').addBatch({
             db.removeColumn('event', 'title', this.callback.bind(this, null, db));
           }.bind(this));
         }.bind(this));
-      }.bind(this));
-    },
-
-    teardown: function(db) {
-      db.dropTable('event', this.callback);
-    },
-
-    'has column metadata': {
-      topic: function(db) {
-        dbmeta('pg', { database: 'db_migrate_test' }, function (err, meta) {
-          if (err) {
-            return this.callback(err);
-          }
-          meta.getColumns('event', this.callback);
-        }.bind(this));
       },
 
-      'without title column': function(err, columns) {
-        assert.isNotNull(columns);
-        assert.equal(columns.length, 1);
-        assert.notEqual(columns[0].getName(), 'title');
+      'has column metadata': {
+        topic: function(db) {
+          dbmeta('pg', { connection:db.connection}, function (err, meta) {
+            if (err) {
+              return this.callback(err);
+            }
+            meta.getColumns('event', this.callback);
+          }.bind(this));
+        },
+
+        'without title column': function(err, columns) {
+          assert.isNotNull(columns);
+          assert.equal(columns.length, 1);
+          assert.notEqual(columns[0].getName(), 'title');
+        }
+      },
+      teardown: function(db) {
+        db.dropTable('event', this.callback);
       }
     }
-  }
-}).addBatch({
-  'renameColumn': {
-    topic: function() {
-      driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) {
+  }).addBatch({
+    'renameColumn': {
+      topic: function() {
         db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true }
         }, function() {
@@ -239,35 +226,33 @@ vows.describe('pg').addBatch({
             db.renameColumn('event', 'title', 'new_title', this.callback.bind(this, null, db));
           }.bind(this));
         }.bind(this));
-      }.bind(this));
-    },
-
-    teardown: function(db) {
-      db.dropTable('event', this.callback);
-    },
-
-    'has column metadata': {
-      topic: function(db) {
-        dbmeta('pg', { database: 'db_migrate_test' }, function (err, meta) {
-          if (err) {
-            return this.callback(err);
-          }
-          meta.getColumns('event', this.callback);
-        }.bind(this));
       },
 
-      'with renamed title column': function(err, columns) {
-        assert.isNotNull(columns);
-        assert.equal(columns.length, 2);
-        var column = findByName(columns, 'new_title');
-        assert.equal(column.getName(), 'new_title');
+      'has column metadata': {
+        topic: function(db) {
+          dbmeta('pg', { connection:db.connection}, function (err, meta) {
+            if (err) {
+              return this.callback(err);
+            }
+            meta.getColumns('event', this.callback);
+          }.bind(this));
+        },
+
+        'with renamed title column': function(err, columns) {
+          assert.isNotNull(columns);
+          assert.equal(columns.length, 2);
+          var column = findByName(columns, 'new_title');
+          assert.equal(column.getName(), 'new_title');
+        }
+      },
+
+      teardown: function(db) {
+        db.dropTable('event', this.callback);
       }
     }
-  }
-}).addBatch({
-  'changeColumn': {
-    topic: function() {
-      driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) {
+  }).addBatch({
+    'changeColumn': {
+      topic: function() {
         db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
           txt: { type: dataType.TEXT, notNull: true, defaultValue: "foo" }
@@ -275,97 +260,91 @@ vows.describe('pg').addBatch({
           var spec = { notNull: false, defaultValue: "foo2" };
           db.changeColumn('event', 'txt', spec, this.callback.bind(this, null, db));
         }.bind(this));
-      }.bind(this));
-    },
-
-    teardown: function(db) {
-      db.dropTable('event', this.callback);
-    },
-
-    'has column metadata': {
-      topic: function(db) {
-        dbmeta('pg', { database: 'db_migrate_test' }, function (err, meta) {
-          if (err) {
-            return this.callback(err);
-          }
-          meta.getColumns('event', this.callback);
-        }.bind(this));
       },
 
-      'with changed title column': function(err, columns) {
-        assert.isNotNull(columns);
-        assert.equal(columns.length, 2);
-        var column = findByName(columns, 'txt');
-        assert.equal(column.getName(), 'txt');
-        assert.equal(column.isNullable(), true);
-        assert.equal(column.getDefaultValue(), "'foo2'::text");
+      'has column metadata': {
+        topic: function(db) {
+          dbmeta('pg', { connection:db.connection}, function (err, meta) {
+            if (err) {
+              return this.callback(err);
+            }
+            meta.getColumns('event', this.callback);
+          }.bind(this));
+        },
+
+        'with changed title column': function(err, columns) {
+          assert.isNotNull(columns);
+          assert.equal(columns.length, 2);
+          var column = findByName(columns, 'txt');
+          assert.equal(column.getName(), 'txt');
+          assert.equal(column.isNullable(), true);
+          assert.equal(column.getDefaultValue(), "'foo2'::text");
+        }
+      },
+
+      teardown: function(db) {
+        db.dropTable('event', this.callback);
       }
     }
-  }
-}).addBatch({
-  'addIndex': {
-    topic: function() {
-      driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) {
+  }).addBatch({
+    'addIndex': {
+      topic: function() {
         db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
           title: { type: dataType.STRING }
         }, function() {
           db.addIndex('event', 'event_title', 'title', this.callback.bind(this, null, db));
         }.bind(this));
-      }.bind(this));
-    },
-
-    teardown: function(db) {
-      db.dropTable('event', this.callback);
-    },
-
-    'has resulting index metadata': {
-      topic: function(db) {
-        dbmeta('pg', { database: 'db_migrate_test' }, function (err, meta) {
-          if (err) {
-            return this.callback(err);
-          }
-          meta.getIndexes('event', this.callback);
-        }.bind(this));
       },
 
-      'with additional index': function(err, indexes) {
-        assert.isNotNull(indexes);
-        assert.equal(indexes.length, 2);
-        var index = findByName(indexes, 'event_title');
-        assert.equal(index.getName(), 'event_title');
-        assert.equal(index.getTableName(), 'event');
-        assert.equal(index.getColumnName(), 'title');
+      'has resulting index metadata': {
+        topic: function(db) {
+          dbmeta('pg', { connection:db.connection}, function (err, meta) {
+            if (err) {
+              return this.callback(err);
+            }
+            meta.getIndexes('event', this.callback);
+          }.bind(this));
+        },
+
+        'with additional index': function(err, indexes) {
+          assert.isNotNull(indexes);
+          assert.equal(indexes.length, 2);
+          var index = findByName(indexes, 'event_title');
+          assert.equal(index.getName(), 'event_title');
+          assert.equal(index.getTableName(), 'event');
+          assert.equal(index.getColumnName(), 'title');
+        }
+      },
+
+      teardown: function(db) {
+        db.dropTable('event', this.callback);
       }
     }
-  }
-}).addBatch({
-  'insert': {
-    topic: function() {
-      driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) {
+  }).addBatch({
+    'insert': {
+      topic: function() {
         db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
           title: { type: dataType.STRING }
         }, function(err) {
-        db.insert('event', ['id','title'], [2,'title'], this.callback.bind(this, null, db));
+          db.insert('event', ['id','title'], [2,'title'], this.callback.bind(this, null, db));
         }.bind(this));
-      }.bind(this));
-    },
+      },
 
-    teardown: function(db) {
-      db.dropTable('event', this.callback);
-    },
+      'with additional row' : function(db) {
+        db.runSql("SELECT * from event", function(err, data) {
+          assert.equal(data.rowCount, 1);
+        });
+      },
 
-    'with additional row' : function(db) {
-      db.runSql("SELECT * from event", function(err, data) {
-        assert.equal(data.rowCount, 1);
-      });
+      teardown: function(db) {
+        db.dropTable('event', this.callback);
+      }
     }
-  }
-}).addBatch({
-  'removeIndex': {
-    topic: function() {
-      driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) {
+  }).addBatch({
+    'removeIndex': {
+      topic: function() {
         db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true }
         }, function() {
@@ -373,47 +352,45 @@ vows.describe('pg').addBatch({
             db.removeIndex('event_title', this.callback.bind(this, null, db));
           }.bind(this));
         }.bind(this));
-      }.bind(this));
-    },
-
-    teardown: function(db) {
-      db.dropTable('event', this.callback);
-    },
-
-    'has resulting index metadata': {
-      topic: function(db) {
-        dbmeta('pg', { database: 'db_migrate_test' }, function (err, meta) {
-          if (err) {
-            return this.callback(err);
-          }
-          meta.getIndexes('event', this.callback);
-        }.bind(this));
       },
 
-      'without index': function(err, indexes) {
-        assert.isNotNull(indexes);
-        assert.equal(indexes.length, 1); // first index is primary key
+      'has resulting index metadata': {
+        topic: function(db) {
+          dbmeta('pg', { connection:db.connection}, function (err, meta) {
+            if (err) {
+              return this.callback(err);
+            }
+            meta.getIndexes('event', this.callback);
+          }.bind(this));
+        },
+
+        'without index': function(err, indexes) {
+          assert.isNotNull(indexes);
+          assert.equal(indexes.length, 1); // first index is primary key
+        }
+      },
+
+      teardown: function(db) {
+        db.dropTable('event', this.callback);
       }
     }
-  }
-}).addBatch({
-  'createMigrationsTable': {
-    topic: function() {
-      driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err,db) {
+  }).addBatch({
+    'createMigrationsTable': {
+      topic: function() {
         db.createMigrationsTable(this.callback.bind(this, null, db));
-      }.bind(this));
-    },
+      },
 
-    teardown: function(db) {
-      db.dropTable('migrations', this.callback);
-    },
+      'has migrations table' : function(err, res) {
+        assert.isNull(err);
+        assert.isNotNull(res);
+      },
 
-    'has migrations table' : function(err, res) {
-      assert.isNull(err);
-      assert.isNotNull(res);
+      teardown: function(db) {
+        db.dropTable('migrations', this.callback);
+      }
     }
-  }
-}).export(module);
+  }).export(module);
+});
 
 function findByName(columns, name) {
   for (var i = 0; i < columns.length; i++) {
@@ -423,3 +400,4 @@ function findByName(columns, name) {
   }
   return null;
 }
+
