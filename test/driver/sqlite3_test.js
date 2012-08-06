@@ -21,12 +21,13 @@ vows.describe('sqlite3').addBatch({
     },
 
     teardown: function(db) {
+      db.close();
       fs.unlink('test.db', this.callback);
     },
 
     'has resulting table metadata': {
       topic: function(db) {
-        dbmeta('sqlite3', 'test.db', function (err, meta) {
+        dbmeta('sqlite3', {connection:db.connection} , function (err, meta) {
           if (err) {
             return this.callback(err);
           }
@@ -44,7 +45,7 @@ vows.describe('sqlite3').addBatch({
 
     'has column metadata for the event table': {
       topic: function(db) {
-        dbmeta('sqlite3', 'test.db', function (err, meta) {
+        dbmeta('sqlite3', {connection:db.connection} , function (err, meta) {
           if (err) {
             return this.callback(err);
           }
@@ -112,9 +113,14 @@ vows.describe('sqlite3').addBatch({
       }.bind(this));
     },
 
+    teardown: function(db) {
+      db.close();
+      fs.unlink('test.db', this.callback);
+    },
+
     'has table metadata': {
-      topic: function() {
-        dbmeta('sqlite3', 'test.db', function (err, meta) {
+      topic: function(db) {
+        dbmeta('sqlite3', {connection:db.connection} , function (err, meta) {
           if (err) {
             return this.callback(err);
           }
@@ -141,12 +147,13 @@ vows.describe('sqlite3').addBatch({
     },
 
     teardown: function(db) {
+      db.close();
       fs.unlink('test.db', this.callback);
     },
 
     'has table metadata': {
-      topic: function() {
-        dbmeta('sqlite3', 'test.db', function (err, meta) {
+      topic: function(db) {
+        dbmeta('sqlite3', {connection:db.connection} , function (err, meta) {
           if (err) {
             return this.callback(err);
           }
@@ -175,12 +182,13 @@ vows.describe('sqlite3').addBatch({
     },
 
     teardown: function(db) {
+      db.close();
       fs.unlink('test.db', this.callback);
     },
 
     'has column metadata': {
       topic: function(db) {
-        dbmeta('sqlite3', 'test.db', function (err, meta) {
+        dbmeta('sqlite3', {connection:db.connection} , function (err, meta) {
           if (err) {
             return this.callback(err);
           }
@@ -214,12 +222,13 @@ vows.describe('sqlite3').addBatch({
     },
 
     teardown: function(db) {
+      db.close();
       fs.unlink('test.db', this.callback);
     },
 
     'has resulting index metadata': {
       topic: function(db) {
-        dbmeta('sqlite3', 'test.db', function (err, meta) {
+        dbmeta('sqlite3', {connection:db.connection} , function (err, meta) {
           if (err) {
             return this.callback(err);
           }
@@ -250,6 +259,7 @@ vows.describe('sqlite3').addBatch({
     },
 
     teardown: function(db) {
+      db.close();
       fs.unlink('test.db', this.callback);
     },
 
@@ -275,12 +285,13 @@ vows.describe('sqlite3').addBatch({
     },
 
     teardown: function(db) {
+      db.close();
       fs.unlink('test.db', this.callback);
     },
 
     'has resulting index metadata': {
       topic: function(db) {
-        dbmeta('sqlite3', 'test.db', function (err, meta) {
+        dbmeta('sqlite3', {connection:db.connection} , function (err, meta) {
           if (err) {
             return this.callback(err);
           }
@@ -303,16 +314,17 @@ vows.describe('sqlite3').addBatch({
     },
 
     teardown: function(db) {
+      db.close();
       fs.unlink('test.db', this.callback);
     },
     
     'has migrations table': {
       topic: function(db) {
-        dbmeta('sqlite3', 'test.db', function (err, meta) {
+        dbmeta('sqlite3', {connection:db.connection} , function (err, meta) {
           if (err) {
             return this.callback(err);
           }
-          meta.getTables(this.callback);
+          meta.getTables(this.callback.bind(this));
         }.bind(this));
       },
 
@@ -322,30 +334,30 @@ vows.describe('sqlite3').addBatch({
         assert.equal(tables.length,2);
         assert.equal(tables[0].getName(), 'migrations');
       },
+    },
 
-      'that has columns':{
-        topic:function(db){
-          dbmeta('sqlite3', 'test.db', function (err, meta) {
-            if (err) {
-              return this.callback(err);
-            }
-            meta.getColumns('migrations',this.callback);
-          }.bind(this));
-        },
+    'that has columns':{
+      topic:function(db){
+        dbmeta('sqlite3', {connection:db.connection} , function (err, meta) {
+          if (err) {
+            return this.callback(err);
+          }
+          meta.getColumns('migrations',this.callback);
+        }.bind(this));
+      },
 
-        'with names': function(err, columns){
-          assert.isNotNull(columns);
-          assert.equal(columns.length, 3);
-          var column = findByName(columns, 'id');
-          assert.equal(column.getName(), 'id');
-          assert.equal(column.getDataType(), 'INTEGER');
-          column = findByName(columns, 'name');
-          assert.equal(column.getName(), 'name');
-          assert.equal(column.getDataType(), 'VARCHAR (255)');
-          column = findByName(columns, 'run_on');
-          assert.equal(column.getName(), 'run_on');
-          assert.equal(column.getDataType(), 'INTEGER');
-        }
+      'with names': function(err, columns){
+        assert.isNotNull(columns);
+        assert.equal(columns.length, 3);
+        var column = findByName(columns, 'id');
+        assert.equal(column.getName(), 'id');
+        assert.equal(column.getDataType(), 'INTEGER');
+        column = findByName(columns, 'name');
+        assert.equal(column.getName(), 'name');
+        assert.equal(column.getDataType(), 'VARCHAR (255)');
+        column = findByName(columns, 'run_on');
+        assert.equal(column.getName(), 'run_on');
+        assert.equal(column.getDataType(), 'INTEGER');
       }
     }
   }
