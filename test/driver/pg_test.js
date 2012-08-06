@@ -4,7 +4,7 @@ var dbmeta = require('db-meta');
 var dataType = require('../../lib/data_type');
 var driver = require('../../lib/driver');
 
-driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db, conn) {
+driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) {
   vows.describe('pg').addBatch({
     'createTable': {
       topic: function() {
@@ -379,12 +379,12 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db, 
     }
   }).addBatch({
     'createMigrationsTable': {
-    topic: function() {
-        db.createMigrationsTable(this.callback.bind(this, null));
-    },
-
-    'has migrations table': {
       topic: function() {
+        db.createMigrationsTable(this.callback.bind(this, null));
+      },
+
+      'has migrations table': {
+        topic: function() {
           dbmeta('pg', { connection:db.connection}, function (err, meta) {
             if (err) {
               return this.callback(err);
@@ -393,44 +393,44 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db, 
           }.bind(this)); 
         },
 
-      'has migrations table' : function(err, tables) {
-        assert.isNull(err);
-        assert.isNotNull(tables);
-        assert.equal(tables.length,1);
-        assert.equal(tables[0].getName(), 'migrations');
-      },
-
-      'that has columns':{
-        topic:function(){
-          dbmeta('pg', { connection:db.connection}, function (err, meta) {
-            if (err) {
-              return this.callback(err);
-            }
-            meta.getColumns('migrations', this.callback);
-          }.bind(this));
+        'has migrations table' : function(err, tables) {
+          assert.isNull(err);
+          assert.isNotNull(tables);
+          assert.equal(tables.length,1);
+          assert.equal(tables[0].getName(), 'migrations');
         },
 
-        'with names': function(err, columns){
-          assert.isNotNull(columns);
-          assert.equal(columns.length, 3);
-          var column = findByName(columns, 'id');
-          assert.equal(column.getName(), 'id');
-          assert.equal(column.getDataType(), 'INTEGER');
-          column = findByName(columns, 'name');
-          assert.equal(column.getName(), 'name');
-          assert.equal(column.getDataType(), 'CHARACTER VARYING');
-          column = findByName(columns, 'run_on');
-          assert.equal(column.getName(), 'run_on');
-          assert.equal(column.getDataType(), 'TIMESTAMP WITHOUT TIME ZONE');
-        }
-      }
-    },
+        'that has columns':{
+          topic:function(){
+            dbmeta('pg', { connection:db.connection}, function (err, meta) {
+              if (err) {
+                return this.callback(err);
+              }
+              meta.getColumns('migrations', this.callback);
+            }.bind(this));
+          },
 
-    teardown: function() {
-      db.dropTable('migrations', this.callback);
+          'with names': function(err, columns){
+            assert.isNotNull(columns);
+            assert.equal(columns.length, 3);
+            var column = findByName(columns, 'id');
+            assert.equal(column.getName(), 'id');
+            assert.equal(column.getDataType(), 'INTEGER');
+            column = findByName(columns, 'name');
+            assert.equal(column.getName(), 'name');
+            assert.equal(column.getDataType(), 'CHARACTER VARYING');
+            column = findByName(columns, 'run_on');
+            assert.equal(column.getName(), 'run_on');
+            assert.equal(column.getDataType(), 'TIMESTAMP WITHOUT TIME ZONE');
+          }
+        }
+      },
+
+      teardown: function() {
+        db.dropTable('migrations', this.callback);
+      }
     }
-  }
-}).export(module);
+  }).export(module);
 });
 
 function findByName(columns, name) {
