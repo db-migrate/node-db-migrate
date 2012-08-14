@@ -4,7 +4,7 @@ var dbmeta = require('db-meta');
 var dataType = require('../../lib/data_type');
 var driver = require('../../lib/driver');
 
-driver.connect({ driver: 'mysql', database: 'db_migrate_test' }, function(err, db) {
+driver.connect({ driver: 'mysql', database: 'db_migrate_test', user:'root' }, function(err, db) {
   vows.describe('mysql').addBatch({
     'createTable': {
       topic: function() {
