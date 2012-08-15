@@ -48,3 +48,8 @@ Fix:
   - Fixed removeIndex error in MySQL #37
   - Fixed issue with tests using too many connections under PostgreSQL
   - Fixed error running migrations under sqlite3 #27
+
+## 0.2.1
+
+Improvement:
+  - Added compatibility for mysql-2.0.0-alpha driver #25
