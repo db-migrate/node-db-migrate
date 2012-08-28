@@ -53,3 +53,8 @@ Fix:
 
 Improvement:
   - Added compatibility for mysql-2.0.0-alpha driver #25
+
+## 0.2.2
+
+Fix:
+  - Fix default value error when using Postgres #43
