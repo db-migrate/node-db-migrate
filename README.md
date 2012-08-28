@@ -29,13 +29,15 @@ Options:
 
 To create a migration, execute `db-migrate create` with a title. `node-db-migrate` will create a node module within `./migrations/` which contains the following two exports:
 
-    exports.up = function(db, callback){
-      callback();
-    };
+```javascript
+exports.up = function (db, callback) {
+  callback();
+};
 
-    exports.down = function(callback){
-      callback();
-    };
+exports.down = function (callback) {
+  callback();
+};
+```
 
 All you have to do is populate these, invoking `callback()` when complete, and you are ready to migrate!
 
@@ -46,77 +48,85 @@ For example:
 
 The first call creates `./migrations/20111219120000-add-pets.js`, which we can populate:
 
-      exports.up = function(db, callback){
-        db.createTable('pets', {
-          id: { type: 'int', primaryKey: true },
-          name: 'string'
-        }, callback);
-      };
+```javascript
+exports.up = function (db, callback) {
+  db.createTable('pets', {
+    id: { type: 'int', primaryKey: true },
+    name: 'string'
+  }, callback);
+};
 
-      exports.down = function(db, callback){
-        db.dropTable('pets', callback);
-      };
+exports.down = function (db, callback) {
+  db.dropTable('pets', callback);
+};
+```
 
 The second creates `./migrations/20111219120005-add-owners.js`, which we can populate:
 
-      exports.up = function(db, callback){
-        db.createTable('owners', {
-          id: { type: 'int', primaryKey: true },
-          name: 'string'
-        }, callback);
-      };
+```javascript
+exports.up = function (db, callback) {
+  db.createTable('owners', {
+    id: { type: 'int', primaryKey: true },
+    name: 'string'
+  }, callback);
+};
 
-      exports.down = function(db, callback){
-        db.dropTable('owners', callback);
-      };
+exports.down = function (db, callback) {
+  db.dropTable('owners', callback);
+};
+```
 
 Executing multiple statements against the database within a single migration requires a bit more care. You can either nest the migrations like:
 
-      exports.up = function(db, callback){
-        db.createTable('pets', {
-          id: { type: 'int', primaryKey: true },
-          name: 'string'
-        }, createOwners);
+```javascript
+exports.up = function (db, callback) {
+  db.createTable('pets', {
+    id: { type: 'int', primaryKey: true },
+    name: 'string'
+  }, createOwners);
 
-        function createOwners(err) {
-          if (err) { callback(err); return; }
-          db.createTable('owners', {
-            id: { type: 'int', primaryKey: true },
-            name: 'string'
-          }, callback);
-        }
-      };
+  function createOwners(err) {
+    if (err) { callback(err); return; }
+    db.createTable('owners', {
+      id: { type: 'int', primaryKey: true },
+      name: 'string'
+    }, callback);
+  }
+};
 
-      exports.down = function(db, callback){
-        db.dropTable('pets', function(err) {
-          if (err) { callback(err); return; }
-          db.dropTable('owners', callback); 
-        })
-      };
+exports.down = function (db, callback) {
+  db.dropTable('pets', function(err) {
+    if (err) { callback(err); return; }
+    db.dropTable('owners', callback); 
+  });
+};
+```
 
 or use the async library to simplify things a bit, such as:
 
-      var async = require('async');
+```javascript
+var async = require('async');
 
-      exports.up = function(db, callback){
-        async.series([
-          db.createTable.bind(db, 'pets', {
-            id: { type: 'int', primaryKey: true },
-            name: 'string'
-          }),
-          db.createTable.bind(db, 'owners', {
-            id: { type: 'int', primaryKey: true },
-            name: 'string'
-          })
-        ], callback);
-      };
+exports.up = function (db, callback) {
+  async.series([
+    db.createTable.bind(db, 'pets', {
+      id: { type: 'int', primaryKey: true },
+      name: 'string'
+    }),
+    db.createTable.bind(db, 'owners', {
+      id: { type: 'int', primaryKey: true },
+      name: 'string'
+    });
+  ], callback);
+};
 
-      exports.down = function(db, callback){
-        async.series([
-          db.dropTable.bind(db, 'pets'),
-          db.dropTable.bind(db, 'owners')
-        ], callback);
-      };
+exports.down = function (db, callback) {
+  async.series([
+    db.dropTable.bind(db, 'pets'),
+    db.dropTable.bind(db, 'owners')
+  ], callback);
+};
+```
 
 
 ## Running Migrations
@@ -159,31 +169,33 @@ All of the down migrations work identically to the up migrations by substituting
 
 db-migrate supports the concept of environments. For example, you might have a dev, test, and prod environment where you need to run the migrations at different times. Environment settings are loaded from a database.json file like the one shown below:
 
-    {
-      "dev": {
-        "driver": "sqlite3",
-        "filename": "~/dev.db"
-      },
+```javascript
+{
+  "dev": {
+    "driver": "sqlite3",
+    "filename": "~/dev.db"
+  },
 
-      "test": {
-        "driver": "sqlite3",
-        "filename": ":memory:"
-      },
+  "test": {
+    "driver": "sqlite3",
+    "filename": ":memory:"
+  },
 
-      "prod": {
-        "driver": "mysql",
-        "user": "root",
-        "password": "root"
-      },
-      
-      "pg": {
-        "driver": "pg",
-        "user": "test",
-        "password": "test",
-        "host": "localhost",
-        "database": "mydb"
-      }
-    }
+  "prod": {
+    "driver": "mysql",
+    "user": "root",
+    "password": "root"
+  },
+  
+  "pg": {
+    "driver": "pg",
+    "user": "test",
+    "password": "test",
+    "host": "localhost",
+    "database": "mydb"
+  }
+}
+```
 
 You can pass the -e or --env option to db-migrate to select the environment you want to run migrations against. The --config option can be used to specify the path to your database.json file if it's not in the current working directory.
 
@@ -209,24 +221,26 @@ __Arguments__
 
 __Examples__
 
-    // with no table options
-    exports.up = function(db, callback) {
-      db.createTable('pets', {
-        id: { type: 'int', primaryKey: true, autoIncrement: true },
-        name: 'string'  // shorthand notation
-      }, callback);
-    }
+```javascript
+// with no table options
+exports.up = function (db, callback) {
+  db.createTable('pets', {
+    id: { type: 'int', primaryKey: true, autoIncrement: true },
+    name: 'string'  // shorthand notation
+  }, callback);
+}
 
-    // with table options
-    exports.up = function(db, callback) {
-      db.createTable('pets', {
-        columns: {
-          id: { type: 'int', primaryKey: true, autoIncrement: true },
-          name: 'string'  // shorthand notation
-        },
-        ifNotExists: true
-      }, callback);
-    }
+// with table options
+exports.up = function (db, callback) {
+  db.createTable('pets', {
+    columns: {
+      id: { type: 'int', primaryKey: true, autoIncrement: true },
+      name: 'string'  // shorthand notation
+    },
+    ifNotExists: true
+  }, callback);
+}
+```
 
 __Column Specs__
 
