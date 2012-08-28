@@ -1,3 +1,4 @@
+[![build status](https://secure.travis-ci.org/nearinfinity/node-db-migrate.png)](http://travis-ci.org/nearinfinity/node-db-migrate)
 # db-migrate
 
 Database migration framework for node.js
