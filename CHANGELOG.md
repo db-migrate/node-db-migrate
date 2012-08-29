@@ -58,3 +58,8 @@ Improvement:
 
 Fix:
   - Fix default value error when using Postgres #43
+
+## 0.2.3
+
+Fix:
+  - Fix error when using mysql-2.0.0-alpha3 driver #44
