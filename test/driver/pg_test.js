@@ -260,7 +260,7 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) 
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
           txt: { type: dataType.TEXT, notNull: true, defaultValue: "foo" }
         }, function() {
-          var spec = { notNull: false, defaultValue: "foo2" };
+          var spec = { notNull: false, defaultValue: "foo2", unique: true };
           db.changeColumn('event', 'txt', spec, this.callback.bind(this, null));
         }.bind(this));
       },
@@ -282,6 +282,7 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) 
           assert.equal(column.getName(), 'txt');
           assert.equal(column.isNullable(), true);
           assert.equal(column.getDefaultValue(), "'foo2'::text");
+          assert.equal(column.isUnique(), true);
         }
       },
 
