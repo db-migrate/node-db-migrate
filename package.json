@@ -43,6 +43,6 @@
     "db-meta": "~0.4.0"
   },
   "scripts": {
-    "test": "vows"
+    "test": "node_modules/.bin/vows"
   }
 }
