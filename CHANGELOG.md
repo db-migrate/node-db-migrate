@@ -63,3 +63,10 @@ Fix:
 
 Fix:
   - Fix error when using mysql-2.0.0-alpha3 driver #44
+
+## 0.2.4
+
+Fix:
+  - Use --migrations-dir option when specified #47
+  - Handle unique constraints in changeColumn() for postgres #46 (via @ryanmeador)
+

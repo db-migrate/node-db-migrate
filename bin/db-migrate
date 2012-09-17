@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 
-var optimist = require('optimist');
+var assert = require('assert');
 var fs = require('fs');
+var path = require('path');
+var util = require('util');
+var mkdirp = require('mkdirp');
+var optimist = require('optimist');
 var config = require('../lib/config.js');
 var index = require('../index');
 var log = require('../lib/log');
-var util = require('util');
-var path = require('path');
-var assert = require('assert');
 
 process.on('uncaughtException', function(err) {
   log.error(err);
@@ -56,7 +57,7 @@ global.verbose = argv.verbose;
 function createMigrationDir(dir, callback) {
   fs.stat(dir, function(err, stat) {
     if (err) {
-      fs.mkdir(dir, callback);
+      mkdirp(dir, callback);
     } else {
       callback();
     }
@@ -85,7 +86,7 @@ function executeCreate() {
     }
 
     argv.title = argv._.shift();
-    index.createMigration(argv.title, function(err, migration) {
+    index.createMigration(argv.title, argv['migrations-dir'], function(err, migration) {
       assert.ifError(err);
       log.info(util.format('Created migration at %s', migration.path));
     });
