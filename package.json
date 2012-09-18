@@ -38,7 +38,7 @@
     "async": "~0.1.15",
     "semver": "~1.0.14",
     "mkdirp": "~0.3.4",
-    "node-mysql": "2.0.0-alpha3"
+    "mysql": "~2.0.0-alpha3"
   },
   "devDependencies": {
     "vows": "~0.6.2",
