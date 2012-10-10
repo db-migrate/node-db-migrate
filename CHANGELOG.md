@@ -70,3 +70,7 @@ Fix:
   - Use --migrations-dir option when specified #47
   - Handle unique constraints in changeColumn() for postgres #46 (via @ryanmeador)
 
+## 0.2.5
+
+Fix:
+  - Fix randomly occuring migration sorting error on empty db #51
