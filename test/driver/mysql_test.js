@@ -260,7 +260,7 @@ driver.connect({ driver: 'mysql', database: 'db_migrate_test', user:'root' }, fu
       topic: function() {
         db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
-          txt: { type: dataType.STRING, notNull: true, defaultValue: "foo" }
+          txt: { type: dataType.STRING, notNull: true, defaultValue: "foo", unique: true }
         }, function(err) {
           if (err) { 
             return this.callback(err); 
@@ -291,6 +291,7 @@ driver.connect({ driver: 'mysql', database: 'db_migrate_test', user:'root' }, fu
           assert.equal(column.getName(), 'txt');
           assert.equal(column.isNullable(), true);
           assert.equal(column.getDefaultValue(), "foo2");
+          assert.equal(column.isUnique(), true);
         }
       }
     }

@@ -58,3 +58,19 @@ Improvement:
 
 Fix:
   - Fix default value error when using Postgres #43
+
+## 0.2.3
+
+Fix:
+  - Fix error when using mysql-2.0.0-alpha3 driver #44
+
+## 0.2.4
+
+Fix:
+  - Use --migrations-dir option when specified #47
+  - Handle unique constraints in changeColumn() for postgres #46 (via @ryanmeador)
+
+## 0.2.5
+
+Fix:
+  - Fix randomly occuring migration sorting error on empty db #51
