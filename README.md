@@ -343,12 +343,13 @@ __Arguments__
 * valueArray - the array of values to be inserted into the associated column
 * callback(err) - callback that will be invoked once the insert has been completed.
 
-### removeIndex(indexName, callback)
+### removeIndex([tableName], indexName, callback)
 
 Remove an index
 
 __Arguments__
 
+* tableName - name of the table that has the index (Required for mySql)
 * indexName - the name of the index
 * callback(err) - callback that will be invoked after removing the index
 

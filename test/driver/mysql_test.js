@@ -385,6 +385,28 @@ driver.connect({ driver: 'mysql', database: 'db_migrate_test', user:'root' }, fu
       }
     }
   }).addBatch({
+    'removeIndexInvalidArgs': {
+      topic: function() {
+        db.createTable('event', {
+          id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
+          title: { type: dataType.STRING }
+        }, function() {
+          db.addIndex('event', 'event_title', 'title', function(err) {
+            db.removeIndex('event_title', this.callback.bind(this, null));
+          }.bind(this));
+        }.bind(this));
+      },
+
+      'removeIndex has errored': function (err) {
+        assert.isNotNull(err);
+        assert.equal(err.message, 'Illegal arguments, must provide "tableName" and "indexName"');
+      },
+
+      teardown: function() {
+        db.dropTable('event', this.callback);
+      }
+    }
+  }).addBatch({
     'createMigrationsTable': {
       topic: function() {
         db.createMigrationsTable(this.callback.bind(this, null));
