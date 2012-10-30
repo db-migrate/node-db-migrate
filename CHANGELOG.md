@@ -74,3 +74,10 @@ Fix:
 
 Fix:
   - Fix randomly occuring migration sorting error on empty db #51
+
+## 0.2.6
+
+Fix:
+  - Fix db.removeIndex for MySQL #42 (via @aprobus)
+  - Workaround for node-mysql bug felixge/node-mysql#289 #54 (via
+    @aprobus)
