@@ -81,3 +81,8 @@ Fix:
   - Fix db.removeIndex for MySQL #42 (via @aprobus)
   - Workaround for node-mysql bug felixge/node-mysql#289 #54 (via
     @aprobus)
+
+## 0.2.7
+
+Fix:
+  - Support process.env.DATABASE_URL for postgres, for use with Heroku #57 (via @garth)

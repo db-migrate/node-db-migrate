@@ -186,7 +186,7 @@ db-migrate supports the concept of environments. For example, you might have a d
     "user": "root",
     "password": "root"
   },
-  
+
   "pg": {
     "driver": "pg",
     "user": "test",
@@ -202,6 +202,10 @@ You can pass the -e or --env option to db-migrate to select the environment you 
     db-migrate up --config config/database.json -e prod
 
 The above will run all migrations that haven't yet been run in the prod environment, grabbing the settings from config/database.json.
+
+Alternatively, for PostgreSQL, you can specify a DATABASE_URL
+environment variable that will be used in place of the configuration
+file settings. This is helpful for use with Heroku.
 
 ## Defaults
 
