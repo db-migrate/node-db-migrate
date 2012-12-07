@@ -14,7 +14,9 @@ driver.connect({ driver: 'mysql', database: 'db_migrate_test', user:'root' }, fu
           txt: { type: dataType.TEXT, notNull: true },
           intg: dataType.INTEGER,
           rel: dataType.REAL,
-          dt: dataType.DATE_TIME
+          dt: dataType.DATE_TIME,
+          ts: dataType.TIMESTAMP,
+          bin: dataType.BINARY
         }, this.callback.bind(this, null));
       },
 
@@ -48,9 +50,9 @@ driver.connect({ driver: 'mysql', database: 'db_migrate_test', user:'root' }, fu
           }.bind(this));
         },
 
-        'with 6 columns': function(err, columns) {
+        'with 8 columns': function(err, columns) {
           assert.isNotNull(columns);
-          assert.equal(columns.length, 6);
+          assert.equal(columns.length, 8);
         },
 
         'that has integer id column that is primary key, non-nullable, and auto increments': function(err, columns) {
@@ -89,6 +91,18 @@ driver.connect({ driver: 'mysql', database: 'db_migrate_test', user:'root' }, fu
         'that has datetime dt column': function(err, columns) {
           var column = findByName(columns, 'dt');
           assert.equal(column.getDataType(), 'DATETIME');
+          assert.equal(column.isNullable(), true);
+        },
+
+        'that has timestamp ts column': function(err, columns) {
+          var column = findByName(columns, 'ts');
+          assert.equal(column.getDataType(), 'TIMESTAMP');
+          assert.equal(column.isNullable(), false);
+        },
+
+        'that has binary bin column': function(err, columns) {
+          var column = findByName(columns, 'bin');
+          assert.equal(column.getDataType(), 'BINARY');
           assert.equal(column.isNullable(), true);
         }
       }
@@ -415,7 +429,7 @@ driver.connect({ driver: 'mysql', database: 'db_migrate_test', user:'root' }, fu
       teardown: function() {
         db.dropTable('migrations', this.callback);
       },
-      
+
       'has migrations table': {
         topic: function() {
           dbmeta('mysql', { connection:db.connection}, function (err, meta) {
