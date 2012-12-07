@@ -86,3 +86,8 @@ Fix:
 
 Fix:
   - Support process.env.DATABASE_URL for postgres, for use with Heroku #57 (via @garth)
+
+## 0.2.8
+
+Improvement
+  - Added support for additional MySQL data types #58 (via @jpravetz)
