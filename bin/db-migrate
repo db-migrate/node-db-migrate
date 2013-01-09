@@ -11,7 +11,7 @@ var index = require('../index');
 var log = require('../lib/log');
 
 process.on('uncaughtException', function(err) {
-  log.error(err);
+  log.error(err.stack);
   process.exit(1);
 });
 
@@ -34,6 +34,9 @@ var argv = optimist
     .alias('c', 'count')
     .string('c')
 
+    .describe('dry-run', "Prints the SQL but doesn't run it.")
+    .boolean('dry-run')
+
     .describe('verbose', 'Verbose mode.')
     .alias('v', 'verbose')
     .boolean('v')
@@ -53,6 +56,10 @@ if (argv.help || argv._.length == 0) {
 }
 
 global.verbose = argv.verbose;
+global.dryRun = argv['dry-run'];
+if(global.dryRun) {
+  log.info('dry run');
+}
 
 function createMigrationDir(dir, callback) {
   fs.stat(dir, function(err, stat) {
@@ -102,6 +109,7 @@ function executeUp() {
     migrator.migrationsDir = path.resolve(argv['migrations-dir']);
     migrator.driver.createMigrationsTable(function(err) {
       assert.ifError(err);
+      log.verbose('migration table created');
       migrator.up(argv, onComplete.bind(this, migrator));
     });
   });

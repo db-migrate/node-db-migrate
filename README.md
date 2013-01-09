@@ -21,6 +21,7 @@ Options:
   --env, -e             The environment to run the migrations under.    [default: "dev"]
   --migrations-dir, -m  The directory containing your migration files.  [default: "./migrations"]
   --count, -c           Max number of migrations to run.
+  --dry-run             Prints the SQL but doesn't run it.              [boolean]
   --verbose, -v         Verbose mode.                                   [default: false]
   --config              Location of the database.json file.             [default: "./database.json"]
 ```
