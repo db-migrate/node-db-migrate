@@ -91,3 +91,11 @@ Fix:
 
 Improvement
   - Added support for additional MySQL data types #58 (via @jpravetz)
+
+## 0.3.0
+
+Improvement:
+  - Added support for MySQLs LONGTEXT #62 (via @joeferner)
+
+New Feature:
+  - Added dry-run support for migrations #55 (via @joeferner)
