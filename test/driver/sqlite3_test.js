@@ -100,7 +100,7 @@ vows.describe('sqlite3').addBatch({
 
       'that has boolean bl column': function(err, columns) {
         var column = findByName(columns, 'bl');
-        assert.equal(column.getDataType(), 'BOOL');
+        assert.equal(column.getDataType(), 'BOOLEAN');
         assert.equal(column.isNullable(), true);
       }
     }
