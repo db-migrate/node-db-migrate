@@ -16,7 +16,8 @@ driver.connect({ driver: 'mysql', database: 'db_migrate_test', user:'root' }, fu
           rel: dataType.REAL,
           dt: dataType.DATE_TIME,
           ts: dataType.TIMESTAMP,
-          bin: dataType.BINARY
+          bin: dataType.BINARY,
+          bl: dataType.BOOLEAN
         }, this.callback.bind(this, null));
       },
 
@@ -50,9 +51,9 @@ driver.connect({ driver: 'mysql', database: 'db_migrate_test', user:'root' }, fu
           }.bind(this));
         },
 
-        'with 8 columns': function(err, columns) {
+        'with 9 columns': function(err, columns) {
           assert.isNotNull(columns);
-          assert.equal(columns.length, 8);
+          assert.equal(columns.length, 9);
         },
 
         'that has integer id column that is primary key, non-nullable, and auto increments': function(err, columns) {
@@ -103,6 +104,12 @@ driver.connect({ driver: 'mysql', database: 'db_migrate_test', user:'root' }, fu
         'that has binary bin column': function(err, columns) {
           var column = findByName(columns, 'bin');
           assert.equal(column.getDataType(), 'BINARY');
+          assert.equal(column.isNullable(), true);
+        },
+
+        'that has boolean bl column': function(err, columns) {
+          var column = findByName(columns, 'bl');
+          assert.equal(column.getDataType(), 'TINYINT');
           assert.equal(column.isNullable(), true);
         }
       }

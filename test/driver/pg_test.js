@@ -14,7 +14,8 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) 
           txt: { type: dataType.TEXT, notNull: true, defaultValue: "foo" },
           intg: dataType.INTEGER,
           rel: dataType.REAL,
-          dt: dataType.DATE_TIME
+          dt: dataType.DATE_TIME,
+          bl: dataType.BOOLEAN
         }, this.callback.bind(this, null));
       },
 
@@ -44,9 +45,9 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) 
           }.bind(this));
         },
 
-        'with 6 columns': function(err, columns) {
+        'with 7 columns': function(err, columns) {
           assert.isNotNull(columns);
-          assert.equal(columns.length, 6);
+          assert.equal(columns.length, 7);
         },
 
         'that has integer id column that is primary key, non-nullable, and auto increments': function(err, columns) {
@@ -85,6 +86,12 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) 
         'that has integer dt column': function(err, columns) {
           var column = findByName(columns, 'dt');
           assert.equal(column.getDataType(), 'TIMESTAMP WITHOUT TIME ZONE');
+          assert.equal(column.isNullable(), true);
+        },
+
+        'that has boolean bl column': function(err, columns) {
+          var column = findByName(columns, 'bl');
+          assert.equal(column.getDataType(), 'BOOLEAN');
           assert.equal(column.isNullable(), true);
         }
       },
