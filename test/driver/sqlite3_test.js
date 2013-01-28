@@ -15,7 +15,8 @@ vows.describe('sqlite3').addBatch({
           txt: { type: dataType.TEXT, notNull: true, defaultValue: "foo" },
           intg: dataType.INTEGER,
           rel: dataType.REAL,
-          dt: dataType.DATE_TIME
+          dt: dataType.DATE_TIME,
+          bl: dataType.BOOLEAN
         }, this.callback.bind(this, null, db));
       }.bind(this));
     },
@@ -53,9 +54,9 @@ vows.describe('sqlite3').addBatch({
         }.bind(this));
       },
 
-      'with 6 columns': function(err, columns) {
+      'with 7 columns': function(err, columns) {
         assert.isNotNull(columns);
-        assert.equal(columns.length, 6);
+        assert.equal(columns.length, 7);
       },
 
       'that has integer id column that is primary key, non-nullable, and auto increments': function(err, columns) {
@@ -94,6 +95,12 @@ vows.describe('sqlite3').addBatch({
       'that has integer dt column': function(err, columns) {
         var column = findByName(columns, 'dt');
         assert.equal(column.getDataType(), 'INTEGER');
+        assert.equal(column.isNullable(), true);
+      },
+
+      'that has boolean bl column': function(err, columns) {
+        var column = findByName(columns, 'bl');
+        assert.equal(column.getDataType(), 'BOOLEAN');
         assert.equal(column.isNullable(), true);
       }
     }
