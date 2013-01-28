@@ -99,3 +99,8 @@ Improvement:
 
 New Feature:
   - Added dry-run support for migrations #55 (via @joeferner)
+
+## 0.3.1
+
+Improvement:
+  - Added support for boolean data type #66 (via @trojanowski)
