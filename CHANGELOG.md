@@ -104,3 +104,8 @@ New Feature:
 
 Improvement:
   - Added support for boolean data type #66 (via @trojanowski)
+
+## 0.3.2
+
+Fix
+  - Update error message when using an invalid data type #67 (via @swang)
