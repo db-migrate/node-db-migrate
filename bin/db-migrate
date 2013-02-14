@@ -45,10 +45,19 @@ var argv = optimist
     .alias('h', '?')
     .boolean('h')
 
+    .describe('version', 'Print version info.')
+    .alias('i', 'version')
+    .boolean('version')
+
     .describe('config', 'Location of the database.json file.')
     .string('config')
 
     .argv;
+
+if (argv.version) {
+  console.log(index.version);
+  process.exit(0);
+}
 
 if (argv.help || argv._.length == 0) {
   optimist.showHelp();
