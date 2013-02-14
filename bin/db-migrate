@@ -9,6 +9,7 @@ var optimist = require('optimist');
 var config = require('../lib/config.js');
 var index = require('../index');
 var log = require('../lib/log');
+var pkginfo = require('pkginfo')(module, 'version');
 
 process.on('uncaughtException', function(err) {
   log.error(err.stack);
@@ -55,7 +56,7 @@ var argv = optimist
     .argv;
 
 if (argv.version) {
-  console.log(index.version);
+  console.log(module.exports.version);
   process.exit(0);
 }
 

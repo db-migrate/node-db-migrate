@@ -18,6 +18,3 @@ exports.createMigration = function(title, migrationsDir, callback) {
     callback(null, migration);
   });
 };
-
-// Must be manually synced with that of package.json.
-exports.version = '0.3.2';

@@ -42,7 +42,8 @@
     "async": "~0.1.15",
     "semver": "~1.0.14",
     "mkdirp": "~0.3.4",
-    "moment": "~1.7.2"
+    "moment": "~1.7.2",
+    "pkginfo": "~0.3.0"
   },
   "devDependencies": {
     "vows": "~0.6.2",
