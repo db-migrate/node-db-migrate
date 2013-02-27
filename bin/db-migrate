@@ -9,6 +9,7 @@ var optimist = require('optimist');
 var config = require('../lib/config.js');
 var index = require('../index');
 var log = require('../lib/log');
+var pkginfo = require('pkginfo')(module, 'version');
 
 process.on('uncaughtException', function(err) {
   log.error(err.stack);
@@ -45,10 +46,19 @@ var argv = optimist
     .alias('h', '?')
     .boolean('h')
 
+    .describe('version', 'Print version info.')
+    .alias('i', 'version')
+    .boolean('version')
+
     .describe('config', 'Location of the database.json file.')
     .string('config')
 
     .argv;
+
+if (argv.version) {
+  console.log(module.exports.version);
+  process.exit(0);
+}
 
 if (argv.help || argv._.length == 0) {
   optimist.showHelp();
