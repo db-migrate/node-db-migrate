@@ -18,7 +18,7 @@ driver.connect({ driver: 'mysql', database: 'db_migrate_test', user:'root' }, fu
           ts: dataType.TIMESTAMP,
           bin: dataType.BINARY,
           bl: dataType.BOOLEAN
-        }, this.callback.bind(this, null));
+        }, this.callback);
       },
 
       teardown: function() {
@@ -240,42 +240,42 @@ driver.connect({ driver: 'mysql', database: 'db_migrate_test', user:'root' }, fu
         }
       }
     }
-  //}).addBatch({
-  //  'renameColumn': {
-  //    topic: function() {
-  //      driver.connect({ driver: 'mysql', database: 'db_migrate_test' }, function(err) {
-  //        db.createTable('event', {
-  //          id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
-  //          title: dataType.STRING
-  //        }, function() {
-  //          db.renameColumn('event', 'title', 'new_title', this.callback.bind(this, null));
-  //        }.bind(this));
-  //      }.bind(this));
-  //    },
-  //
-  //    teardown: function() {
-  //      db.dropTable('event', this.callback);
-  //    },
-  //
-  //    'has column metadata': {
-  //      topic: function() {
-  //        dbmeta('mysql', { database: 'db_migrate_test' }, function (err, meta) {
-  //          if (err) {
-  //            return this.callback(err);
-  //          }
-  //          meta.getColumns('event', this.callback);
-  //        }.bind(this));
-  //      },
-  //
-  //      'with renamed title column': function(err, columns) {
-  //        assert.isNotNull(columns);
-  //        assert.equal(columns.length, 2);
-  //        var column = findByName(columns, 'new_title');
-  //        assert.isNotNull(column);
-  //        assert.equal(column.getName(), 'new_title');
-  //      }
-  //    }
-  //  }
+  }).addBatch({
+    'renameColumn': {
+      topic: function() {
+        driver.connect({ driver: 'mysql', database: 'db_migrate_test' }, function(err) {
+          db.createTable('event', {
+            id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
+            title: dataType.STRING
+          }, function() {
+            db.renameColumn('event', 'title', 'new_title', this.callback.bind(this, null));
+          }.bind(this));
+        }.bind(this));
+      },
+
+      teardown: function() {
+        db.dropTable('event', this.callback);
+      },
+
+      'has column metadata': {
+        topic: function() {
+          dbmeta('mysql', { connection: db.connection }, function (err, meta) {
+            if (err) {
+              return this.callback(err);
+            }
+            meta.getColumns('event', this.callback);
+          }.bind(this));
+        },
+
+        'with renamed title column': function(err, columns) {
+          assert.isNotNull(columns);
+          assert.equal(columns.length, 2);
+          var column = findByName(columns, 'new_title');
+          assert.isNotNull(column);
+          assert.equal(column.getName(), 'new_title');
+        }
+      }
+    }
   }).addBatch({
     'changeColumn': {
       topic: function() {
