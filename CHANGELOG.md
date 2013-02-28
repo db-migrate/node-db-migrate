@@ -109,3 +109,15 @@ Improvement:
 
 Fix
   - Update error message when using an invalid data type #67 (via @swang)
+
+## 0.4.0
+
+New Feature:
+  - Added support for renameColumn in MySQL #80 (via @akinnunen)
+
+Improvement:
+  - Added --version flag #73 (via @mcandre)
+  - Lazily require migrations #77, #78 (via @btakita)
+
+Fix
+  - Fixed typo in lib/driver/pg.js for BLOB datatype #76
