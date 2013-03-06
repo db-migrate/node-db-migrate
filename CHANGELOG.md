@@ -121,3 +121,8 @@ Improvement:
 
 Fix
   - Fixed typo in lib/driver/pg.js for BLOB datatype #76
+
+## 0.4.1
+
+Improvement:
+  - Add support for BIGINT data type #81
