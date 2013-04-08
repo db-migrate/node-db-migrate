@@ -46,7 +46,7 @@
     "pkginfo": "~0.3.0"
   },
   "devDependencies": {
-    "vows": "~0.6.2",
+    "vows": "~0.7.0",
     "db-meta": "~0.4.1"
   },
   "scripts": {
