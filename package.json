@@ -54,6 +54,6 @@
     "sqlite3": "~2.1.0"
   },
   "scripts": {
-    "test": "node_modules/.bin/vows"
+    "test": "sh node_modules/.bin/vows"
   }
 }
