@@ -43,11 +43,15 @@
     "semver": "~1.0.14",
     "mkdirp": "~0.3.4",
     "moment": "~1.7.2",
-    "pkginfo": "~0.3.0"
+    "pkginfo": "~0.3.0",
+    "parse-database-url": "~0.1.0"
   },
   "devDependencies": {
     "vows": "~0.7.0",
-    "db-meta": "~0.4.1"
+    "db-meta": "~0.4.1",
+    "mysql": "~2.0.0",
+    "pg": "~1.0.0",
+    "sqlite3": "~2.1.0"
   },
   "scripts": {
     "test": "node_modules/.bin/vows"
