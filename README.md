@@ -98,7 +98,7 @@ exports.up = function (db, callback) {
 exports.down = function (db, callback) {
   db.dropTable('pets', function(err) {
     if (err) { callback(err); return; }
-    db.dropTable('owners', callback); 
+    db.dropTable('owners', callback);
   });
 };
 ```
@@ -204,7 +204,7 @@ You can pass the -e or --env option to db-migrate to select the environment you 
 
 The above will run all migrations that haven't yet been run in the prod environment, grabbing the settings from config/database.json.
 
-Alternatively, for PostgreSQL, you can specify a DATABASE_URL
+Alternatively, you can specify a DATABASE_URL
 environment variable that will be used in place of the configuration
 file settings. This is helpful for use with Heroku.
 
@@ -377,6 +377,21 @@ __Arguments__
 * sql - the SQL query string, possibly with ? replacement parameters
 * params - zero or more ? replacement parameters
 * callback(err, results) - callback that will be invoked after executing the SQL
+
+## Development
+
+The following command runs the vows tests.
+
+```bash
+npm test
+```
+
+Running the tests requires a one-time setup of the MySQL and Postgres databases.
+
+```bash
+mysql -u root -e "CREATE DATABASE db_migrate_test;"
+createdb db_migrate_test
+```
 
 ## License
 
