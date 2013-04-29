@@ -126,3 +126,13 @@ Fix
 
 Improvement:
   - Add support for BIGINT data type #81
+
+## 0.4.2
+
+Improvement:
+	- Superficial changes based on JSHint report #85, #88 (via @mcandre)
+	- Let DATABASE_URL configure any database #90 (via @pwnall)
+
+Fix:
+	- Fix for postgres driver blindly recreating the migrations table #89 (via @sgibbons)
+	- Mitigate `npm test` permission error #95 (via @mcandre)
