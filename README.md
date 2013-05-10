@@ -300,8 +300,8 @@ Column spec is the same as that described in createTable
 
 Remove a column from an existing database table
 
-* tableName - name of table to add a column to
-* columnName - name of the column to add
+* tableName - name of table to remove a column from
+* columnName - name of the column to remove
 * callback(err) - callback that will be invoked after removing the column
 
 ### renameColumn(tableName, oldColumnName, newColumnName, callback)
