@@ -194,9 +194,13 @@ db-migrate supports the concept of environments. For example, you might have a d
     "password": "test",
     "host": "localhost",
     "database": "mydb"
-  }
+  },
+
+  "other": "postgres://uname:pw@server.com/dbname"
 }
 ```
+
+Note that if the settings for an environment are represented by a single string that string will be parsed as a database URL.
 
 You can pass the -e or --env option to db-migrate to select the environment you want to run migrations against. The --config option can be used to specify the path to your database.json file if it's not in the current working directory.
 
