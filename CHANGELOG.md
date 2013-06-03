@@ -136,3 +136,12 @@ Improvement:
 Fix:
 	- Fix for postgres driver blindly recreating the migrations table #89 (via @sgibbons)
 	- Mitigate `npm test` permission error #95 (via @mcandre)
+
+## 0.5.0
+
+New Feature:
+	- Support for database URLs in database.json #103 (via @miguelgrinberg)
+	- Option to use native Postgres client #106 (via @olalonde)
+
+Improvement:
+	- Updated README.md documentation #98 (via @acco)
