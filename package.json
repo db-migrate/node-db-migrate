@@ -44,7 +44,7 @@
     "mkdirp": "~0.3.4",
     "moment": "~1.7.2",
     "pkginfo": "~0.3.0",
-    "parse-database-url": "https://github.com/olalonde/node-parse-database-url.git"
+    "parse-database-url": "git://github.com/olalonde/node-db-migrate.git"
   },
   "devDependencies": {
     "vows": "~0.7.0",
