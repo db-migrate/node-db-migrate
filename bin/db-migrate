@@ -19,6 +19,7 @@ process.on('uncaughtException', function(err) {
 var argv = optimist
     .default({
       verbose: false,
+      "force-exit": false,
       config: process.cwd() + '/database.json',
       'migrations-dir': process.cwd() + '/migrations' })
     .usage('Usage: db-migrate [up|down|create] migrationName [options]')
@@ -37,6 +38,9 @@ var argv = optimist
 
     .describe('dry-run', "Prints the SQL but doesn't run it.")
     .boolean('dry-run')
+
+    .describe('force-exit', 'Forcibly exit the migration process on completion.')
+    .boolean('force-exit')
 
     .describe('verbose', 'Verbose mode.')
     .alias('v', 'verbose')
@@ -179,3 +183,8 @@ function run() {
 }
 
 run();
+
+if (argv['force-exit']) {
+  log.verbose("Forcing exit");
+  process.exit(0);
+}
