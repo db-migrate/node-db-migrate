@@ -143,10 +143,12 @@ function executeDown() {
   });
 }
 
-function onComplete(migrator, err) {
-  migrator.driver.close();
-  assert.ifError(err);
-  log.info('Done');
+function onComplete(migrator, originalErr) {
+  migrator.driver.close(function(err) {
+    assert.ifError(originalErr);
+    assert.ifError(err);
+    log.info('Done');
+  });
 }
 
 function run() {
