@@ -145,3 +145,9 @@ New Feature:
 
 Improvement:
 	- Updated README.md documentation #98 (via @acco)
+
+## 0.5.1
+
+Improvement:
+  - Add a force-exit flag #108 (via @codeaholics)
+  - Provide close callback for MySQL driver #107 (via @codeaholics)
