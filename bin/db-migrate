@@ -152,6 +152,7 @@ function onComplete(migrator, originalErr) {
     assert.ifError(originalErr);
     assert.ifError(err);
     log.info('Done');
+    process.exit();
   });
 }
 
