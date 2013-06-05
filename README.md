@@ -24,6 +24,7 @@ Options:
   --dry-run             Prints the SQL but doesn't run it.              [boolean]
   --verbose, -v         Verbose mode.                                   [default: false]
   --config              Location of the database.json file.             [default: "./database.json"]
+  --force-exit          Call system.exit() after migration run          [default: false]
 ```
 
 ## Creating Migrations
