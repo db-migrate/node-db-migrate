@@ -151,3 +151,9 @@ Improvement:
 Improvement:
   - Add a force-exit flag #108 (via @codeaholics)
   - Provide close callback for MySQL driver #107 (via @codeaholics)
+
+## 0.5.2
+
+Fix:
+  - Add ability to create camel-cased column names for PostgreSQL #111 (via @virpool)
+  - Add ability to make a unique index #110 (via @codeaholics)
