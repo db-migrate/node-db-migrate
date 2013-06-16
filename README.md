@@ -331,7 +331,7 @@ __Arguments__
 * columnSpec - a hash containing the column spec
 * callback(err) - callback that will be invoked after changing the column
 
-### addIndex(tableName, indexName, columns, callback)
+### addIndex(tableName, indexName, columns, [unique], callback)
 
 Add an index
 
@@ -340,6 +340,7 @@ __Arguments__
 * tableName - table to add the index too
 * indexName - the name of the index
 * columns - an array of column names contained in the index
+* unique - whether the index is unique (optional, default false)
 * callback(err) - callback that will be invoked after adding the index
 
 ### insert(tableName, columnNameArray, valueArray, callback)
