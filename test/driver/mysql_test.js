@@ -17,7 +17,7 @@ driver.connect({ driver: 'mysql', database: 'db_migrate_test', user:'root' }, fu
           dt: dataType.DATE_TIME,
           ts: dataType.TIMESTAMP,
           bin: dataType.BINARY,
-          bl: dataType.BOOLEAN
+          bl: { type: dataType.BOOLEAN, defaultValue: false }
         }, this.callback);
       },
 
@@ -107,10 +107,11 @@ driver.connect({ driver: 'mysql', database: 'db_migrate_test', user:'root' }, fu
           assert.equal(column.isNullable(), true);
         },
 
-        'that has boolean bl column': function(err, columns) {
+        'that has boolean bl column with a default value': function(err, columns) {
           var column = findByName(columns, 'bl');
           assert.equal(column.getDataType(), 'TINYINT');
           assert.equal(column.isNullable(), true);
+          assert.equal(column.getDefaultValue(), 0);
         }
       }
     }
@@ -283,8 +284,8 @@ driver.connect({ driver: 'mysql', database: 'db_migrate_test', user:'root' }, fu
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
           txt: { type: dataType.STRING, notNull: true, defaultValue: "foo", unique: true }
         }, function(err) {
-          if (err) { 
-            return this.callback(err); 
+          if (err) {
+            return this.callback(err);
           }
           var spec = { type: dataType.STRING, notNull: false, defaultValue: 'foo2' };
           db.changeColumn('event', 'txt', spec, this.callback.bind(this, null));
