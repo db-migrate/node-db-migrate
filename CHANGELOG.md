@@ -157,3 +157,8 @@ Improvement:
 Fix:
   - Add ability to create camel-cased column names for PostgreSQL #111 (via @virpool)
   - Add ability to make a unique index #110 (via @codeaholics)
+
+## 0.5.3
+
+Fix:
+  - Fixed bug setting default values to values that are falsy #114 (via @wbrady)
