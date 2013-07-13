@@ -162,3 +162,8 @@ Fix:
 
 Fix:
   - Fixed bug setting default values to values that are falsy #114 (via @wbrady)
+
+## 0.5.4
+
+Fix:
+  - Add backticks to MySQL driver #114 (via @mstorgaard)
