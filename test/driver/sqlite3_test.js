@@ -95,7 +95,7 @@ vows.describe('sqlite3').addBatch({
 
       'that has integer dt column': function (err, columns) {
         var column = findByName(columns, 'dt');
-        assert.equal(column.getDataType(), 'INTEGER');
+        assert.equal(column.getDataType(), 'DATETIME');
         assert.equal(column.isNullable(), true);
       },
 
@@ -409,7 +409,7 @@ vows.describe('sqlite3').addBatch({
           assert.equal(column.getDataType(), 'VARCHAR (255)');
           column = findByName(columns, 'run_on');
           assert.equal(column.getName(), 'run_on');
-          assert.equal(column.getDataType(), 'INTEGER');
+          assert.equal(column.getDataType(), 'DATETIME');
         }
       }
     }
