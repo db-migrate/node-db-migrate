@@ -39,6 +39,22 @@ vows.describe('config').addBatch({
     }
   }
 }).addBatch({
+  'loading from a file with ENV vars': {
+    topic: function() {
+      process.env['DB_MIGRATE_TEST_VAR'] = 'username_from_env';
+      var configPath = path.join(__dirname, 'database_with_env.json');
+      config.load = _configLoad;
+      config.loadUrl = _configLoadUrl;
+      config.load(configPath, 'prod');
+      return config;
+    },
+
+    'should load a value from the environments': function (config) {
+      assert.equal(config.prod.username, 'username_from_env');
+    },
+}
+
+}).addBatch({
   'loading from an URL': {
     topic: function() {
       var databaseUrl = 'postgres://uname:pw@server.com/dbname';
