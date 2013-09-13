@@ -167,3 +167,17 @@ Fix:
 
 Fix:
   - Add backticks to MySQL driver #114 (via @mstorgaard)
+
+## 0.6.0
+
+New Feature:
+  - Support varargs in runSql, all on mysql driver #119 (via @Gloridea)
+  - Load Environment Variables specified in config file #118 (via @codyhanson)
+  - Added CoffeeScript support for migrations #116 (via @DeniSix)
+
+Improvement:
+  - Added date type for sqlite3 #121 (via @mrcsparker)
+
+Fix:
+  - Fix postgres issue with camelCased column name definition #125 (via @virpool)
+
