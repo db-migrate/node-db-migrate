@@ -416,7 +416,7 @@ createdb db_migrate_test
 
 (The MIT License)
 
-Copyright (c) 2011 Near Infinity Corporation
+Copyright (c) 2013 Jeff Kunkle
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
