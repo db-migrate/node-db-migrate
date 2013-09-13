@@ -12,7 +12,7 @@ exports.connect = function(config, callback) {
 };
 
 exports.createMigration = function(title, migrationsDir, callback) {
-  var migration = new Migration(title, migrationsDir, new Date());
+  var migration = new Migration(title + '.js', migrationsDir, new Date());
   migration.write(function(err) {
     if (err) { callback(err); return; }
     callback(null, migration);
