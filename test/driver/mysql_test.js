@@ -354,8 +354,13 @@ driver.connect({ driver: 'mysql', database: 'db_migrate_test', user:'root' }, fu
     }
   }).addBatch({
     'runSql': {
-       'accepts vararg parameters': function() {
+      'accepts vararg parameters': function() {
         db.runSql("SELECT 1 = ?, 2 = ?", 1, 2, function(err, data) {
+          assert.equal(data.length, 1);
+        });
+      },
+      'accepts array parameters': function() {
+        db.runSql("SELECT 1 = ?, 2 = ?", [1, 2], function(err, data) {
           assert.equal(data.length, 1);
         });
       }
