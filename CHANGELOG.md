@@ -181,3 +181,8 @@ Improvement:
 Fix:
   - Fix postgres issue with camelCased column name definition #125 (via @virpool)
 
+## 0.6.1
+
+Fix:
+  - Fix two regressions related to runSql not accepting params as an
+    array #127, #128
