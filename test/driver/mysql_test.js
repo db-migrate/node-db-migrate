@@ -320,16 +320,33 @@ driver.connect({ driver: 'mysql', database: 'db_migrate_test', user:'root' }, fu
   }).addBatch({
     'addIndex': {
       topic: function() {
-        db.createTable('event', {
+        db.createTable('Event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
           title: { type: dataType.STRING }
         }, function() {
-          db.addIndex('event', 'event_title', 'title', this.callback.bind(this, null));
+          db.addIndex('Event', 'event_title', 'title', this.callback.bind(this, null));
         }.bind(this));
       },
 
       teardown: function() {
-        db.dropTable('event', this.callback);
+        db.dropTable('Event', this.callback);
+      },
+
+      'preserves case': {
+        topic: function() {
+          dbmeta('mysql', { connection:db.connection}, function (err, meta) {
+            if (err) {
+              return this.callback(err);
+            }
+            meta.getTables(this.callback);
+          }.bind(this));
+        },
+
+        'of the functions original table': function(err, tables) {
+          assert.isNotNull(tables);
+          assert.equal(tables.length, 1);
+          assert.equal(tables[0].getName(), 'Event');
+        }
       },
 
       'has resulting index metadata': {
