@@ -186,3 +186,13 @@ Fix:
 Fix:
   - Fix two regressions related to runSql not accepting params as an
     array #127, #128
+
+## 0.6.2
+
+Fix:
+  - Fix add index downcasing table name in MySQL #126 (via @noazark)
+  - Fix dry run on first migration #132 (via @jgoyon)
+
+Improvement:
+  - Add decimal data type support
+
