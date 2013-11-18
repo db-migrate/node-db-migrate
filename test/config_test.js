@@ -6,6 +6,8 @@ var path = require('path');
 var _configLoad = config.load;
 var _configLoadUrl = config.loadUrl;
 
+var DATABASE_URL = 'postgres://uname:pw@server.com/dbname';
+
 vows.describe('config').addBatch({
   'loading from a file': {
     topic: function() {
@@ -57,10 +59,9 @@ vows.describe('config').addBatch({
 }).addBatch({
   'loading from an URL': {
     topic: function() {
-      var databaseUrl = 'postgres://uname:pw@server.com/dbname';
       config.load = _configLoad;
       config.loadUrl = _configLoadUrl;
-      config.loadUrl(databaseUrl, 'dev');
+      config.loadUrl(DATABASE_URL, 'dev');
       return config;
     },
 
@@ -77,6 +78,40 @@ vows.describe('config').addBatch({
     },
 
     'should export a getCurrent function with all current environment settings': function (config) {
+      assert.isDefined(config.getCurrent);
+      var current = config.getCurrent();
+      assert.equal(current.env, 'dev');
+      assert.equal(current.settings.driver, 'postgres');
+      assert.equal(current.settings.user, 'uname');
+      assert.equal(current.settings.password, 'pw');
+      assert.equal(current.settings.host, 'server.com');
+      assert.equal(current.settings.database, 'dbname');
+    }
+  }
+}).addBatch({
+  'loading from an Environment URL': {
+    topic: function() {
+      process.env['DATABASE_URL'] = DATABASE_URL;
+      var configPath = path.join(__dirname, 'database_with_env.json');
+      config.load = _configLoad;
+      config.loadUrl = _configLoadUrl;
+      config.load(configPath, 'dev');
+      return config;
+    },
+
+    'should remove the load function': function (config) {
+      assert.isUndefined(config.load);
+    },
+
+    'should remove the loadUrl function': function (config) {
+      assert.isUndefined(config.loadUrl);
+    },
+
+    'should export the settings as the current environment': function (config) {
+      assert.isDefined(config.dev);
+    },
+
+    'should load databaseUrl from the environment': function (config) {
       assert.isDefined(config.getCurrent);
       var current = config.getCurrent();
       assert.equal(current.env, 'dev');
