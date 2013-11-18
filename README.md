@@ -211,6 +211,16 @@ You can also specify environment variables in your config file by using a specia
   },
 }
 ```
+
+You can also specify an environment variable for the full connection string using the databaseUrl key:
+```javascript
+{
+  "prod": {
+    "databaseUrl": {"ENV": "DATABASE_URL"}
+  }
+}
+```
+
 In this case, db-migrate will search your environment for variables
 called `PRODUCTION_USERNAME` and `PRODUCTION_PASSWORD`, and use those values for the corresponding configuration entry.
 
