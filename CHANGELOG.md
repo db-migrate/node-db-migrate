@@ -196,3 +196,7 @@ Fix:
 Improvement:
   - Add decimal data type support
 
+## 0.6.3
+
+Fix
+  - Fix postgres issue with camelCased column name during insert #137 (via @tone81)
