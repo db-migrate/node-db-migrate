@@ -277,6 +277,12 @@ The following options are available on column specs
 * unique - true to add unique constraint to the column
 * defaultValue - set the column default value
 
+__Driver specific options__
+
+PostgreSQL table options:
+
+* inherits - specify which table the newly-created table should inherit from
+
 ### dropTable(tableName, [options,] callback)
 
 Drop a database table
