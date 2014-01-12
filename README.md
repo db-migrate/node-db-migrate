@@ -36,7 +36,7 @@ exports.up = function (db, callback) {
   callback();
 };
 
-exports.down = function (callback) {
+exports.down = function (db, callback) {
   callback();
 };
 ```
