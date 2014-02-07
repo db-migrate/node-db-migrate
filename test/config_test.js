@@ -37,6 +37,25 @@ vows.describe('config').addBatch({
       assert.equal(current.settings.driver, 'sqlite3');
       assert.equal(current.settings.filename, ':memory:');
     }
+  },
+}).addBatch({
+  'loading from a broken config file': {
+    topic: function() {
+      var configPath = path.join(__dirname, 'database.notjson');
+      config.load = _configLoad;
+      config.loadUrl = _configLoadUrl;
+      try {
+        config.load(configPath, 'dev');
+      } catch (e) {
+        return e;
+      }
+      return;
+    },
+
+    'should throw a syntax error': function (error) {
+      assert.isDefined(error);
+      assert.ok(error instanceof SyntaxError, "Expected broken file to produce syntax error");
+    }
   }
 }).addBatch({
   'loading from a file with ENV vars': {
