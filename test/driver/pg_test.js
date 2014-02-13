@@ -12,8 +12,10 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) 
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
           str: { type: dataType.STRING, unique: true },
           txt: { type: dataType.TEXT, notNull: true, defaultValue: "foo" },
+          chr: dataType.CHAR,
           intg: dataType.INTEGER,
           rel: dataType.REAL,
+          smalint: dataType.SMALLINT,
           dt: dataType.DATE,
           dti: dataType.DATE_TIME,
           bl: dataType.BOOLEAN
