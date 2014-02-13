@@ -62,7 +62,7 @@ vows.describe('base').addBatch({
     },
 
     'escapes single quotes': function(base) {
-      assert.equal("Bill's Mother's House", base.escape("Bill's Mother's House"));
+      assert.equal("Bill''s Mother''s House", base.escape("Bill's Mother's House"));
     }
   }
 }).export(module);
