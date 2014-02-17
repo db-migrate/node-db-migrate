@@ -12,9 +12,12 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) 
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
           str: { type: dataType.STRING, unique: true },
           txt: { type: dataType.TEXT, notNull: true, defaultValue: "foo" },
+          chr: dataType.CHAR,
           intg: dataType.INTEGER,
           rel: dataType.REAL,
-          dt: dataType.DATE_TIME,
+          smalint: dataType.SMALLINT,
+          dt: dataType.DATE,
+          dti: dataType.DATE_TIME,
           bl: dataType.BOOLEAN
         }, this.callback.bind(this, null));
       },
@@ -45,9 +48,9 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) 
           }.bind(this));
         },
 
-        'with 7 columns': function(err, columns) {
+        'with 10 columns': function(err, columns) {
           assert.isNotNull(columns);
-          assert.equal(columns.length, 7);
+          assert.equal(columns.length, 10);
         },
 
         'that has integer id column that is primary key, non-nullable, and auto increments': function(err, columns) {
@@ -85,6 +88,12 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) 
 
         'that has integer dt column': function(err, columns) {
           var column = findByName(columns, 'dt');
+          assert.equal(column.getDataType(), 'DATE');
+          assert.equal(column.isNullable(), true);
+        },
+
+        'that has integer dti column': function(err, columns) {
+          var column = findByName(columns, 'dti');
           assert.equal(column.getDataType(), 'TIMESTAMP WITHOUT TIME ZONE');
           assert.equal(column.isNullable(), true);
         },
@@ -92,6 +101,18 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) 
         'that has boolean bl column': function(err, columns) {
           var column = findByName(columns, 'bl');
           assert.equal(column.getDataType(), 'BOOLEAN');
+          assert.equal(column.isNullable(), true);
+        },
+
+        'that has character chr column': function(err, columns) {
+          var column = findByName(columns, 'chr');
+          assert.equal(column.getDataType(), 'CHARACTER');
+          assert.equal(column.isNullable(), true);
+        },
+
+        'that has small integer smalint column': function(err, columns) {
+          var column = findByName(columns, 'smalint');
+          assert.equal(column.getDataType(), 'SMALLINT');
           assert.equal(column.isNullable(), true);
         }
       },
@@ -419,7 +440,7 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) 
               return this.callback(err);
             }
             meta.getTables(this.callback);
-          }.bind(this)); 
+          }.bind(this));
         },
 
         'has migrations table' : function(err, tables) {
