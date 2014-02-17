@@ -200,3 +200,16 @@ Improvement:
 
 Fix
   - Fix postgres issue with camelCased column name during insert #137 (via @tone81)
+
+## 0.6.4
+
+Improvement:
+  - Handle more than one single quote in string literals in a portable way #151 (via @szywon)
+  - added date, char and smallint types for pg #150 (via @FabricioFFC)
+  - better error handling for broken database.json files #149 (via @acruikshank)
+
+Fix:
+  - Make compatible with coffee-script 1.7 #147 (via @jinze)
+  - docs: the exports.down fn gets (db, callback) as params #144 (via @alxndr)
+  - Fix for multiple single quotes in a string #143
+
