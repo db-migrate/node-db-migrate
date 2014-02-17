@@ -12,9 +12,12 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) 
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
           str: { type: dataType.STRING, unique: true },
           txt: { type: dataType.TEXT, notNull: true, defaultValue: "foo" },
+          chr: dataType.CHAR,
           intg: dataType.INTEGER,
           rel: dataType.REAL,
-          dt: dataType.DATE_TIME,
+          smalint: dataType.SMALLINT,
+          dt: dataType.DATE,
+          dti: dataType.DATE_TIME,
           bl: dataType.BOOLEAN
         }, this.callback.bind(this, null));
       },
@@ -419,7 +422,7 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) 
               return this.callback(err);
             }
             meta.getTables(this.callback);
-          }.bind(this)); 
+          }.bind(this));
         },
 
         'has migrations table' : function(err, tables) {
