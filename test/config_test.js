@@ -41,7 +41,7 @@ vows.describe('config').addBatch({
 }).addBatch({
   'loading from a broken config file': {
     topic: function() {
-      var configPath = path.join(__dirname, 'database.notjson');
+      var configPath = path.join(__dirname, 'database_with_syntax_error.json');
       config.load = _configLoad;
       config.loadUrl = _configLoadUrl;
       try {
