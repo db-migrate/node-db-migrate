@@ -20,6 +20,7 @@ var argv = optimist
     .default({
       verbose: false,
       "force-exit": false,
+      "sql-file": false,
       config: process.cwd() + '/database.json',
       'migrations-dir': process.cwd() + '/migrations' })
     .usage('Usage: db-migrate [up|down|create] migrationName [options]')
@@ -56,6 +57,9 @@ var argv = optimist
 
     .describe('config', 'Location of the database.json file.')
     .string('config')
+
+    .describe('sql-file', "Automatically create two sql files for up and down statements in /sqls and generate the javascript code that loads them.")
+    .boolean('sql-file')
 
     .argv;
 
@@ -111,11 +115,39 @@ function executeCreate() {
     }
 
     argv.title = argv._.shift();
-    index.createMigration(argv.title, argv['migrations-dir'], function(err, migration) {
+    var templateType = argv['sql-file'] ? Migration.TemplateType.SQL_FILE_LOADER : Migration.TemplateType.DEFAULT;
+    var migration = new Migration(argv.title + '.js', argv['migrations-dir'], new Date(), templateType);
+    index.createMigration(migration, function(err, migration) {
       assert.ifError(err);
       log.info(util.format('Created migration at %s', migration.path));
     });
-  })
+  });
+
+  if (argv['sql-file'] || config['sql-file']) {
+    createSqlFiles();
+  }
+}
+
+function createSqlFiles() {
+  var sqlDir = argv['migrations-dir'] + '/sqls';
+  createMigrationDir(sqlDir, function(err) {
+    if (err) {
+      log.error('Failed to create migration directory at ', sqlDir, err);
+      process.exit(1);
+    }
+
+    var templateTypeEmpty = Migration.TemplateType.EMPTY;
+    var migrationUpSQL = new Migration(argv.title + '-up.sql', sqlDir, new Date(), templateTypeEmpty);
+    index.createMigration(migrationUpSQL, function(err, migration) {
+      assert.ifError(err);
+      log.info(util.format('Created migration up sql file at %s', migration.path));
+    });
+    var migrationDownSQL = new Migration(argv.title + '-down.sql', sqlDir, new Date(), templateTypeEmpty);
+    index.createMigration(migrationDownSQL, function(err, migration) {
+      assert.ifError(err);
+      log.info(util.format('Created migration down sql file at %s', migration.path));
+    });
+  });
 }
 
 function executeUp() {
@@ -159,6 +191,7 @@ function run() {
   var action = argv._.shift();
   switch(action) {
     case 'create':
+      loadConfig();
       executeCreate();
       break;
     case 'up':
