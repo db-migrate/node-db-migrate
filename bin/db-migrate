@@ -115,7 +115,7 @@ function executeCreate() {
     }
 
     argv.title = argv._.shift();
-    var templateType = argv['sql-file'] ? Migration.TemplateType.SQL_FILE_LOADER : Migration.TemplateType.DEFAULT;
+    var templateType = shouldCreateSqlFiles() ? Migration.TemplateType.SQL_FILE_LOADER : Migration.TemplateType.DEFAULT_JS;
     var migration = new Migration(argv.title + '.js', argv['migrations-dir'], new Date(), templateType);
     index.createMigration(migration, function(err, migration) {
       assert.ifError(err);
@@ -123,9 +123,13 @@ function executeCreate() {
     });
   });
 
-  if (argv['sql-file'] || config['sql-file']) {
+  if (shouldCreateSqlFiles()) {
     createSqlFiles();
   }
+}
+
+function shouldCreateSqlFiles() {
+  return argv['sql-file'] || config['sql-file'];
 }
 
 function createSqlFiles() {
@@ -136,13 +140,13 @@ function createSqlFiles() {
       process.exit(1);
     }
 
-    var templateTypeEmpty = Migration.TemplateType.EMPTY;
-    var migrationUpSQL = new Migration(argv.title + '-up.sql', sqlDir, new Date(), templateTypeEmpty);
+    var templateTypeDefaultSQL = Migration.TemplateType.DEFAULT_SQL;
+    var migrationUpSQL = new Migration(argv.title + '-up.sql', sqlDir, new Date(), templateTypeDefaultSQL);
     index.createMigration(migrationUpSQL, function(err, migration) {
       assert.ifError(err);
       log.info(util.format('Created migration up sql file at %s', migration.path));
     });
-    var migrationDownSQL = new Migration(argv.title + '-down.sql', sqlDir, new Date(), templateTypeEmpty);
+    var migrationDownSQL = new Migration(argv.title + '-down.sql', sqlDir, new Date(), templateTypeDefaultSQL);
     index.createMigration(migrationDownSQL, function(err, migration) {
       assert.ifError(err);
       log.info(util.format('Created migration down sql file at %s', migration.path));
