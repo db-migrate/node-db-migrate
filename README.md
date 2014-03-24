@@ -25,6 +25,7 @@ Options:
   --verbose, -v         Verbose mode.                                   [default: false]
   --config              Location of the database.json file.             [default: "./database.json"]
   --force-exit          Call system.exit() after migration run          [default: false]
+  --sql-file            Create sql files for up and down.               [default: false]
 ```
 
 ## Creating Migrations
@@ -130,6 +131,88 @@ exports.down = function (db, callback) {
 };
 ```
 
+### Using files for sqls
+
+If you prefer to use sql files for your up and down statements, you can use the `--sql-file` option to automatically generate these files and the javascript code that load them.
+
+For example:
+
+    $ db-migrate create add-people --sql-file
+
+This call creates 3 files:
+
+```
+./migrations/20111219120000-add-people.js
+./migrations/sqls/20111219120000-add-people-up.sql
+./migrations/sqls/20111219120000-add-people-down.sql
+```
+
+The sql files will have the following content:
+```sql
+/* Replace with your SQL commands */
+```
+
+And the javascript file with the following code that load these sql files:
+
+```javascript
+var dbm = require('db-migrate');
+var type = dbm.dataType;
+var fs = require('fs');
+var path = require('path');
+
+exports.up = function(db, callback) {
+  var filePath = path.join(__dirname + '/sqls/20111219120000-add-people-up.sql');
+  fs.readFile(filePath, {encoding: 'utf-8'}, function(err,data){
+    if (err) return console.log(err);
+    db.runSql(data, function(err) {
+      if (err) return console.log(err);
+      callback();
+    });
+  });
+};
+
+exports.down = function(db, callback) {
+  var filePath = path.join(__dirname + '/sqls/20111219120000-add-people-down.sql');
+  fs.readFile(filePath, {encoding: 'utf-8'}, function(err,data){
+    if (err) return console.log(err);
+    db.runSql(data, function(err) {
+      if (err) return console.log(err);
+      callback();
+    });
+  });
+};
+```
+
+** Making it as default **
+
+To not need to always specify the `sql-file` option in your `db-migrate create` commands, you can set a property in your `database.json` as follows:
+
+```
+{
+    "dev": {
+      "host": "localhost",
+    ...
+  },
+    "sql-file" : true
+}
+```
+
+** Important - For MySQL users **
+
+If you use MySQL, to be able to use multiple statements in your sql file, you have to set the property `multiple-statements: true` when creating the connection object. You can set it in your `database.json` as follows:
+
+```
+{
+    "dev": {
+    "host": "localhost",
+    "user": { "ENV" : "DB_USER" },
+    "password" : { "ENV" : "DB_PASS" },
+    "database": "database-name",
+    "driver": "mysql",
+    "multipleStatements": true
+  }
+}
+```
 
 ## Running Migrations
 
