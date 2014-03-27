@@ -104,7 +104,7 @@ function executeCreate() {
     process.exit(1);
   }
 
-  createMigrationDir(argv['migrations-dir'], function(err) {
+  createMigrationDir(argv['migrations-dir'] + (argv._[0] && argv._[0].indexOf('/') > -1 ? '/' + argv._[0].substr(0, argv._[0].lastIndexOf('/')) : ''), function(err) {
     if (err) {
       log.error('Failed to create migration directory at ', argv['migrations-dir'], err);
       process.exit(1);
