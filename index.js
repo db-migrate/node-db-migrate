@@ -10,7 +10,9 @@ try {
   coffeeModule = require('coffee-script');
   if (coffeeModule && coffeeModule.register) coffeeModule.register();
   coffeeSupported = true;
-} catch (e) {}
+} catch (e) {
+  log.warn('CoffeeScript not installed');
+}
 
 exports.connect = function(config, callback) {
   driver.connect(config, function(err, db) {
