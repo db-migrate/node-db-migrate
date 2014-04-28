@@ -1,5 +1,6 @@
 var driver = require('./lib/driver');
 var Migrator = require('./lib/migrator');
+var log = require('./lib/log');
 
 exports.dataType = require('./lib/data_type');
 exports.config = require('./lib/config');
