@@ -30,7 +30,8 @@
     "mkdirp": "~0.3.4",
     "moment": "~1.7.2",
     "pkginfo": "~0.3.0",
-    "parse-database-url": "~0.2.0"
+    "parse-database-url": "~0.2.0",
+    "dotenv": "^0.2.8"
   },
   "devDependencies": {
     "vows": "~0.7.0",

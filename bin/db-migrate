@@ -10,6 +10,9 @@ var config = require('../lib/config.js');
 var index = require('../index');
 var log = require('../lib/log');
 var pkginfo = require('pkginfo')(module, 'version');
+var dotenv = require('dotenv');
+
+dotenv.load();
 
 process.on('uncaughtException', function(err) {
   log.error(err.stack);
