@@ -57,6 +57,14 @@ vows.describe('base').addBatch({
       }, Error);
 
       assert.throws(function() {
+        base.addForeignKey();
+      }, Error);
+
+      assert.throws(function() {
+        base.removeForeignKey();
+      }, Error);
+
+      assert.throws(function() {
         base.runSql();
       }, Error);
     },

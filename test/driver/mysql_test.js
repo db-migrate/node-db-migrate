@@ -4,7 +4,10 @@ var dbmeta = require('db-meta');
 var dataType = require('../../lib/data_type');
 var driver = require('../../lib/driver');
 
-driver.connect({ driver: 'mysql', database: 'db_migrate_test', user:'root' }, function(err, db) {
+var dbName = 'db_migrate_test';
+
+driver.connect({ driver: 'mysql', database: dbName, user:'root' }, function(err, db) {
+  assert.isNull(err);
   vows.describe('mysql').addBatch({
     'createTable': {
       topic: function() {
@@ -244,7 +247,7 @@ driver.connect({ driver: 'mysql', database: 'db_migrate_test', user:'root' }, fu
   }).addBatch({
     'renameColumn': {
       topic: function() {
-        driver.connect({ driver: 'mysql', database: 'db_migrate_test' }, function(err) {
+        driver.connect({ driver: 'mysql', database: dbName }, function(err) {
           db.createTable('event', {
             id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
             title: dataType.STRING
@@ -366,6 +369,123 @@ driver.connect({ driver: 'mysql', database: 'db_migrate_test', user:'root' }, fu
           assert.equal(index.getName(), 'event_title');
           assert.equal(index.getTableName(), 'event');
           assert.equal(index.getColumnName(), 'title');
+        }
+      }
+    }
+  }).addBatch({
+    'addForeignKey': {
+      topic: function() {
+        db.createTable('Event', {
+          id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
+          event_id: { type: dataType.INTEGER, notNull: true },
+          title: { type: dataType.STRING }
+        }, function() {
+          db.createTable('EventType', {
+            id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
+            title: { type: dataType.STRING }
+          }, function () {
+            db.addForeignKey('Event', 'EventType', 'fk_Event_EventType', {
+              'event_id': 'id'
+            }, {
+              onDelete: 'CASCADE'
+            }, this.callback.bind(this, null));
+          }.bind(this));
+        }.bind(this));
+      },
+
+      teardown: function() {
+        db.dropTable('Event');
+        db.dropTable('EventType', this.callback);
+      },
+
+      'sets usage and constraints': {
+        topic: function() {
+          var metaQuery = ['SELECT',
+            '  usg.REFERENCED_TABLE_NAME,',
+            '  usg.REFERENCED_COLUMN_NAME,',
+            '    cstr.UPDATE_RULE,',
+            '  cstr.DELETE_RULE',
+            'FROM',
+            '  `INFORMATION_SCHEMA`.`KEY_COLUMN_USAGE` AS usg',
+            'INNER JOIN',
+            '  `INFORMATION_SCHEMA`.`REFERENTIAL_CONSTRAINTS` AS cstr',
+            '    ON  cstr.CONSTRAINT_SCHEMA = usg.TABLE_SCHEMA',
+            '    AND cstr.CONSTRAINT_NAME = usg.CONSTRAINT_NAME',
+            'WHERE',
+            '  usg.TABLE_SCHEMA = ?',
+            '  AND usg.TABLE_NAME = ?',
+            '  AND usg.COLUMN_NAME = ?'].join('\n');
+          db.runSql(metaQuery, dbName, 'Event', 'event_id', this.callback);
+        },
+
+        'with correct references': function(err, rows) {
+          assert.isNotNull(rows);
+          assert.equal(rows.length, 1);
+          var row = rows[0];
+          assert.equal(row.REFERENCED_TABLE_NAME, 'EventType');
+          assert.equal(row.REFERENCED_COLUMN_NAME, 'id');
+        },
+
+        'and correct rules': function(err, rows) {
+          assert.isNotNull(rows);
+          assert.equal(rows.length, 1);
+          var row = rows[0];
+          assert.equal(row.UPDATE_RULE, 'NO ACTION');
+          assert.equal(row.DELETE_RULE, 'CASCADE');
+        }
+      }
+    }
+  }).addBatch({
+    'removeForeignKey': {
+      topic: function() {
+        db.createTable('Event', {
+          id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
+          event_id: { type: dataType.INTEGER, notNull: true },
+          title: { type: dataType.STRING }
+        }, function() {
+          db.createTable('EventType', {
+            id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
+            title: { type: dataType.STRING }
+          }, function () {
+            db.addForeignKey('Event', 'EventType', 'fk_Event_EventType', {
+              'event_id': 'id'
+            }, {
+              onDelete: 'CASCADE'
+            }, function () {
+              db.removeForeignKey('Event', 'fk_Event_EventType', this.callback.bind(this, null));
+            }.bind(this));
+          }.bind(this));
+        }.bind(this));
+      },
+
+      teardown: function() {
+        db.dropTable('Event');
+        db.dropTable('EventType', this.callback);
+      },
+
+      'removes usage and constraints': {
+        topic: function() {
+          var metaQuery = ['SELECT',
+            '  usg.REFERENCED_TABLE_NAME,',
+            '  usg.REFERENCED_COLUMN_NAME,',
+            '    cstr.UPDATE_RULE,',
+            '  cstr.DELETE_RULE',
+            'FROM',
+            '  `INFORMATION_SCHEMA`.`KEY_COLUMN_USAGE` AS usg',
+            'INNER JOIN',
+            '  `INFORMATION_SCHEMA`.`REFERENTIAL_CONSTRAINTS` AS cstr',
+            '    ON  cstr.CONSTRAINT_SCHEMA = usg.TABLE_SCHEMA',
+            '    AND cstr.CONSTRAINT_NAME = usg.CONSTRAINT_NAME',
+            'WHERE',
+            '  usg.TABLE_SCHEMA = ?',
+            '  AND usg.TABLE_NAME = ?',
+            '  AND usg.COLUMN_NAME = ?'].join('\n');
+          db.runSql(metaQuery, dbName, 'Event', 'event_id', this.callback);
+        },
+
+        'completely': function(err, rows) {
+          assert.isNotNull(rows);
+          assert.equal(rows.length, 0);
         }
       }
     }
