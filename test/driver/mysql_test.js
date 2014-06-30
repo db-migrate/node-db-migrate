@@ -17,7 +17,8 @@ driver.connect({ driver: 'mysql', database: 'db_migrate_test', user:'root' }, fu
           dt: dataType.DATE_TIME,
           ts: dataType.TIMESTAMP,
           bin: dataType.BINARY,
-          bl: { type: dataType.BOOLEAN, defaultValue: false }
+          bl: { type: dataType.BOOLEAN, defaultValue: false },
+          en: { type: dataType.ENUM, values: ['foo', 'bar'] }
         }, this.callback);
       },
 
@@ -112,6 +113,12 @@ driver.connect({ driver: 'mysql', database: 'db_migrate_test', user:'root' }, fu
           assert.equal(column.getDataType(), 'TINYINT');
           assert.equal(column.isNullable(), true);
           assert.equal(column.getDefaultValue(), 0);
+        },
+
+        'that has enum en column': function(err, columns) {
+          var column = findByName(columns, 'en');
+          assert.equal(column.getDataType(), "ENUM('foo','bar')");
+          assert.equal(column.isNullable(), true);
         }
       }
     }
