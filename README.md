@@ -15,7 +15,7 @@ Database migration framework for node.js
 ## Usage
 
 ```
-Usage: db-migrate [up|down|create] migrationName [options]
+Usage: db-migrate [up|down|create|mark] migrationName [options]
 
 Options:
   --env, -e             The environment to run the migrations under.    [default: "dev"]
@@ -166,6 +166,8 @@ You can also run a specific number of migrations with the -c option:
       [INFO] Done
 
 All of the down migrations work identically to the up migrations by substituting the word `down` for `up`.
+
+Each migration can be marked as executed without apply itself (only add record to migrations table). Can be used if need skip migration
 
 ## Configuration
 

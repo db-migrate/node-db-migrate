@@ -22,7 +22,7 @@ var argv = optimist
       "force-exit": false,
       config: process.cwd() + '/database.json',
       'migrations-dir': process.cwd() + '/migrations' })
-    .usage('Usage: db-migrate [up|down|create] migrationName [options]')
+    .usage('Usage: db-migrate [up|down|create|mark] migrationName [options]')
 
     .describe('env', 'The environment to run the migrations under (dev, test, prod).')
     .alias('e', 'env')
@@ -118,6 +118,21 @@ function executeCreate() {
   })
 }
 
+function executeMark() {
+  if(!argv.count) {
+    argv.count = Number.MAX_VALUE;
+  }
+  index.connect(config.getCurrent().settings, function(err, migrator) {
+    assert.ifError(err);
+    migrator.migrationsDir = path.resolve(argv['migrations-dir']);
+    migrator.driver.createMigrationsTable(function(err) {
+      assert.ifError(err);
+      log.verbose('migration table created');
+      migrator.mark(argv, onComplete.bind(this, migrator));
+    });
+  });
+}
+
 function executeUp() {
   if(!argv.count) {
     argv.count = Number.MAX_VALUE;
@@ -163,19 +178,22 @@ function run() {
       break;
     case 'up':
     case 'down':
+    case 'mark':
       loadConfig();
       if(argv._.length > 0) {
         argv.destination = argv._.shift().toString();
       }
       if(action == 'up') {
         executeUp();
+      } else if (action == 'mark') {
+        executeMark();
       } else {
         executeDown();
       }
       break;
 
     default:
-      log.error('Invalid Action: Must be [up|down|create].');
+      log.error('Invalid Action: Must be [up|down|create|mark].');
       optimist.showHelp();
       process.exit(1);
       break;
