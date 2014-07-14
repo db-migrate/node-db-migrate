@@ -20,6 +20,7 @@ var argv = optimist
     .default({
       verbose: false,
       "force-exit": false,
+      "down-using-run-order": false,
       config: process.cwd() + '/database.json',
       'migrations-dir': process.cwd() + '/migrations' })
     .usage('Usage: db-migrate [up|down|create] migrationName [options]')
@@ -41,6 +42,9 @@ var argv = optimist
 
     .describe('force-exit', 'Forcibly exit the migration process on completion.')
     .boolean('force-exit')
+
+    .describe('down-using-run-order', 'Run down migrations in reverse run order, rather than reverse creation order.')
+    .boolean('down-using-run-order')
 
     .describe('verbose', 'Verbose mode.')
     .alias('v', 'verbose')
@@ -71,6 +75,7 @@ if (argv.help || argv._.length == 0) {
 
 global.verbose = argv.verbose;
 global.dryRun = argv['dry-run'];
+global.downUsingRunOrder = argv['down-using-run-order'];
 if(global.dryRun) {
   log.info('dry run');
 }
@@ -165,11 +170,20 @@ function run() {
     case 'down':
       loadConfig();
       if(argv._.length > 0) {
-        argv.destination = argv._.shift().toString();
+        if (global.downUsingRunOrder) {
+          log.info('Ignoring migration name since --down-using-run-order is set.');
+        } else {
+          argv.destination = argv._.shift().toString();
+        }
       }
       if(action == 'up') {
         executeUp();
       } else {
+        if(global.downUsingRunOrder) {
+          log.info('using run order for down migrations');
+        } else {
+          log.info('using creation order for down migrations');
+        }
         executeDown();
       }
       break;

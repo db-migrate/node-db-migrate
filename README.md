@@ -18,13 +18,15 @@ Database migration framework for node.js
 Usage: db-migrate [up|down|create] migrationName [options]
 
 Options:
-  --env, -e             The environment to run the migrations under.    [default: "dev"]
-  --migrations-dir, -m  The directory containing your migration files.  [default: "./migrations"]
-  --count, -c           Max number of migrations to run.
-  --dry-run             Prints the SQL but doesn't run it.              [boolean]
-  --verbose, -v         Verbose mode.                                   [default: false]
-  --config              Location of the database.json file.             [default: "./database.json"]
-  --force-exit          Call system.exit() after migration run          [default: false]
+  --env, -e               The environment to run the migrations under.    [default: "dev"]
+  --migrations-dir, -m    The directory containing your migration files.  [default: "./migrations"]
+  --count, -c             Max number of migrations to run.
+  --dry-run               Prints the SQL but doesn't run it.              [boolean]
+  --verbose, -v           Verbose mode.                                   [default: false]
+  --config                Location of the database.json file.             [default: "./database.json"]
+  --force-exit            Call system.exit() after migration run          [default: false]
+  --down-using-run-order  Run down migrations in reverse run order,       [default: false]
+                          rather than reverse creation order.
 ```
 
 ## Creating Migrations
