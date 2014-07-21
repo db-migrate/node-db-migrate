@@ -64,7 +64,7 @@ if (argv.version) {
   process.exit(0);
 }
 
-if (argv.help || argv._.length == 0) {
+if (argv.help || argv._.length === 0) {
   optimist.showHelp();
   process.exit(1);
 }
