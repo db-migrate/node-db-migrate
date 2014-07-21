@@ -36,7 +36,7 @@ var argv = optimist
     .alias('c', 'count')
     .string('c')
 
-    .describe('dry-run', "Prints the SQL but doesn't run it.")
+    .describe('dry-run', 'Prints the SQL but doesn\'t run it.')
     .boolean('dry-run')
 
     .describe('force-exit', 'Forcibly exit the migration process on completion.')
