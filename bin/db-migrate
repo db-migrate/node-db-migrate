@@ -19,7 +19,7 @@ process.on('uncaughtException', function(err) {
 var argv = optimist
     .default({
       verbose: false,
-      "force-exit": false,
+      'force-exit': false,
       config: process.cwd() + '/database.json',
       'migrations-dir': process.cwd() + '/migrations' })
     .usage('Usage: db-migrate [up|down|create] migrationName [options]')
