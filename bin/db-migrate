@@ -185,6 +185,6 @@ function run() {
 run();
 
 if (argv['force-exit']) {
-  log.verbose("Forcing exit");
+  log.verbose('Forcing exit');
   process.exit(0);
 }
