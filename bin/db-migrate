@@ -98,7 +98,7 @@ function loadConfig() {
 }
 
 function executeCreate() {
-  if(argv._.length == 0) {
+  if(argv._.length === 0) {
     log.error("'migrationName' is required.");
     optimist.showHelp();
     process.exit(1);
