@@ -115,7 +115,7 @@ function executeCreate() {
       assert.ifError(err);
       log.info(util.format('Created migration at %s', migration.path));
     });
-  })
+  });
 }
 
 function executeUp() {
