@@ -93,7 +93,7 @@ function loadConfig() {
   }
   if(verbose) {
     var current = config.getCurrent();
-    log.info("Using", current.env, "settings:", current.settings);
+    log.info('Using', current.env, 'settings:', current.settings);
   }
 }
 
