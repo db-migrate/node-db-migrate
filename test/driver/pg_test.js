@@ -19,7 +19,7 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) 
           dt: dataType.DATE,
           dti: dataType.DATE_TIME,
           bl: dataType.BOOLEAN
-        }, this.callback.bind(this, null));
+        }, this.callback.bind(this));
       },
 
       'has table metadata': {
@@ -351,6 +351,58 @@ driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) 
 
       teardown: function() {
         db.dropTable('event', this.callback);
+      }
+    }
+  }).addBatch({
+    'addFK': {
+      topic: function() {
+        db.createTable('Event', {
+          id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
+          event_id: { type: dataType.INTEGER, notNull: true },
+          title: { type: dataType.STRING }
+        }, function() {
+          db.createTable('EventType', {
+            id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
+            title: { type: dataType.STRING }
+          }, function () {
+            // lowercase table names because they are quoted in the function
+            // and pg uses lowercase internally
+            db.addForeignKey('event', 'eventtype', 'fk_Event_EventType', {
+              'event_id': 'id'
+            }, {
+              onDelete: 'CASCADE'
+            }, this.callback);
+          }.bind(this));
+        }.bind(this));
+      },
+      'sets usage and constraints': {
+        topic: function() {
+          dbmeta('pg', { connection:db.connection}, function (err, meta) {
+            if (err) {
+              return this.callback(err);
+            }
+
+            meta.getColumns('event', this.callback);
+          }.bind(this));
+        },
+
+        'with correct reference': function(err, columns) {
+          assert.isNotNull(columns);
+          assert.equal(columns.length, 3);
+          var found = 0;
+          for(var i = 0; i < columns.length; i++) {
+            if(columns[i].getName() === 'event_id') {
+              assert.equal(columns[i].isForeignKey(), true);
+              found++;
+            }
+          }
+          assert.equal(found, 1);
+        }
+      },
+
+      teardown: function() {
+        db.dropTable('event');
+        db.dropTable('eventtype', this.callback);
       }
     }
   }).addBatch({
