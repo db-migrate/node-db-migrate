@@ -19,7 +19,7 @@ process.on('uncaughtException', function(err) {
 var argv = optimist
     .default({
       verbose: false,
-      "force-exit": false,
+      'force-exit': false,
       config: process.cwd() + '/database.json',
       'migrations-dir': process.cwd() + '/migrations' })
     .usage('Usage: db-migrate [up|down|create] migrationName [options]')
@@ -36,7 +36,7 @@ var argv = optimist
     .alias('c', 'count')
     .string('c')
 
-    .describe('dry-run', "Prints the SQL but doesn't run it.")
+    .describe('dry-run', 'Prints the SQL but doesn\'t run it.')
     .boolean('dry-run')
 
     .describe('force-exit', 'Forcibly exit the migration process on completion.')
@@ -64,7 +64,7 @@ if (argv.version) {
   process.exit(0);
 }
 
-if (argv.help || argv._.length == 0) {
+if (argv.help || argv._.length === 0) {
   optimist.showHelp();
   process.exit(1);
 }
@@ -86,20 +86,20 @@ function createMigrationDir(dir, callback) {
 }
 
 function loadConfig() {
-  if (process.env["DATABASE_URL"]) {
-    config.loadUrl(process.env["DATABASE_URL"], argv.env);
+  if (process.env.DATABASE_URL) {
+    config.loadUrl(process.env.DATABASE_URL, argv.env);
   } else {
     config.load(argv.config, argv.env);
   }
   if(verbose) {
     var current = config.getCurrent();
-    log.info("Using", current.env, "settings:", current.settings);
+    log.info('Using', current.env, 'settings:', current.settings);
   }
 }
 
 function executeCreate() {
-  if(argv._.length == 0) {
-    log.error("'migrationName' is required.");
+  if(argv._.length === 0) {
+    log.error('\'migrationName\' is required.');
     optimist.showHelp();
     process.exit(1);
   }
@@ -115,7 +115,7 @@ function executeCreate() {
       assert.ifError(err);
       log.info(util.format('Created migration at %s', migration.path));
     });
-  })
+  });
 }
 
 function executeUp() {
@@ -191,6 +191,6 @@ function run() {
 run();
 
 if (argv['force-exit']) {
-  log.verbose("Forcing exit");
+  log.verbose('Forcing exit');
   process.exit(0);
 }
