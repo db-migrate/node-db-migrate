@@ -415,6 +415,9 @@ mysql -u root -e "CREATE DATABASE db_migrate_test;"
 createdb db_migrate_test
 ```
 
+You will also need to copy `test/db.config.example.json` to `test/db.config.json`
+and adjust appropriate to setup configuration for your database instances.
+
 ## License
 
 (The MIT License)

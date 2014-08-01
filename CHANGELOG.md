@@ -213,3 +213,11 @@ Fix:
   - docs: the exports.down fn gets (db, callback) as params #144 (via @alxndr)
   - Fix for multiple single quotes in a string #143
 
+## 0.7.0 (2014-08-01)
+
+Improvement:
+  - Externalize db configuration for tests #180 (via @dlaxar)
+  - Tightening up some js syntax #179 (via @paulomcnally)
+  - Change down migrations to execute in order they were run #178 (via @ajkerr)
+  - addForeignKey and removeForeignKey added to mysql #174 (via @JohanObrink)
+  - Add ability to use .env file for config if present #170 (via @bvalosek)
