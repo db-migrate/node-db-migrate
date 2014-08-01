@@ -4,7 +4,9 @@ var dbmeta = require('db-meta');
 var dataType = require('../../lib/data_type');
 var driver = require('../../lib/driver');
 
-driver.connect({ driver: 'pg', database: 'db_migrate_test' }, function(err, db) {
+var config = require('../db.config.json').pg;
+
+driver.connect(config, function(err, db) {
   vows.describe('pg').addBatch({
     'createTable': {
       topic: function() {

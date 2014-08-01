@@ -3,3 +3,4 @@ node_modules/
 *.db
 .DS_Store
 .idea
+test/db.config.json
