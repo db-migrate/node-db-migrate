@@ -4,10 +4,11 @@ var dbmeta = require('db-meta');
 var dataType = require('../../lib/data_type');
 var driver = require('../../lib/driver');
 
-var dbName = 'db_migrate_test';
+var config = require('../db.config.json').mysql;
 
-driver.connect({ driver: 'mysql', database: dbName, user:'root' }, function(err, db) {
-  assert.isNull(err);
+var dbName = config.database;
+driver.connect(config, function(err, db) {
+    assert.isNull(err);
   vows.describe('mysql').addBatch({
     'createTable': {
       topic: function() {
@@ -247,7 +248,7 @@ driver.connect({ driver: 'mysql', database: dbName, user:'root' }, function(err,
   }).addBatch({
     'renameColumn': {
       topic: function() {
-        driver.connect({ driver: 'mysql', database: dbName }, function(err) {
+        driver.connect(config, function(err) {
           db.createTable('event', {
             id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
             title: dataType.STRING

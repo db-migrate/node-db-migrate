@@ -5,17 +5,19 @@ this project:
 
 1. Fork the repo.
 
-2. Run the tests. Pull requests without tests are much less likely to be
+2. Copy the test/db.config.example.json to test/db.config.json
+
+3. Run the tests. Pull requests without tests are much less likely to be
 merged, and it's great to know you're starting with a clean slate: `npm test`.
 Be sure to check the README for setting up your test databases first.
 
-3. Add a test for your change. Refactoring and documentation changes
+4. Add a test for your change. Refactoring and documentation changes
 require no new tests. If you are adding functionality or fixing a bug,
 please include a test.
 
-4. Make the test pass.
+5. Make the test pass.
 
-5. Push to your fork and submit a pull request.
+6. Push to your fork and submit a pull request.
 
 At this point you're waiting on me. In a perfect world I'd commit to
 responding to your request in some short period of time. Unfortunately,
