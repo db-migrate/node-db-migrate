@@ -17,6 +17,9 @@ Database migration framework for node.js
 ```
 Usage: db-migrate [up|down|create] migrationName [options]
 
+Down migrations are run in reverse run order, so migrationName is ignored for down migrations.
+Use the --count option to control how many down migrations are run (default is 1).
+
 Options:
   --env, -e             The environment to run the migrations under.    [default: "dev"]
   --migrations-dir, -m  The directory containing your migration files.  [default: "./migrations"]
