@@ -221,3 +221,8 @@ Improvement:
   - Change down migrations to execute in order they were run #178 (via @ajkerr)
   - addForeignKey and removeForeignKey added to mysql #174 (via @JohanObrink)
   - Add ability to use .env file for config if present #170 (via @bvalosek)
+
+## 0.7.1 (2014-08-05)
+
+Improvement:
+  - allow addColumn to create primary keys #183 (via @lourenzo)
