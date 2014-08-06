@@ -127,7 +127,11 @@ function executeUp() {
   }
   index.connect(config.getCurrent().settings, function(err, migrator) {
     assert.ifError(err);
-    migrator.migrationsDir = path.resolve(argv['migrations-dir']);
+    var migrationsDirs = argv['migrations-dir'].split(',');
+    migrator.migrationsDirs = [];
+    for (var i=0; i<migrationsDirs.length; i++) {
+      migrator.migrationsDirs.push(path.resolve(migrationsDirs[i]));
+    }
     migrator.driver.createMigrationsTable(function(err) {
       assert.ifError(err);
       log.verbose('migration table created');
@@ -143,7 +147,11 @@ function executeDown() {
   }
   index.connect(config.getCurrent().settings, function(err, migrator) {
     assert.ifError(err);
-    migrator.migrationsDir = path.resolve(argv['migrations-dir']);
+    var migrationsDirs = argv['migrations-dir'].split(',');
+    migrator.migrationsDirs = [];
+    for (var i=0; i<migrationsDirs.length; i++) {
+      migrator.migrationsDirs = path.resolve(migrationsDirs[i]);  
+    }
     migrator.driver.createMigrationsTable(function(err) {
       assert.ifError(err);
       migrator.down(argv, onComplete.bind(this, migrator));
