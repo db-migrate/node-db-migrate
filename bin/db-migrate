@@ -10,6 +10,9 @@ var config = require('../lib/config.js');
 var index = require('../index');
 var log = require('../lib/log');
 var pkginfo = require('pkginfo')(module, 'version');
+var dotenv = require('dotenv');
+
+dotenv.load();
 
 process.on('uncaughtException', function(err) {
   log.error(err.stack);
@@ -19,8 +22,8 @@ process.on('uncaughtException', function(err) {
 var argv = optimist
     .default({
       verbose: false,
-      "force-exit": false,
-      "sql-file": false,
+      'force-exit': false,
+	  'sql-file': false,
       config: process.cwd() + '/database.json',
       'migrations-dir': process.cwd() + '/migrations' })
     .usage('Usage: db-migrate [up|down|create] migrationName [options]')
@@ -37,7 +40,7 @@ var argv = optimist
     .alias('c', 'count')
     .string('c')
 
-    .describe('dry-run', "Prints the SQL but doesn't run it.")
+    .describe('dry-run', 'Prints the SQL but doesn\'t run it.')
     .boolean('dry-run')
 
     .describe('force-exit', 'Forcibly exit the migration process on completion.')
@@ -68,7 +71,7 @@ if (argv.version) {
   process.exit(0);
 }
 
-if (argv.help || argv._.length == 0) {
+if (argv.help || argv._.length === 0) {
   optimist.showHelp();
   process.exit(1);
 }
@@ -90,20 +93,20 @@ function createMigrationDir(dir, callback) {
 }
 
 function loadConfig() {
-  if (process.env["DATABASE_URL"]) {
-    config.loadUrl(process.env["DATABASE_URL"], argv.env);
+  if (process.env.DATABASE_URL) {
+    config.loadUrl(process.env.DATABASE_URL, argv.env);
   } else {
     config.load(argv.config, argv.env);
   }
   if(verbose) {
     var current = config.getCurrent();
-    log.info("Using", current.env, "settings:", current.settings);
+    log.info('Using', current.env, 'settings:', current.settings);
   }
 }
 
 function executeCreate() {
-  if(argv._.length == 0) {
-    log.error("'migrationName' is required.");
+  if(argv._.length === 0) {
+    log.error('\'migrationName\' is required.');
     optimist.showHelp();
     process.exit(1);
   }
@@ -170,7 +173,8 @@ function executeUp() {
 }
 
 function executeDown() {
-  if(!argv.destination && !argv.count) {
+  if(!argv.count) {
+    log.info('Defaulting to running 1 down migration.');
     argv.count = 1;
   }
   index.connect(config.getCurrent().settings, function(err, migrator) {
@@ -202,7 +206,12 @@ function run() {
     case 'down':
       loadConfig();
       if(argv._.length > 0) {
-        argv.destination = argv._.shift().toString();
+        if (action == 'down') {
+          log.info('Ignoring migration name for down migrations.  Use --count to control how many down migrations are run.');
+          argv.destination = null;
+        } else {
+          argv.destination = argv._.shift().toString();
+        }
       }
       if(action == 'up') {
         executeUp();
@@ -222,6 +231,6 @@ function run() {
 run();
 
 if (argv['force-exit']) {
-  log.verbose("Forcing exit");
+  log.verbose('Forcing exit');
   process.exit(0);
 }
