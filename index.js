@@ -3,6 +3,7 @@ var Migrator = require('./lib/migrator');
 
 exports.dataType = require('./lib/data_type');
 exports.config = require('./lib/config');
+exports.Promise = require('bluebird');
 
 exports.connect = function(config, callback) {
   driver.connect(config, function(err, db) {
