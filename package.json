@@ -38,7 +38,8 @@
     "db-meta": "~0.4.1",
     "mysql": "~2.0.0",
     "pg": "~1.0.0",
-    "sqlite3": "~2.1.0"
+    "sqlite3": "~2.1.0",
+    "rimraf": "~2.2.6"
   },
   "scripts": {
     "test": "node node_modules/.bin/vows"
