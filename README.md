@@ -280,7 +280,8 @@ db-migrate supports the concept of environments. For example, you might have a d
     "user": "test",
     "password": "test",
     "host": "localhost",
-    "database": "mydb"
+    "database": "mydb",
+    "schema": "my_schema"
   },
 
   "other": "postgres://uname:pw@server.com/dbname"
