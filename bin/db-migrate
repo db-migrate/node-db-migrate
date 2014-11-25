@@ -96,7 +96,12 @@ function loadConfig() {
   }
   if(verbose) {
     var current = config.getCurrent();
-    log.info('Using', current.env, 'settings:', current.settings);
+    var s = JSON.parse(JSON.stringify(current.settings));
+
+    if (s["password"])
+      s["password"] = "******";
+    
+    log.info('Using', current.env, 'settings:', s);
   }
 }
 
