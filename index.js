@@ -11,10 +11,9 @@ exports.connect = function(config, callback) {
   });
 };
 
-exports.createMigration = function(title, migrationsDir, callback) {
-  var migration = new Migration(title + '.js', migrationsDir, new Date());
+exports.createMigration = function(migration, callback) {
   migration.write(function(err) {
-    if (err) { callback(err); return; }
-    callback(null, migration);
+	if (err) { callback(err); return; }
+	callback(null, migration);
   });
 };
