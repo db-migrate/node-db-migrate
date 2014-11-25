@@ -226,3 +226,15 @@ Improvement:
 
 Improvement:
   - allow addColumn to create primary keys #183 (via @lourenzo)
+
+## 0.8.0 (2014-11-25)
+
+Improvement:
+  - Allow changing schema for Postgres #153 (via @zoips)
+  - Enable autoincrement even when emitting primary key #157 (via @kkurahar)
+  - New option to auto-generate SQL files #160 (via @tuliomonteazul)
+  - Allow dry run to work when there is no migration table #166 (via @jjshoe)
+  - Add support for Postgres driver in DATABASE_URL #188 (via @saxicek)
+  - Use JSON.stringify on non-string objects #185 (via @G3z)
+  - Add back quotes around foreign key name #189 (via @sitnin)
+  - Mask passwords in verbose logging #195 (via @Crotery)
