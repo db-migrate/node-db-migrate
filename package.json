@@ -30,16 +30,16 @@
     "mkdirp": "~0.3.4",
     "moment": "~1.7.2",
     "pkginfo": "~0.3.0",
-    "parse-database-url": "~0.2.0",
+    "parse-database-url": "~0.2.2",
     "dotenv": "~0.2.8"
   },
   "devDependencies": {
-    "vows": "~0.7.0",
+    "vows": "~0.8.1",
     "db-meta": "~0.4.1",
-    "mysql": "~2.0.0",
-    "pg": "~1.0.0",
-    "sqlite3": "~2.1.0",
-    "rimraf": "~2.2.6"
+    "mysql": "~2.5.4",
+    "pg": "~4.2.0",
+    "sqlite3": "~3.0.4",
+    "rimraf": "~2.2.8"
   },
   "scripts": {
     "test": "node node_modules/.bin/vows"
