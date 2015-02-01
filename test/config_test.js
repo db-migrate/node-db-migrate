@@ -106,5 +106,22 @@ vows.describe('config').addBatch({
       assert.equal(current.settings.database, 'dbname');
     }
   }
-}).export(module);
+}).addBatch({
+  'loading a config with null values': {
+    topic: function() {
+        var configPath = path.join(__dirname, 'database_with_null_values.json');
+        config.load = _configLoad;
+        config.loadUrl = _configLoadUrl;
+        try {
+            config.load(configPath, 'dev');
+        }catch(e) {
+            return e;
+        }
+        return null;
+    },
 
+    'should something': function(err) {
+        assert.isNull(err);
+    }
+  }
+}).export(module);
