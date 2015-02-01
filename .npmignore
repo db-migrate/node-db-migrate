@@ -2,3 +2,4 @@ test
 migrations
 node_modules
 *.db
+database.json
