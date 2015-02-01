@@ -41,7 +41,7 @@
     "pg": "~4.2.0",
     "rimraf": "~2.2.8",
     "sqlite3": "~3.0.4",
-    "vows": "~0.8.0"
+    "vows": "0.8.0"
   },
   "scripts": {
     "test": "node node_modules/.bin/vows"
