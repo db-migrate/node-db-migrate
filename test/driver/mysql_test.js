@@ -368,7 +368,7 @@ driver.connect(config, function(err, db) {
           assert.equal(indexes.length, 2);
           var index = findByName(indexes, 'event_title');
           assert.equal(index.getName(), 'event_title');
-          assert.equal(index.getTableName(), 'Event');
+          assert.equal(index.getTableName(), 'event');
           assert.equal(index.getColumnName(), 'title');
         }
       }
