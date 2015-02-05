@@ -368,7 +368,7 @@ driver.connect(config, function(err, db) {
           assert.equal(indexes.length, 2);
           var index = findByName(indexes, 'event_title');
           assert.equal(index.getName(), 'event_title');
-          assert.equal(index.getTableName(), 'Event');
+          assert.equal(index.getTableName(), 'event');
           assert.equal(index.getColumnName(), 'title');
         }
       }
@@ -381,11 +381,11 @@ driver.connect(config, function(err, db) {
           event_id: { type: dataType.INTEGER, notNull: true },
           title: { type: dataType.STRING }
         }, function() {
-          db.createTable('eventType', {
+          db.createTable('event_type', {
             id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
             title: { type: dataType.STRING }
           }, function () {
-            db.addForeignKey('event', 'eventType', 'fk_event_eventType', {
+            db.addForeignKey('event', 'event_type', 'fk_event_event_type', {
               'event_id': 'id'
             }, {
               onDelete: 'CASCADE'
@@ -396,7 +396,7 @@ driver.connect(config, function(err, db) {
 
       teardown: function() {
         db.dropTable('event');
-        db.dropTable('eventType', this.callback);
+        db.dropTable('event_type', this.callback);
       },
 
       'sets usage and constraints': {
@@ -423,7 +423,7 @@ driver.connect(config, function(err, db) {
           assert.isNotNull(rows);
           assert.equal(rows.length, 1);
           var row = rows[0];
-          assert.equal(row.REFERENCED_TABLE_NAME, 'eventType');
+          assert.equal(row.REFERENCED_TABLE_NAME, 'event_type');
           assert.equal(row.REFERENCED_COLUMN_NAME, 'id');
         },
 
@@ -444,16 +444,16 @@ driver.connect(config, function(err, db) {
             event_id: { type: dataType.INTEGER, notNull: true },
             title: { type: dataType.STRING }
           }, function() {
-            db.createTable('eventType', {
+            db.createTable('event_type', {
               id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
               title: { type: dataType.STRING }
             }, function () {
-              db.addForeignKey('event', 'eventType', 'fk_event_eventType', {
+              db.addForeignKey('event', 'event_type', 'fk_event_event_type', {
                 'event_id': 'id'
               }, {
                 onDelete: 'CASCADE'
               }, function () {
-                db.removeForeignKey('event', 'fk_event_eventType', this.callback.bind(this, null));
+                db.removeForeignKey('event', 'fk_event_event_type', this.callback.bind(this, null));
               }.bind(this));
             }.bind(this));
           }.bind(this));
@@ -461,7 +461,7 @@ driver.connect(config, function(err, db) {
 
         teardown: function() {
           db.dropTable('event');
-          db.dropTable('eventType', this.callback);
+          db.dropTable('event_type', this.callback);
         },
       },
 
