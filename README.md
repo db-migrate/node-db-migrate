@@ -33,6 +33,7 @@ Options:
   --config              Location of the database.json file.             [default: "./database.json"]
   --force-exit          Call system.exit() after migration run          [default: false]
   --sql-file            Create sql files for up and down.               [default: false]
+  --coffee-file         Create a coffeescript migration file            [default: false]
 ```
 
 ## Creating Migrations

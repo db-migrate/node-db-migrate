@@ -64,6 +64,9 @@ var argv = optimist
     .describe('sql-file', "Automatically create two sql files for up and down statements in /sqls and generate the javascript code that loads them.")
     .boolean('sql-file')
 
+    .describe('coffee-file', "Create a coffeescript migration file")
+    .boolean('coffee-file')
+
     .argv;
 
 if (argv.version) {
@@ -123,8 +126,13 @@ function executeCreate() {
     }
 
     argv.title = argv._.shift();
-    var templateType = shouldCreateSqlFiles() ? Migration.TemplateType.SQL_FILE_LOADER : Migration.TemplateType.DEFAULT_JS;
-    var migration = new Migration(argv.title + '.js', argv['migrations-dir'], new Date(), templateType);
+    var templateType = Migration.TemplateType.DEFAULT_JS;
+    if (shouldCreateSqlFiles()) {
+      templateType = Migration.TemplateType.SQL_FILE_LOADER;
+    } else if (shouldCreateCoffeeFile()) {
+      templateType = Migration.TemplateType.DEFAULT_COFFEE;
+    }
+    var migration = new Migration(argv.title + (shouldCreateCoffeeFile() ? '.coffee' : '.js'), argv['migrations-dir'], new Date(), templateType);
     index.createMigration(migration, function(err, migration) {
       assert.ifError(err);
       log.info(util.format('Created migration at %s', migration.path));
@@ -138,6 +146,10 @@ function executeCreate() {
 
 function shouldCreateSqlFiles() {
   return argv['sql-file'] || config['sql-file'];
+}
+
+function shouldCreateCoffeeFile() {
+  return argv['coffee-file'] || config['coffee-file'];
 }
 
 function createSqlFiles() {
