@@ -110,6 +110,16 @@ vows.describe('migration').addBatch({
           assert.equal(actual, migration.defaultSqlTemplate());
         }
       },
+      'as default coffee' : {
+        topic: function() {
+            var migration = new Migration(fileName, dirName, date, Migration.TemplateType.DEFAULT_COFFEE);
+            return migration;
+          },
+        'should return default coffee template': function(migration) {
+          var actual = migration.getTemplate();
+          assert.equal(actual, migration.defaultCoffeeTemplate());
+        }
+      },
       'as default javascript' : {
         topic: function() {
             var migration = new Migration(fileName, dirName, date, Migration.TemplateType.DEFAULT_JS);
