@@ -92,7 +92,7 @@ driver.connect(config, function(err, db) {
 									return this.callback(err);
 								}
 					
-								db.addIndex('event', 'event_title', 'title', this.callback);
+								db.addIndex('event', 'event_title', 'title', false, this.callback);
 							}.bind(this));    
             },
       
@@ -124,7 +124,7 @@ driver.connect(config, function(err, db) {
               }
             }
           } 
-        })*/.addBatch({
+        }).addBatch({
           'insert': {
             topic: function() {
               db.createCollection('event', function(err, collection) {
@@ -141,93 +141,79 @@ driver.connect(config, function(err, db) {
 						},
             
             'with additional row' : function() {
-              db.find({title: 'title'}, function(err, data) {
+              db.find('event', {title: 'title'}, function(err, data) {
+								if(err) {
+									console.log('err = '+err);
+									return this.callback(err);
+								}
+								
+								console.log('data = ');
+								console.log(data);
+								
                 assert.equal(data.length, 1);
               });
             }
-          } /*
-        }).addBatch({
-          'insertWithSingleQuotes': {
-            topic: function() {
-              db.createCollection('event', {
-                id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
-                title: { type: dataType.STRING }
-              }, function() {
-                db.insert('event', ['id','title'], [2,"Bill's Mother's House"], this.callback.bind(this, null));
-              }.bind(this));
-            },
-      
-            
-            teardown: function() {
-                    db.dropCollection('event', this.callback);
-                  },
-            
-      
-            'with additional row' : function() {
-              db.runCollection("SELECT * from event", function(err, data) {
-                assert.equal(data.length, 1);
-              });
-            }
-          }
-        }).addBatch({
+          } 
+        })*/.addBatch({
           'removeIndex': {
             topic: function() {
-              db.createCollection('Event', {
-                id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
-                title: { type: dataType.STRING }
-              }, function() {
+              db.createCollection('event', function(err, collection) {
+								if(err) {
+									console.log('err = '+err);
+									return this.callback(err);
+								}
+								
+								
+								db.addIndex('event', 'event_title', 'title', false, function(err, data) {
+																	
+									if(err) {
+										console.log('err = '+err);
+										return this.callback(err);
+									}
+																	
+									db.removeIndex('event', 'event_title', this.callback);
+								}.bind(this));
+								
+								
+								//db.addIndex('event', 'event_title', 'title', false, this.callback);
+								
+								
+                /*
                 db.addIndex('event', 'event_title', 'title', function(err) {
-                  db.removeIndex('event', 'event_title', this.callback.bind(this, null));
-                }.bind(this));
+                                  db.removeIndex('event', 'event_title', this.callback.bind(this, null));
+                                }.bind(this));*/
+                
               }.bind(this));
             },
       
             
             teardown: function() {
-                    db.dropCollection('event', this.callback);
-                  },
+							db.dropCollection('event', this.callback);
+						},
             
       
             'has resulting index metadata': {
               topic: function() {
-                dbmeta('mongodb', { connection:db.connection}, function (err, meta) {
-                  if (err) {
-                    return this.callback(err);
-                  }
-                  meta.getIndexes('Event', this.callback);
-                }.bind(this));
+								console.log('in getIndexes');
+                db.getIndexes('event', this.callback);
               },
       
               'without index': function(err, indexes) {
+								
+								if(err) {
+									console.log(err);
+									return this.callback(err);
+								}
+								
+								console.log('indexes = '+indexes);
+								
+								assert.isDefined(indexes);
                 assert.isNotNull(indexes);
-                assert.equal(indexes.length, 1); // first index is primary key
+								assert.notInclude(indexes, 'event_title');
+                //assert.equal(indexes.length, 1); // first index is primary key
               }
             }
-          }
-        }).addBatch({
-          'removeIndexInvalidArgs': {
-            topic: function() {
-              db.createCollection('Event', {
-                id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
-                title: { type: dataType.STRING }
-              }, function() {
-                db.addIndex('Event', 'event_title', 'title', function(err) {
-                  db.removeIndex('event_title', this.callback.bind(this, null));
-                }.bind(this));
-              }.bind(this));
-            },
-      
-            'removeIndex has errored': function (err) {
-              assert.isNotNull(err);
-              assert.equal(err.message, 'Illegal arguments, must provide "tableName" and "indexName"');
-            },
-      
-            
-            teardown: function() {
-                    db.dropCollection('Event', this.callback);
-                  }
-            
-          }
+          } /*
         }).addBatch({
           'createMigrationsTable': {
             topic: function() {
