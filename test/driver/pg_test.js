@@ -609,6 +609,88 @@ driver.connect(config, function(err, db) {
         db.dropTable('migrations', this.callback);
       }
     }
+  }).addBatch({
+    'createTable': {
+      topic: function() {
+        db.createTable('parent', {
+          columns: { id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true } }
+        }, this.callback.bind(this, null));
+
+        db.createTable('child', {
+          columns: { unique_field: { type: dataType.INTEGER } },
+          inherits: 'parent'
+        }, this.callback.bind(this, null));
+      },
+
+      'has table metadata': {
+        topic: function() {
+          dbmeta('pg', { connection:db.connection}, function (err, meta) {
+            if (err) {
+              return this.callback(err);
+            }
+            meta.getTables(this.callback);
+          }.bind(this));
+        },
+
+        'containing the parent and child tables': function(err, tables) {
+          assert.equal(tables.length, 2);
+          assert.equal(tables[0].getName(), 'parent');
+          assert.equal(tables[1].getName(), 'child');
+        }
+      },
+
+      'has column metadata for parent table': {
+        topic: function() {
+          dbmeta('pg', { connection:db.connection}, function (err, meta) {
+            if (err) {
+              return this.callback(err);
+            }
+            meta.getColumns('parent', this.callback);
+          }.bind(this));
+        },
+
+        'with 1 column': function(err, columns) {
+          assert.isNotNull(columns);
+          assert.equal(columns.length, 1);
+        },
+
+        'that has integer id column that is primary key, non-nullable, and auto increments': function(err, columns) {
+          var column = findByName(columns, 'id');
+          assert.equal(column.getDataType(), 'INTEGER');
+          assert.equal(column.isPrimaryKey(), true);
+          assert.equal(column.isNullable(), false);
+          assert.equal(column.isAutoIncrementing(), true);
+        }
+      },
+
+      'has column metadata for child table': {
+        topic: function() {
+          dbmeta('pg', { connection:db.connection}, function (err, meta) {
+            if (err) {
+              return this.callback(err);
+            }
+            meta.getColumns('child', this.callback);
+          }.bind(this));
+        },
+
+        'with 2 columns': function(err, columns) {
+          assert.isNotNull(columns);
+          assert.equal(columns.length, 2);
+        },
+
+        'that has integer id column that is primary key, non-nullable, and auto increments': function(err, columns) {
+          var column = findByName(columns, 'id');
+          assert.equal(column.getDataType(), 'INTEGER');
+          assert.equal(column.isPrimaryKey(), false); // Primary key is not inherited
+          assert.equal(column.isNullable(), false);
+        }
+      },
+
+      teardown: function() {
+        db.dropTable('child', this.callback);
+        db.dropTable('parent', this.callback);
+      }
+    }
   }).export(module);
 });
 
@@ -620,4 +702,3 @@ function findByName(columns, name) {
   }
   return null;
 }
-
