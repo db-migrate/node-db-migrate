@@ -448,6 +448,67 @@ __Arguments__
 * unique - whether the index is unique (optional, default false)
 * callback(err) - callback that will be invoked after adding the index
 
+### addForeignKey
+
+Adds a foreign Key
+
+__Arguments__
+
+* tableName - table on which the foreign key gets applied
+* referencedTableName - table where the referenced key is located
+* keyName - name of the foreign key
+* fieldMapping - mapping of the foreign key to referenced key
+* rules - ondelete, onupdate constraints
+* callback(err) - callback that will be invoked after adding the foreign key
+
+__Example__
+
+```javascript
+exports.up = function (db, callback)
+{
+  db.addForeignKey('module_user', 'modules', 'module_user_module_id_foreign',
+  {
+    'module_id': 'id'
+  },
+  {
+    onDelete: 'CASCADE',
+    onUpdate: 'RESTRICT'
+  }, callback);
+};
+```
+
+### removeForeignKey
+
+__Arguments__
+
+* tableName - table in which the foreign key should be deleted
+* keyName - the name of the foreign key
+* options - object of options, see below
+* callback - callback that will be invoked once the foreign key was deleted
+
+__Options__
+
+* dropIndex (default: false) - deletes the index with the same name as the foreign key
+
+__Examples__
+
+```javascript
+//without options object
+exports.down = function (db, callback)
+{
+  db.removeForeignKey('module_user', 'module_user_module_id_foreign', callback);
+};
+
+//with options object
+exports.down = function (db, callback)
+{
+  db.removeForeignKey('module_user', 'module_user_module_id_foreign',
+  {
+    dropIndex: true,
+  }, callback);
+};
+```
+
 ### insert(tableName, columnNameArray, valueArray, callback)
 
 Insert an item into a given column
