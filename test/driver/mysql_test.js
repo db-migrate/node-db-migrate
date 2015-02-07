@@ -374,6 +374,158 @@ driver.connect(config, function(err, db) {
       }
     }
   }).addBatch({
+    'columnForeignKeySpec': {
+      topic: function() {
+        db.createTable('event_type', {
+
+            id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
+            title: { type: dataType.STRING }
+          }, function() {
+
+            db.createTable('event', {
+            id: {
+              type: dataType.INTEGER,
+              primaryKey: true,
+              autoIncrement: true
+            },
+            event_id: {
+              type: dataType.INTEGER,
+              notNull: true,
+              foreignKey: {
+              name: 'fk_event_event_type',
+              table: 'event_type',
+              mapping: 'id',
+              rules: {
+                    onDelete: 'CASCADE'
+                },
+            } },
+            title: {
+              type: dataType.STRING
+            }
+          }, this.callback.bind(this, null));
+        }.bind(this));
+      },
+
+      teardown: function() {
+        db.dropTable('event');
+        db.dropTable('event_type', this.callback);
+      },
+
+      'sets usage and constraints': {
+        topic: function() {
+          var metaQuery = ['SELECT',
+            '  usg.REFERENCED_TABLE_NAME,',
+            '  usg.REFERENCED_COLUMN_NAME,',
+            '    cstr.UPDATE_RULE,',
+            '  cstr.DELETE_RULE',
+            'FROM',
+            '  `INFORMATION_SCHEMA`.`KEY_COLUMN_USAGE` AS usg',
+            'INNER JOIN',
+            '  `INFORMATION_SCHEMA`.`REFERENTIAL_CONSTRAINTS` AS cstr',
+            '    ON  cstr.CONSTRAINT_SCHEMA = usg.TABLE_SCHEMA',
+            '    AND cstr.CONSTRAINT_NAME = usg.CONSTRAINT_NAME',
+            'WHERE',
+            '  usg.TABLE_SCHEMA = ?',
+            '  AND usg.TABLE_NAME = ?',
+            '  AND usg.COLUMN_NAME = ?'].join('\n');
+          db.runSql(metaQuery, dbName, 'event', 'event_id', this.callback);
+        },
+
+        'with correct references': function(err, rows) {
+          assert.isNotNull(rows);
+          assert.equal(rows.length, 1);
+          var row = rows[0];
+          assert.equal(row.REFERENCED_TABLE_NAME, 'event_type');
+          assert.equal(row.REFERENCED_COLUMN_NAME, 'id');
+        },
+
+        'and correct rules': function(err, rows) {
+          assert.isNotNull(rows);
+          assert.equal(rows.length, 1);
+          var row = rows[0];
+          assert.equal(row.UPDATE_RULE, 'NO ACTION');
+          assert.equal(row.DELETE_RULE, 'CASCADE');
+        }
+      }
+    }
+  }).addBatch({
+    'explicitColumnForeignKeySpec': {
+      topic: function() {
+        db.createTable('event_type', {
+
+            id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
+            title: { type: dataType.STRING }
+          }, function() {
+
+            db.createTable('event', {
+            id: {
+              type: dataType.INTEGER,
+              primaryKey: true,
+              autoIncrement: true
+            },
+            event_id: {
+              type: dataType.INTEGER,
+              notNull: true,
+              foreignKey: {
+              name: 'fk_event_event_type',
+              table: 'event_type',
+              mapping: {
+                event_id: 'id'
+              },
+              rules: {
+                    onDelete: 'CASCADE'
+                },
+            } },
+            title: {
+              type: dataType.STRING
+            }
+          }, this.callback.bind(this, null));
+        }.bind(this));
+      },
+
+      teardown: function() {
+        db.dropTable('event');
+        db.dropTable('event_type', this.callback);
+      },
+
+      'sets usage and constraints': {
+        topic: function() {
+          var metaQuery = ['SELECT',
+            '  usg.REFERENCED_TABLE_NAME,',
+            '  usg.REFERENCED_COLUMN_NAME,',
+            '    cstr.UPDATE_RULE,',
+            '  cstr.DELETE_RULE',
+            'FROM',
+            '  `INFORMATION_SCHEMA`.`KEY_COLUMN_USAGE` AS usg',
+            'INNER JOIN',
+            '  `INFORMATION_SCHEMA`.`REFERENTIAL_CONSTRAINTS` AS cstr',
+            '    ON  cstr.CONSTRAINT_SCHEMA = usg.TABLE_SCHEMA',
+            '    AND cstr.CONSTRAINT_NAME = usg.CONSTRAINT_NAME',
+            'WHERE',
+            '  usg.TABLE_SCHEMA = ?',
+            '  AND usg.TABLE_NAME = ?',
+            '  AND usg.COLUMN_NAME = ?'].join('\n');
+          db.runSql(metaQuery, dbName, 'event', 'event_id', this.callback);
+        },
+
+        'with correct references': function(err, rows) {
+          assert.isNotNull(rows);
+          assert.equal(rows.length, 1);
+          var row = rows[0];
+          assert.equal(row.REFERENCED_TABLE_NAME, 'event_type');
+          assert.equal(row.REFERENCED_COLUMN_NAME, 'id');
+        },
+
+        'and correct rules': function(err, rows) {
+          assert.isNotNull(rows);
+          assert.equal(rows.length, 1);
+          var row = rows[0];
+          assert.equal(row.UPDATE_RULE, 'NO ACTION');
+          assert.equal(row.DELETE_RULE, 'CASCADE');
+        }
+      }
+    }
+  }).addBatch({
     'addForeignKey': {
       topic: function() {
         db.createTable('event', {
