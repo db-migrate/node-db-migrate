@@ -9,7 +9,7 @@ var config = require('../db.config.json').mongodb;
 var dbName = config.database;
 driver.connect(config, function(err, db) {
 	assert.isNull(err);
-  vows.describe('mongodb')/*
+  vows.describe('mongodb')
   .addBatch({
       'createCollection': {
         topic: function() {
@@ -129,7 +129,6 @@ driver.connect(config, function(err, db) {
             topic: function() {
               db.createCollection('event', function(err, collection) {
 								if(err) {
-									console.log('err = '+err);
 									return this.callback(err);
 								}
                 db.insert('event', [{id: 2, title: 'title'}], this.callback);
@@ -143,46 +142,29 @@ driver.connect(config, function(err, db) {
             'with additional row' : function() {
               db.find('event', {title: 'title'}, function(err, data) {
 								if(err) {
-									console.log('err = '+err);
 									return this.callback(err);
 								}
-								
-								console.log('data = ');
-								console.log(data);
 								
                 assert.equal(data.length, 1);
               });
             }
           } 
-        })*/.addBatch({
+        }).addBatch({
           'removeIndex': {
             topic: function() {
               db.createCollection('event', function(err, collection) {
 								if(err) {
-									console.log('err = '+err);
 									return this.callback(err);
 								}
-								
 								
 								db.addIndex('event', 'event_title', 'title', false, function(err, data) {
 																	
 									if(err) {
-										console.log('err = '+err);
 										return this.callback(err);
 									}
 																	
 									db.removeIndex('event', 'event_title', this.callback);
-								}.bind(this));
-								
-								
-								//db.addIndex('event', 'event_title', 'title', false, this.callback);
-								
-								
-                /*
-                db.addIndex('event', 'event_title', 'title', function(err) {
-                                  db.removeIndex('event', 'event_title', this.callback.bind(this, null));
-                                }.bind(this));*/
-                
+								}.bind(this));        
               }.bind(this));
             },
       
@@ -194,81 +176,43 @@ driver.connect(config, function(err, db) {
       
             'has resulting index metadata': {
               topic: function() {
-								console.log('in getIndexes');
                 db.getIndexes('event', this.callback);
               },
       
               'without index': function(err, indexes) {
-								
 								if(err) {
-									console.log(err);
 									return this.callback(err);
 								}
-								
-								console.log('indexes = '+indexes);
 								
 								assert.isDefined(indexes);
                 assert.isNotNull(indexes);
 								assert.notInclude(indexes, 'event_title');
-                //assert.equal(indexes.length, 1); // first index is primary key
               }
             }
-          } /*
+          } 
         }).addBatch({
           'createMigrationsTable': {
             topic: function() {
-              db.createMigrationsTable(this.callback.bind(this, null));
+              db.createMigrationsCollection(this.callback);
             },
       
-            
             teardown: function() {
-                    db.dropCollection('migrations', this.callback);
-                  },
-            
-      
+							db.dropCollection('migrations', this.callback);
+						},
+
             'has migrations table': {
               topic: function() {
-                dbmeta('mysql', { connection:db.connection}, function (err, meta) {
-                  if (err) {
-                    return this.callback(err);
-                  }
-                  meta.getTables(this.callback);
-                }.bind(this));
+                db.getCollectionNames(this.callback);
               },
       
               'has migrations table' : function(err, tables) {
                 assert.isNull(err);
                 assert.isNotNull(tables);
-                assert.equal(tables.length,1);
-                assert.equal(tables[0].getName(), 'migrations');
-              },
-      
-              'that has columns':{
-                topic:function(){
-                dbmeta('mysql', { connection:db.connection}, function (err, meta) {
-                    if (err) {
-                      return this.callback(err);
-                    }
-                    meta.getColumns('migrations',this.callback);
-                  }.bind(this));
-                },
-      
-                'with names': function(err, columns){
-                  assert.isNotNull(columns);
-                  assert.equal(columns.length, 3);
-                  var column = findByName(columns, 'id');
-                  assert.equal(column.getName(), 'id');
-                  assert.equal(column.getDataType(), 'INT');
-                  column = findByName(columns, 'name');
-                  assert.equal(column.getName(), 'name');
-                  assert.equal(column.getDataType(), 'VARCHAR');
-                  column = findByName(columns, 'run_on');
-                  assert.equal(column.getName(), 'run_on');
-                  assert.equal(column.getDataType(), 'DATETIME');
-                }
+								assert.equal(tables.length, 2);	// Should be 2 b/c of the system collection
+								assert.equal(tables[1].collectionName, 'migrations');
               }
             }
-          } */
+          } 
       
 		//}).export(module);
 		// TODO: Uncomment above and remove this before ocmmitting
