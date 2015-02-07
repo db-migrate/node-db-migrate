@@ -433,7 +433,7 @@ exports.up = function(db, callback) {
                     onUpdate: 'RESTRICT'
                 },
                 mapping: {
-                  product_id: id'
+                  product_id: 'id'
                 }
             }
         },
