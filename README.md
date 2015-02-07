@@ -377,67 +377,70 @@ __Column ForeignKey Spec Examples__
 ```javascript
 exports.up = function(db, callback) {
 
-    //automatic mapping, the mapping key resolves to the column
-    db.createTable( 'product_variant',
-    {
-        id:
-        {
-            type: 'int',
-            unsigned: true,
-            notNull: true,
-            primaryKey: true,
-            autoIncrement: true,
-            length: 10
-        },
-        product_id:
-        {
-            type: 'int',
-            unsigned: true,
-            length: 10,
-            notNull: true,
-            foreignKey: {
-                name: 'product_variant_product_id_fk',
-                table: 'product',
-                rules: {
-                    onDelete: 'CASCADE',
-                    onUpdate: 'RESTRICT'
-                },
-                mapping: 'id'
-            }
-        },
-    }, callback );
+  //automatic mapping, the mapping key resolves to the column
+  db.createTable( 'product_variant',
+  {
+      id:
+      {
+        type: 'int',
+        unsigned: true,
+        notNull: true,
+        primaryKey: true,
+        autoIncrement: true,
+        length: 10
+      },
+      product_id:
+      {
+        type: 'int',
+        unsigned: true,
+        length: 10,
+        notNull: true,
+        foreignKey: {
+          name: 'product_variant_product_id_fk',
+          table: 'product',
+          rules: {
+            onDelete: 'CASCADE',
+            onUpdate: 'RESTRICT'
+          },
+          mapping: 'id'
+        }
+      },
+  }, callback );
+};
 
-    //explicit mapping
-    db.createTable( 'product_variant',
+exports.up = function(db, callback) {
+
+  //explicit mapping
+  db.createTable( 'product_variant',
+  {
+    id:
     {
-        id:
-        {
-            type: 'int',
-            unsigned: true,
-            notNull: true,
-            primaryKey: true,
-            autoIncrement: true,
-            length: 10
+      type: 'int',
+      unsigned: true,
+      notNull: true,
+      primaryKey: true,
+      autoIncrement: true,
+      length: 10
+    },
+    product_id:
+    {
+      type: 'int',
+      unsigned: true,
+      length: 10,
+      notNull: true,
+      foreignKey: {
+        name: 'product_variant_product_id_fk',
+        table: 'product',
+        rules: {
+          onDelete: 'CASCADE',
+          onUpdate: 'RESTRICT'
         },
-        product_id:
-        {
-            type: 'int',
-            unsigned: true,
-            length: 10,
-            notNull: true,
-            foreignKey: {
-                name: 'product_variant_product_id_fk',
-                table: 'product',
-                rules: {
-                    onDelete: 'CASCADE',
-                    onUpdate: 'RESTRICT'
-                },
-                mapping: {
-                  product_id: 'id'
-                }
-            }
-        },
-    }, callback );
+        mapping: {
+          product_id: 'id'
+        }
+      }
+    },
+  }, callback );
 };
 ```
 
