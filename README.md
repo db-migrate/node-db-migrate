@@ -368,6 +368,78 @@ The following options are available on column specs
 * notNull - true to mark the column as non-nullable
 * unique - true to add unique constraint to the column
 * defaultValue - set the column default value
+* foreignKey - set a foreign key to the column
+
+__Column ForeignKey Spec Examples__
+
+**Note:** Currently only supported together with mysql!
+
+```javascript
+exports.up = function(db, callback) {
+
+    //automatic mapping, the mapping key resolves to the column
+    db.createTable( 'product_variant',
+    {
+        id:
+        {
+            type: 'int',
+            unsigned: true,
+            notNull: true,
+            primaryKey: true,
+            autoIncrement: true,
+            length: 10
+        },
+        product_id:
+        {
+            type: 'int',
+            unsigned: true,
+            length: 10,
+            notNull: true,
+            foreignKey: {
+                name: 'product_variant_product_id_fk',
+                table: 'product',
+                rules: {
+                    onDelete: 'CASCADE',
+                    onUpdate: 'RESTRICT'
+                },
+                mapping: 'id'
+            }
+        },
+    }, callback );
+
+    //explicit mapping
+    db.createTable( 'product_variant',
+    {
+        id:
+        {
+            type: 'int',
+            unsigned: true,
+            notNull: true,
+            primaryKey: true,
+            autoIncrement: true,
+            length: 10
+        },
+        product_id:
+        {
+            type: 'int',
+            unsigned: true,
+            length: 10,
+            notNull: true,
+            foreignKey: {
+                name: 'product_variant_product_id_fk',
+                table: 'product',
+                rules: {
+                    onDelete: 'CASCADE',
+                    onUpdate: 'RESTRICT'
+                },
+                mapping: {
+                  'product_id': id'
+                }
+            }
+        },
+    }, callback );
+};
+```
 
 ### dropTable(tableName, [options,] callback)
 
