@@ -30,7 +30,7 @@ driver.connect(config, function(err, db) {
           }
         } 
   		}
-  	})
+  	}) 
   .addBatch({
 		'dropCollection': {
 			topic: function() {
@@ -54,7 +54,7 @@ driver.connect(config, function(err, db) {
 				}
 			}
 		} 
-	})
+	}) 
 	.addBatch({
 		'renameCollection': {
 			topic: function() {
@@ -83,73 +83,76 @@ driver.connect(config, function(err, db) {
 					assert.equal(tables[1].collectionName, 'functions');
 				}
 			} 
-						}
-        }).addBatch({
-          'addIndex': {
-            topic: function() {
-							db.createCollection('event', function(err, collection) {
-								if(err) {
-									return this.callback(err);
-								}
+		}
+	})
+	.addBatch({
+		'addIndex': {
+			topic: function() {
+				db.createCollection('event', function(err, collection) {
+					if(err) {
+						return this.callback(err);
+					}
 					
-								db.addIndex('event', 'event_title', 'title', false, this.callback);
-							}.bind(this));    
-            },
+					db.addIndex('event', 'event_title', 'title', false, this.callback);
+				}.bind(this));    
+			},
       
-            teardown: function() {
-							db.dropCollection('event', this.callback);
-						},
+			teardown: function() {
+				db.dropCollection('event', this.callback);
+			},
            						 
-            'preserves case': {
-              topic: function() {
-                db.getCollectionNames(this.callback);
-              },
+			'preserves case': {
+				topic: function() {
+					db.getCollectionNames(this.callback);
+				},
       
-              'of the functions original table': function(err, tables) {
-                assert.isNotNull(tables);
-                assert.equal(tables.length, 2);	// Should be 2 b/c of the system collection
-                assert.equal(tables[1].collectionName, 'event');
-              }
-            },
+				'of the functions original table': function(err, tables) {
+					assert.isNotNull(tables);
+					assert.equal(tables.length, 2);	// Should be 2 b/c of the system collection
+					assert.equal(tables[1].collectionName, 'event');
+				}
+			},
       
-            'has resulting index metadata': {
-              topic: function() {
-                db.getIndexes('event', this.callback);
-              },
+			'has resulting index metadata': {
+				topic: function() {
+					db.getIndexes('event', this.callback);
+				},
       
-              'with additional index': function(err, indexes) {
-								assert.isDefined(indexes);
-								assert.isNotNull(indexes);
-                assert.include(indexes, 'event_title');
-              }
-            }
-          } 
-        }).addBatch({
-          'insert': {
-            topic: function() {
-              db.createCollection('event', function(err, collection) {
-								if(err) {
-									return this.callback(err);
-								}
-                db.insert('event', [{id: 2, title: 'title'}], this.callback);
-              }.bind(this));
-            },
+				'with additional index': function(err, indexes) {
+					assert.isDefined(indexes);
+					assert.isNotNull(indexes);
+					assert.include(indexes, 'event_title');
+				}
+			}
+		} 
+	})
+	 .addBatch({
+		 'insert': {
+			 topic: function() {
+				 db.createCollection('event', function(err, collection) {
+					 if(err) {
+						 return this.callback(err);
+					 }
+					 db.insert('event', [{id: 2, title: 'title'}], this.callback);
+				 }.bind(this));
+			 },
       
-            teardown: function() {
-							db.dropCollection('event', this.callback);
-						},
+			 teardown: function() {
+				 db.dropCollection('event', this.callback);
+			 },
             
-            'with additional row' : function() {
-              db.find('event', {title: 'title'}, function(err, data) {
-								if(err) {
-									return this.callback(err);
-								}
+			 'with additional row' : function() {
+				 db.find('event', {title: 'title'}, function(err, data) {
+					 if(err) {
+						 return this.callback(err);
+					 }
 								
-                assert.equal(data.length, 1);
-              });
-            }
-          } 
-        }).addBatch({
+					 assert.equal(data.length, 1);
+				 });
+			 }
+		 } 
+   })
+	 .addBatch({
           'removeIndex': {
             topic: function() {
               db.createCollection('event', function(err, collection) {
@@ -214,9 +217,9 @@ driver.connect(config, function(err, db) {
             }
           } 
       
-		//}).export(module);
+		}).export(module);
 		// TODO: Uncomment above and remove this before ocmmitting
-	}).run();
+		//}).run();
 });
 function findByName(columns, name) {
   for (var i = 0; i < columns.length; i++) {

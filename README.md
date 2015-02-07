@@ -15,6 +15,7 @@ Database migration framework for node.js
 * Mysql (https://github.com/felixge/node-mysql)
 * PostgreSQL (https://github.com/brianc/node-postgres)
 * sqlite3 (https://github.com/developmentseed/node-sqlite3)
+* Mongodb (https://github.com/mongodb/node-mongodb-native)
 
 ## Usage
 
