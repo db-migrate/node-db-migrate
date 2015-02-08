@@ -22,8 +22,9 @@ process.on('uncaughtException', function(err) {
 var argv = optimist
     .default({
       verbose: false,
+      table: 'migrations',
       'force-exit': false,
-	  'sql-file': false,
+      'sql-file': false,
       config: process.cwd() + '/database.json',
       'migrations-dir': process.cwd() + '/migrations' })
     .usage('Usage: db-migrate [up|down|create] migrationName [options]')
@@ -61,11 +62,16 @@ var argv = optimist
     .describe('config', 'Location of the database.json file.')
     .string('config')
 
-    .describe('sql-file', "Automatically create two sql files for up and down statements in /sqls and generate the javascript code that loads them.")
+    .describe('sql-file', 'Automatically create two sql files for up and down statements in /sqls and generate the javascript code that loads them.')
     .boolean('sql-file')
 
-    .describe('coffee-file', "Create a coffeescript migration file")
+    .describe('coffee-file', 'Create a coffeescript migration file')
     .boolean('coffee-file')
+
+    .describe('migration-table', 'Set the name of the migration table, which stores the migration history.')
+    .alias('table', 'migration-table')
+    .alias('t', 'table')
+    .string('t')
 
     .argv;
 
@@ -79,6 +85,7 @@ if (argv.help || argv._.length === 0) {
   process.exit(1);
 }
 
+global.migrationTable = argv.table;
 global.verbose = argv.verbose;
 global.dryRun = argv['dry-run'];
 if(global.dryRun) {
@@ -107,7 +114,7 @@ function loadConfig() {
 
     if (s["password"])
       s["password"] = "******";
-    
+
     log.info('Using', current.env, 'settings:', s);
   }
 }

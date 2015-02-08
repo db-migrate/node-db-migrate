@@ -6,6 +6,8 @@ var driver = require('../../lib/driver');
 
 var config = require('../db.config.json').mysql;
 
+global.migrationTable = 'migrations';
+
 var dbName = config.database;
 driver.connect(config, function(err, db) {
     assert.isNull(err);
