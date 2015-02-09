@@ -370,18 +370,18 @@ driver.connect(config, function(err, db) {
   }).addBatch({
     'addForeignKey': {
       topic: function() {
-        db.createTable('Event', {
+        db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
           event_id: { type: dataType.INTEGER, notNull: true },
           title: { type: dataType.STRING }
         }, function() {
-          db.createTable('EventType', {
+          db.createTable('event_type', {
             id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
             title: { type: dataType.STRING }
           }, function () {
             // lowercase table names because they are quoted in the function
             // and pg uses lowercase internally
-            db.addForeignKey('event', 'eventtype', 'fk_Event_EventType', {
+            db.addForeignKey('event', 'event_type', 'fk_event_event_type', {
               'event_id': 'id'
             }, {
               onDelete: 'CASCADE'
@@ -418,7 +418,7 @@ driver.connect(config, function(err, db) {
           assert.isNotNull(rows);
           assert.equal(rows.length, 1);
           var row = rows[0];
-          assert.equal(row.table_name, 'eventtype');
+          assert.equal(row.table_name, 'event_type');
           assert.equal(row.column_name, 'id');
         },
 
@@ -434,35 +434,35 @@ driver.connect(config, function(err, db) {
 
       teardown: function() {
         db.dropTable('event');
-        db.dropTable('eventtype', this.callback);
+        db.dropTable('event_type', this.callback);
       }
     }
   }).addBatch({
     'removeForeignKey': {
       topic: function() {
-        db.createTable('Event', {
+        db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
           event_id: { type: dataType.INTEGER, notNull: true },
           title: { type: dataType.STRING }
         }, function() {
-          db.createTable('EventType', {
+          db.createTable('event_type', {
             id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
             title: { type: dataType.STRING }
           }, function () {
-            db.addForeignKey('event', 'eventtype', 'fk_Event_EventType', {
+            db.addForeignKey('event', 'event_type', 'fk_event_event_type', {
               'event_id': 'id'
             }, {
               onDelete: 'CASCADE'
             }, function () {
-              db.removeForeignKey('event', 'fk_Event_EventType', this.callback.bind(this, null));
+              db.removeForeignKey('event', 'fk_event_event_type', this.callback.bind(this, null));
             }.bind(this));
           }.bind(this));
         }.bind(this));
       },
 
       teardown: function() {
-        db.dropTable('Event');
-        db.dropTable('EventType', this.callback);
+        db.dropTable('event');
+        db.dropTable('event_type', this.callback);
       },
 
       'removes usage and constraints': {
