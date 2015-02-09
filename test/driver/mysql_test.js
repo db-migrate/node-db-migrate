@@ -609,9 +609,9 @@ driver.connect(config, function(err, db) {
       }
     }
   }).addBatch({
-    'createMigrationsTable': {
+    '_createMigrationsTable': {
       topic: function() {
-        db.createMigrationsTable(this.callback.bind(this, null));
+        db._createMigrationsTable(this.callback.bind(this, null));
       },
 
       teardown: function() {

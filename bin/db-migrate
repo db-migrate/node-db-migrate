@@ -169,7 +169,7 @@ function executeUp() {
   index.connect(config.getCurrent().settings, function(err, migrator) {
     assert.ifError(err);
     migrator.migrationsDir = path.resolve(argv['migrations-dir']);
-    migrator.driver.createMigrationsTable(function(err) {
+    migrator.driver._createMigrationsTable(function(err) {
       assert.ifError(err);
       log.verbose('migration table created');
       migrator.up(argv, onComplete.bind(this, migrator));
@@ -185,7 +185,7 @@ function executeDown() {
   index.connect(config.getCurrent().settings, function(err, migrator) {
     assert.ifError(err);
     migrator.migrationsDir = path.resolve(argv['migrations-dir']);
-    migrator.driver.createMigrationsTable(function(err) {
+    migrator.driver._createMigrationsTable(function(err) {
       assert.ifError(err);
       migrator.down(argv, onComplete.bind(this, migrator));
     });

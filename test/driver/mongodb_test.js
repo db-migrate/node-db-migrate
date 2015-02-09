@@ -11,26 +11,26 @@ driver.connect(config, function(err, db) {
 	assert.isNull(err);
   vows.describe('mongodb')
   .addBatch({
-      'createCollection': {
-        topic: function() {
-          db.createCollection('event', this.callback);
-        },
+		'createCollection': {
+			topic: function() {
+				db.createCollection('event', this.callback);
+			},
   
-        teardown: function() {
-  				db.dropCollection('event', this.callback);
-        },
+			teardown: function() {
+				db.dropCollection('event', this.callback);
+			},
         
-        'has table metadata': {
-          topic: function() {					
-  					db.getCollectionNames(this.callback);
-          },
+			'has table metadata': {
+				topic: function() {					
+					db.getCollectionNames(this.callback);
+				},
   
-          'containing the event table': function(err, tables) {
-            assert.equal(tables.length, 2);	// Should be 2 b/c of the system collection
-          }
-        } 
-  		}
-  	}) 
+				'containing the event table': function(err, tables) {
+					assert.equal(tables.length, 2);	// Should be 2 b/c of the system collection
+				}
+			} 
+		}
+	}) 
   .addBatch({
 		'dropCollection': {
 			topic: function() {
@@ -126,106 +126,97 @@ driver.connect(config, function(err, db) {
 			}
 		} 
 	})
-	 .addBatch({
-		 'insert': {
-			 topic: function() {
-				 db.createCollection('event', function(err, collection) {
-					 if(err) {
-						 return this.callback(err);
-					 }
-					 db.insert('event', [{id: 2, title: 'title'}], this.callback);
-				 }.bind(this));
-			 },
+	.addBatch({
+		'insert': {
+			topic: function() {
+				db.createCollection('event', function(err, collection) {
+					if(err) {
+						return this.callback(err);
+					}
+					db.insert('event', [{id: 2, title: 'title'}], this.callback);
+				}.bind(this));
+			},
       
-			 teardown: function() {
-				 db.dropCollection('event', this.callback);
-			 },
+			teardown: function() {
+				db.dropCollection('event', this.callback);
+			},
             
-			 'with additional row' : function() {
-				 db.find('event', {title: 'title'}, function(err, data) {
-					 if(err) {
-						 return this.callback(err);
-					 }
+			'with additional row' : function() {
+				db.find('event', {title: 'title'}, function(err, data) {
+					if(err) {
+						return this.callback(err);
+					}
 								
-					 assert.equal(data.length, 1);
-				 });
-			 }
-		 } 
-   })
-	 .addBatch({
-          'removeIndex': {
-            topic: function() {
-              db.createCollection('event', function(err, collection) {
-								if(err) {
-									return this.callback(err);
-								}
+					assert.equal(data.length, 1);
+				});
+			}
+		} 
+	})
+	.addBatch({
+		'removeIndex': {
+			topic: function() {
+				db.createCollection('event', function(err, collection) {
+					if(err) {
+						return this.callback(err);
+					}
 								
-								db.addIndex('event', 'event_title', 'title', false, function(err, data) {
+					db.addIndex('event', 'event_title', 'title', false, function(err, data) {
 																	
-									if(err) {
-										return this.callback(err);
-									}
+						if(err) {
+							return this.callback(err);
+						}
 																	
-									db.removeIndex('event', 'event_title', this.callback);
-								}.bind(this));        
-              }.bind(this));
-            },
-      
+						db.removeIndex('event', 'event_title', this.callback);
+					}.bind(this));        
+				}.bind(this));
+			},
             
-            teardown: function() {
-							db.dropCollection('event', this.callback);
-						},
+			teardown: function() {
+				db.dropCollection('event', this.callback);
+			},
             
       
-            'has resulting index metadata': {
-              topic: function() {
-                db.getIndexes('event', this.callback);
-              },
+			'has resulting index metadata': {
+				topic: function() {
+					db.getIndexes('event', this.callback);
+				},
       
-              'without index': function(err, indexes) {
-								if(err) {
-									return this.callback(err);
-								}
+				'without index': function(err, indexes) {
+					if(err) {
+						return this.callback(err);
+					}
 								
-								assert.isDefined(indexes);
-                assert.isNotNull(indexes);
-								assert.notInclude(indexes, 'event_title');
-              }
-            }
-          } 
-        }).addBatch({
-          'createMigrationsTable': {
-            topic: function() {
-              db.createMigrationsCollection(this.callback);
-            },
+					assert.isDefined(indexes);
+					assert.isNotNull(indexes);
+					assert.notInclude(indexes, 'event_title');
+				}
+			}
+		} 
+	})
+	.addBatch({
+		'_createMigrationsTable': {
+			topic: function() {
+				db._createMigrationsCollection(this.callback);
+			},
       
-            teardown: function() {
-							db.dropCollection('migrations', this.callback);
-						},
+			teardown: function() {
+				db.dropCollection('migrations', this.callback);
+			},
 
-            'has migrations table': {
-              topic: function() {
-                db.getCollectionNames(this.callback);
-              },
+			'has migrations table': {
+				topic: function() {
+					db.getCollectionNames(this.callback);
+				},
       
-              'has migrations table' : function(err, tables) {
-                assert.isNull(err);
-                assert.isNotNull(tables);
-								assert.equal(tables.length, 2);	// Should be 2 b/c of the system collection
-								assert.equal(tables[1].collectionName, 'migrations');
-              }
-            }
-          } 
-      
-		}).export(module);
-		// TODO: Uncomment above and remove this before ocmmitting
-		//}).run();
+				'has migrations table' : function(err, tables) {
+					assert.isNull(err);
+					assert.isNotNull(tables);
+					assert.equal(tables.length, 2);	// Should be 2 b/c of the system collection
+					assert.equal(tables[1].collectionName, 'migrations');
+				}
+			}
+		} 
+	
+	}).export(module);
 });
-function findByName(columns, name) {
-  for (var i = 0; i < columns.length; i++) {
-    if (columns[i].getName() === name) {
-      return columns[i];
-    }
-  }
-  return null;
-}
+

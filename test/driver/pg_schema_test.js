@@ -25,7 +25,7 @@ vows.describe('pg').addBatch({
             topic: function(db) {
                 var callback = this.callback;
                 
-                db.createMigrationsTable(function() {
+                db._createMigrationsTable(function() {
                     client.query("SELECT table_name FROM information_schema.tables WHERE table_schema = 'test_schema' AND table_name = 'migrations'", function(err, result) {
                         callback(err, result);        
                     });
