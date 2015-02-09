@@ -290,10 +290,15 @@ driver.connect(config, function(err, db) {
       topic: function() {
         db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
-          txt: { type: dataType.TEXT, notNull: true, defaultValue: "foo" }
+          txt: { type: dataType.TEXT, notNull: true, unique: true, defaultValue: "foo" },
+          keep_id: { type: dataType.INTEGER, notNull: true, unique: true }
         }, function() {
-          var spec = { notNull: false, defaultValue: "foo2", unique: true };
-          db.changeColumn('event', 'txt', spec, this.callback.bind(this, null));
+          var spec = { notNull: false, defaultValue: "foo2", unique: false },
+              spec2 = { notNull: true, unsigned: true };
+
+          db.changeColumn('event', 'txt', spec, function() {
+            db.changeColumn('event', 'keep_id', spec2, this.callback.bind(this, null));
+          }.bind(this));
         }.bind(this));
       },
 
@@ -309,11 +314,16 @@ driver.connect(config, function(err, db) {
 
         'with changed title column': function(err, columns) {
           assert.isNotNull(columns);
-          assert.equal(columns.length, 2);
+          assert.equal(columns.length, 3);
           var column = findByName(columns, 'txt');
           assert.equal(column.getName(), 'txt');
           assert.equal(column.isNullable(), true);
           assert.equal(column.getDefaultValue(), "'foo2'::text");
+          assert.equal(column.isUnique(), false);
+
+          column = findByName(columns, 'keep_id');
+          assert.equal(column.getName(), 'keep_id');
+          assert.equal(column.isNullable(), false);
           assert.equal(column.isUnique(), true);
         }
       },

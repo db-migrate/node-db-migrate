@@ -11,6 +11,8 @@ notifications:
 env:
     - DB=mysql
     - DB=mariadb
+    - DB=postgres92
+    - DB=postgres93
 
 before_script:
     - sh -c "if [ '$DB' = 'mariadb' ]; then sudo apt-get install python-software-properties; fi"
@@ -19,6 +21,8 @@ before_script:
     - sh -c "if [ '$DB' = 'mariadb' ]; then sudo apt-get update; fi"
     - sh -c "if [ '$DB' = 'mariadb' ]; then sudo apt-get purge mysql*; fi"
     - sh -c "if [ '$DB' = 'mariadb' ]; then sudo apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install mariadb-server-10.0 -y; fi"
+    - sh -c "if [ '$DB' = 'postgres92' ]; then sudo /etc/init.d/postgresql stop && sudo /etc/init.d/postgresql start 9.2; fi"
+    - sh -c "if [ '$DB' = 'postgres93' ]; then sudo /etc/init.d/postgresql stop && sudo /etc/init.d/postgresql start 9.3; fi"
     - mysql -e "create database db_migrate_test;"
     - createdb db_migrate_test
     - cp test/db.config.ci test/db.config.json
