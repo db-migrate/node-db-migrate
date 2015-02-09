@@ -42,11 +42,11 @@ To create a migration, execute `db-migrate create` with a title. `node-db-migrat
 
 ```javascript
 exports.up = function (db, callback) {
-  callback();
+
 };
 
 exports.down = function (db, callback) {
-  callback();
+
 };
 ```
 
