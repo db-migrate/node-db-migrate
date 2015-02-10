@@ -11,5 +11,10 @@
   "sqlite3": {
     "driver": "sqlite3",
     "filename": "test.db"
+  },
+  "mongodb": {
+    "driver": "mongodb",
+    "host": "localhost",
+    "database": "db_migrate_test"
   }
 }

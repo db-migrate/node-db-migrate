@@ -8,6 +8,9 @@ notifications:
     recipients:
       - magic@wizardtales.com
 
+services:
+  - mongodb
+
 env:
     - DB=mysql
     - DB=mariadb
