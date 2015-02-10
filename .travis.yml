@@ -8,12 +8,14 @@ notifications:
     recipients:
       - magic@wizardtales.com
 
+services:
+  - mongodb
+
 env:
     - DB=mysql
     - DB=mariadb
     - DB=postgres92
     - DB=postgres93
-    - DB=mongodb
 
 before_script:
     - sh -c "if [ '$DB' = 'mariadb' ]; then sudo apt-get install python-software-properties; fi"
