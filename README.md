@@ -365,7 +365,7 @@ The following options are available on column specs
 * length - the column data length, where supported
 * primaryKey - true to set the column as a primary key. Compound primary keys are supported by setting the `primaryKey` option to true on multiple columns
 * autoIncrement - true to mark the column as auto incrementing
-* notNull - true to mark the column as non-nullable
+* notNull - true to mark the column as non-nullable, omit it archive database default behavior and false to mark explicitly as nullable
 * unique - true to add unique constraint to the column
 * defaultValue - set the column default value
 * foreignKey - set a foreign key to the column
