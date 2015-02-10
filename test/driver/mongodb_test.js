@@ -6,6 +6,8 @@ var driver = require('../../lib/driver');
 
 var config = require('../db.config.json').mongodb;
 
+global.migrationTable = 'migrations';
+
 var dbName = config.database;
 driver.connect(config, function(err, db) {
   assert.isNull(err);
@@ -19,7 +21,7 @@ driver.connect(config, function(err, db) {
       teardown: function() {
         db.dropCollection('event', this.callback);
       },
-        
+
       'has table metadata': {
         topic: function() {
           db._getCollectionNames(this.callback);
@@ -28,9 +30,9 @@ driver.connect(config, function(err, db) {
         'containing the event table': function(err, tables) {
           assert.equal(tables.length, 2);	// Should be 2 b/c of the system collection
         }
-      } 
+      }
     }
-  }) 
+  })
   .addBatch({
     'dropCollection': {
       topic: function() {
@@ -54,7 +56,7 @@ driver.connect(config, function(err, db) {
         }
       }
     }
-  }) 
+  })
   .addBatch({
     'renameCollection': {
       topic: function() {
@@ -94,7 +96,7 @@ driver.connect(config, function(err, db) {
           }
 
           db.addIndex('event', 'event_title', 'title', false, this.callback);
-        }.bind(this));    
+        }.bind(this));
       },
 
       teardown: function() {
