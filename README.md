@@ -274,12 +274,6 @@ db-migrate supports the concept of environments. For example, you might have a d
     "driver": "sqlite3",
     "filename": ":memory:"
   },
-	
-  "int": {
-    "driver": "mongodb",
-		"database": "int_db",
-		"host": "localhost"
-  },
 
   "prod": {
     "driver": "mysql",
@@ -294,6 +288,12 @@ db-migrate supports the concept of environments. For example, you might have a d
     "host": "localhost",
     "database": "mydb",
     "schema": "my_schema"
+  },
+
+  "mongo": {
+    "driver": "mongodb",
+    "database": "my_db",
+    "host": "localhost"
   },
 
   "other": "postgres://uname:pw@server.com/dbname"
