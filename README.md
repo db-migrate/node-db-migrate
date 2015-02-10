@@ -634,7 +634,7 @@ __Arguments__
 
 ## Migrations API - NoSQL
 
-Below are examples of all the different migrations supported by db-migrate for NoSQL databases. 
+Below are examples of all the different migrations supported by db-migrate for NoSQL databases.
 
 ### createCollection(collectionName, callback)
 
@@ -712,7 +712,7 @@ The following command runs the vows tests.
 npm test
 ```
 
-Running the tests requires a one-time setup of the MySQL and Postgres databases.
+Running the tests requires a one-time setup of the **MySQL**, **MongoDB** and **Postgres** databases.
 
 ```bash
 mysql -u root -e "CREATE DATABASE db_migrate_test;"
