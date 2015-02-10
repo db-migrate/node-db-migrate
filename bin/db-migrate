@@ -22,8 +22,9 @@ process.on('uncaughtException', function(err) {
 var argv = optimist
     .default({
       verbose: false,
+      table: 'migrations',
       'force-exit': false,
-	  'sql-file': false,
+      'sql-file': false,
       config: process.cwd() + '/database.json',
       'migrations-dir': process.cwd() + '/migrations' })
     .usage('Usage: db-migrate [up|down|create] migrationName [options]')
@@ -61,8 +62,16 @@ var argv = optimist
     .describe('config', 'Location of the database.json file.')
     .string('config')
 
-    .describe('sql-file', "Automatically create two sql files for up and down statements in /sqls and generate the javascript code that loads them.")
+    .describe('sql-file', 'Automatically create two sql files for up and down statements in /sqls and generate the javascript code that loads them.')
     .boolean('sql-file')
+
+    .describe('coffee-file', 'Create a coffeescript migration file')
+    .boolean('coffee-file')
+
+    .describe('migration-table', 'Set the name of the migration table, which stores the migration history.')
+    .alias('table', 'migration-table')
+    .alias('t', 'table')
+    .string('t')
 
     .argv;
 
@@ -76,6 +85,7 @@ if (argv.help || argv._.length === 0) {
   process.exit(1);
 }
 
+global.migrationTable = argv.table;
 global.verbose = argv.verbose;
 global.dryRun = argv['dry-run'];
 if(global.dryRun) {
@@ -104,7 +114,7 @@ function loadConfig() {
 
     if (s["password"])
       s["password"] = "******";
-    
+
     log.info('Using', current.env, 'settings:', s);
   }
 }
@@ -123,8 +133,13 @@ function executeCreate() {
     }
 
     argv.title = argv._.shift();
-    var templateType = shouldCreateSqlFiles() ? Migration.TemplateType.SQL_FILE_LOADER : Migration.TemplateType.DEFAULT_JS;
-    var migration = new Migration(argv.title + '.js', argv['migrations-dir'], new Date(), templateType);
+    var templateType = Migration.TemplateType.DEFAULT_JS;
+    if (shouldCreateSqlFiles()) {
+      templateType = Migration.TemplateType.SQL_FILE_LOADER;
+    } else if (shouldCreateCoffeeFile()) {
+      templateType = Migration.TemplateType.DEFAULT_COFFEE;
+    }
+    var migration = new Migration(argv.title + (shouldCreateCoffeeFile() ? '.coffee' : '.js'), argv['migrations-dir'], new Date(), templateType);
     index.createMigration(migration, function(err, migration) {
       assert.ifError(err);
       log.info(util.format('Created migration at %s', migration.path));
@@ -138,6 +153,10 @@ function executeCreate() {
 
 function shouldCreateSqlFiles() {
   return argv['sql-file'] || config['sql-file'];
+}
+
+function shouldCreateCoffeeFile() {
+  return argv['coffee-file'] || config['coffee-file'];
 }
 
 function createSqlFiles() {
@@ -169,7 +188,7 @@ function executeUp() {
   index.connect(config.getCurrent().settings, function(err, migrator) {
     assert.ifError(err);
     migrator.migrationsDir = path.resolve(argv['migrations-dir']);
-    migrator.driver._createMigrationsTable(function(err) {
+    migrator.driver.createMigrationsTable(function(err) {
       assert.ifError(err);
       log.verbose('migration table created');
       migrator.up(argv, onComplete.bind(this, migrator));
@@ -185,7 +204,7 @@ function executeDown() {
   index.connect(config.getCurrent().settings, function(err, migrator) {
     assert.ifError(err);
     migrator.migrationsDir = path.resolve(argv['migrations-dir']);
-    migrator.driver._createMigrationsTable(function(err) {
+    migrator.driver.createMigrationsTable(function(err) {
       assert.ifError(err);
       migrator.down(argv, onComplete.bind(this, migrator));
     });

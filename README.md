@@ -34,6 +34,7 @@ Options:
   --config              Location of the database.json file.             [default: "./database.json"]
   --force-exit          Call system.exit() after migration run          [default: false]
   --sql-file            Create sql files for up and down.               [default: false]
+  --coffee-file         Create a coffeescript migration file            [default: false]
 ```
 
 ## Creating Migrations
@@ -374,6 +375,81 @@ The following options are available on column specs
 * notNull - true to mark the column as non-nullable
 * unique - true to add unique constraint to the column
 * defaultValue - set the column default value
+* foreignKey - set a foreign key to the column
+
+__Column ForeignKey Spec Examples__
+
+**Note:** Currently only supported together with mysql!
+
+```javascript
+exports.up = function(db, callback) {
+
+  //automatic mapping, the mapping key resolves to the column
+  db.createTable( 'product_variant',
+  {
+      id:
+      {
+        type: 'int',
+        unsigned: true,
+        notNull: true,
+        primaryKey: true,
+        autoIncrement: true,
+        length: 10
+      },
+      product_id:
+      {
+        type: 'int',
+        unsigned: true,
+        length: 10,
+        notNull: true,
+        foreignKey: {
+          name: 'product_variant_product_id_fk',
+          table: 'product',
+          rules: {
+            onDelete: 'CASCADE',
+            onUpdate: 'RESTRICT'
+          },
+          mapping: 'id'
+        }
+      },
+  }, callback );
+};
+
+exports.up = function(db, callback) {
+
+  //explicit mapping
+  db.createTable( 'product_variant',
+  {
+    id:
+    {
+      type: 'int',
+      unsigned: true,
+      notNull: true,
+      primaryKey: true,
+      autoIncrement: true,
+      length: 10
+    },
+    product_id:
+    {
+      type: 'int',
+      unsigned: true,
+      length: 10,
+      notNull: true,
+      foreignKey: {
+        name: 'product_variant_product_id_fk',
+        table: 'product',
+        rules: {
+          onDelete: 'CASCADE',
+          onUpdate: 'RESTRICT'
+        },
+        mapping: {
+          product_id: 'id'
+        }
+      }
+    },
+  }, callback );
+};
+```
 
 ### dropTable(tableName, [options,] callback)
 
@@ -453,6 +529,67 @@ __Arguments__
 * columns - an array of column names contained in the index
 * unique - whether the index is unique (optional, default false)
 * callback(err) - callback that will be invoked after adding the index
+
+### addForeignKey
+
+Adds a foreign Key
+
+__Arguments__
+
+* tableName - table on which the foreign key gets applied
+* referencedTableName - table where the referenced key is located
+* keyName - name of the foreign key
+* fieldMapping - mapping of the foreign key to referenced key
+* rules - ondelete, onupdate constraints
+* callback(err) - callback that will be invoked after adding the foreign key
+
+__Example__
+
+```javascript
+exports.up = function (db, callback)
+{
+  db.addForeignKey('module_user', 'modules', 'module_user_module_id_foreign',
+  {
+    'module_id': 'id'
+  },
+  {
+    onDelete: 'CASCADE',
+    onUpdate: 'RESTRICT'
+  }, callback);
+};
+```
+
+### removeForeignKey
+
+__Arguments__
+
+* tableName - table in which the foreign key should be deleted
+* keyName - the name of the foreign key
+* options - object of options, see below
+* callback - callback that will be invoked once the foreign key was deleted
+
+__Options__
+
+* dropIndex (default: false) - deletes the index with the same name as the foreign key
+
+__Examples__
+
+```javascript
+//without options object
+exports.down = function (db, callback)
+{
+  db.removeForeignKey('module_user', 'module_user_module_id_foreign', callback);
+};
+
+//with options object
+exports.down = function (db, callback)
+{
+  db.removeForeignKey('module_user', 'module_user_module_id_foreign',
+  {
+    dropIndex: true,
+  }, callback);
+};
+```
 
 ### insert(tableName, columnNameArray, valueArray, callback)
 

@@ -7,6 +7,8 @@ var driver = require('../../lib/driver');
 
 var config = require('../db.config.json').sqlite3;
 
+global.migrationTable = 'migrations';
+
 vows.describe('sqlite3').addBatch({
   'createTable': {
     topic: function () {
@@ -384,10 +386,10 @@ vows.describe('sqlite3').addBatch({
       }
     }
   }).addBatch({
-    '_createMigrationsTable': {
+    'createMigrationsTable': {
       topic: function () {
         driver.connect(config, function (err, db) {
-          db._createMigrationsTable(this.callback.bind(this, null, db));
+          db.createMigrationsTable(this.callback.bind(this, null, db));
         }.bind(this));
       },
 

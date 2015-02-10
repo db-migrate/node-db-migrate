@@ -8,13 +8,21 @@ notifications:
     recipients:
       - magic@wizardtales.com
 
+env:
+    - DB=mysql
+    - DB=mariadb
+    - DB=postgres92
+    - DB=postgres93
+
 before_script:
-    - sudo apt-get install python-software-properties
-    - sudo apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xcbcb082a1bb943db
-    - sudo add-apt-repository 'deb http://ftp.osuosl.org/pub/mariadb/repo/10.0/ubuntu precise main'
-    - sudo apt-get update
-    - sudo apt-get purge mysql*
-    - sudo apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install mariadb-server-10.0 -y
+    - sh -c "if [ '$DB' = 'mariadb' ]; then sudo apt-get install python-software-properties; fi"
+    - sh -c "if [ '$DB' = 'mariadb' ]; then sudo apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xcbcb082a1bb943db; fi"
+    - sh -c "if [ '$DB' = 'mariadb' ]; then sudo add-apt-repository 'deb http://ftp.osuosl.org/pub/mariadb/repo/10.0/ubuntu precise main'; fi"
+    - sh -c "if [ '$DB' = 'mariadb' ]; then sudo apt-get update; fi"
+    - sh -c "if [ '$DB' = 'mariadb' ]; then sudo apt-get purge mysql*; fi"
+    - sh -c "if [ '$DB' = 'mariadb' ]; then sudo apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install mariadb-server-10.0 -y; fi"
+    - sh -c "if [ '$DB' = 'postgres92' ]; then sudo /etc/init.d/postgresql stop && sudo /etc/init.d/postgresql start 9.2; fi"
+    - sh -c "if [ '$DB' = 'postgres93' ]; then sudo /etc/init.d/postgresql stop && sudo /etc/init.d/postgresql start 9.3; fi"
     - mysql -e "create database db_migrate_test;"
     - createdb db_migrate_test
     - cp test/db.config.ci test/db.config.json

@@ -6,13 +6,15 @@ var driver = require('../../lib/driver');
 
 var config = require('../db.config.json').mysql;
 
+global.migrationTable = 'migrations';
+
 var dbName = config.database;
 driver.connect(config, function(err, db) {
     assert.isNull(err);
   vows.describe('mysql').addBatch({
     'createTable': {
       topic: function() {
-        db.createTable('Event', {
+        db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
           str: { type: dataType.STRING, unique: true, defaultValue: 'foo' },
           txt: { type: dataType.TEXT, notNull: true },
@@ -26,7 +28,7 @@ driver.connect(config, function(err, db) {
       },
 
       teardown: function() {
-        db.dropTable('Event', this.callback);
+        db.dropTable('event', this.callback);
       },
 
       'has table metadata': {
@@ -41,7 +43,7 @@ driver.connect(config, function(err, db) {
 
         'containing the event table': function(err, tables) {
           assert.equal(tables.length, 1);
-          assert.equal(tables[0].getName(), 'Event');
+          assert.equal(tables[0].getName(), 'event');
         }
       },
 
@@ -51,7 +53,7 @@ driver.connect(config, function(err, db) {
             if (err) {
               return this.callback(err);
             }
-            meta.getColumns('Event', this.callback);
+            meta.getColumns('event', this.callback);
           }.bind(this));
         },
 
@@ -122,13 +124,13 @@ driver.connect(config, function(err, db) {
   }).addBatch({
     'dropTable': {
       topic: function() {
-        db.createTable('Event', {
+        db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true }
         }, function(err) {
           if (err) {
             return this.callback(err);
           }
-          db.dropTable('Event', this.callback.bind(this, null));
+          db.dropTable('event', this.callback.bind(this, null));
         }.bind(this));
       },
 
@@ -151,10 +153,10 @@ driver.connect(config, function(err, db) {
   }).addBatch({
     'renameTable': {
       topic: function() {
-        db.createTable('Event', {
+        db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true }
         }, function() {
-          db.renameTable('Event', 'functions', this.callback.bind(this, null));
+          db.renameTable('event', 'functions', this.callback.bind(this, null));
         }.bind(this));
       },
 
@@ -182,15 +184,15 @@ driver.connect(config, function(err, db) {
   }).addBatch({
     'addColumn': {
       topic: function() {
-        db.createTable('Event', {
+        db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true }
         }, function() {
-          db.addColumn('Event', 'title', 'string', this.callback.bind(this, null));
+          db.addColumn('event', 'title', 'string', this.callback.bind(this, null));
         }.bind(this));
       },
 
       teardown: function() {
-        db.dropTable('Event', this.callback);
+        db.dropTable('event', this.callback);
       },
 
       'has column metadata': {
@@ -199,7 +201,7 @@ driver.connect(config, function(err, db) {
             if (err) {
               return this.callback(err);
             }
-            meta.getColumns('Event', this.callback);
+            meta.getColumns('event', this.callback);
           }.bind(this));
         },
 
@@ -215,17 +217,17 @@ driver.connect(config, function(err, db) {
   }).addBatch({
     'removeColumn': {
       topic: function() {
-        db.createTable('Event', {
+        db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true }
         }, function() {
-          db.addColumn('Event', 'title', 'string', function(err) {
-            db.removeColumn('Event', 'title', this.callback.bind(this, null));
+          db.addColumn('event', 'title', 'string', function(err) {
+            db.removeColumn('event', 'title', this.callback.bind(this, null));
           }.bind(this));
         }.bind(this));
       },
 
       teardown: function() {
-        db.dropTable('Event', this.callback);
+        db.dropTable('event', this.callback);
       },
 
       'has column metadata': {
@@ -234,7 +236,7 @@ driver.connect(config, function(err, db) {
             if (err) {
               return this.callback(err);
             }
-            meta.getColumns('Event', this.callback);
+            meta.getColumns('event', this.callback);
           }.bind(this));
         },
 
@@ -249,17 +251,17 @@ driver.connect(config, function(err, db) {
     'renameColumn': {
       topic: function() {
         driver.connect(config, function(err) {
-          db.createTable('Event', {
+          db.createTable('event', {
             id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
             title: dataType.STRING
           }, function() {
-            db.renameColumn('Event', 'title', 'new_title', this.callback.bind(this, null));
+            db.renameColumn('event', 'title', 'new_title', this.callback.bind(this, null));
           }.bind(this));
         }.bind(this));
       },
 
       teardown: function() {
-        db.dropTable('Event', this.callback);
+        db.dropTable('event', this.callback);
       },
 
       'has column metadata': {
@@ -268,7 +270,7 @@ driver.connect(config, function(err, db) {
             if (err) {
               return this.callback(err);
             }
-            meta.getColumns('Event', this.callback);
+            meta.getColumns('event', this.callback);
           }.bind(this));
         },
 
@@ -284,20 +286,25 @@ driver.connect(config, function(err, db) {
   }).addBatch({
     'changeColumn': {
       topic: function() {
-        db.createTable('Event', {
+        db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
-          txt: { type: dataType.STRING, notNull: true, defaultValue: "foo", unique: true }
+          txt: { type: dataType.STRING, notNull: true, defaultValue: "foo", unique: true },
+          keep_id: { type: dataType.INTEGER, notNull: false, unique: true }
         }, function(err) {
           if (err) {
             return this.callback(err);
           }
-          var spec = { type: dataType.STRING, notNull: false, defaultValue: 'foo2' };
-          db.changeColumn('Event', 'txt', spec, this.callback.bind(this, null));
+          var spec = { type: dataType.STRING, notNull: false, unique: false, defaultValue: 'foo2' },
+              spec2 = { type: dataType.INTEGER, notNull: true, unsigned: true };
+
+          db.changeColumn('event', 'txt', spec, function() {
+            db.changeColumn('event', 'keep_id', spec2, this.callback.bind(this, null));
+          }.bind(this));
         }.bind(this));
       },
 
       teardown: function() {
-        db.dropTable('Event', this.callback);
+        db.dropTable('event', this.callback);
       },
 
       'has column metadata': {
@@ -306,17 +313,22 @@ driver.connect(config, function(err, db) {
             if (err) {
               return this.callback(err);
             }
-            meta.getColumns('Event', this.callback);
+            meta.getColumns('event', this.callback);
           }.bind(this));
         },
 
         'with changed title column': function(err, columns) {
           assert.isNotNull(columns);
-          assert.equal(columns.length, 2);
+          assert.equal(columns.length, 3);
           var column = findByName(columns, 'txt');
           assert.equal(column.getName(), 'txt');
           assert.equal(column.isNullable(), true);
           assert.equal(column.getDefaultValue(), "foo2");
+          assert.equal(column.isUnique(), false);
+
+          column = findByName(columns, 'keep_id');
+          assert.equal(column.getName(), 'keep_id');
+          assert.equal(column.isNullable(), false);
           assert.equal(column.isUnique(), true);
         }
       }
@@ -324,16 +336,16 @@ driver.connect(config, function(err, db) {
   }).addBatch({
     'addIndex': {
       topic: function() {
-        db.createTable('Event', {
+        db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
           title: { type: dataType.STRING }
         }, function() {
-          db.addIndex('Event', 'event_title', 'title', this.callback.bind(this, null));
+          db.addIndex('event', 'event_title', 'title', this.callback.bind(this, null));
         }.bind(this));
       },
 
       teardown: function() {
-        db.dropTable('Event', this.callback);
+        db.dropTable('event', this.callback);
       },
 
       'preserves case': {
@@ -349,7 +361,7 @@ driver.connect(config, function(err, db) {
         'of the functions original table': function(err, tables) {
           assert.isNotNull(tables);
           assert.equal(tables.length, 1);
-          assert.equal(tables[0].getName(), 'Event');
+          assert.equal(tables[0].getName(), 'event');
         }
       },
 
@@ -359,7 +371,7 @@ driver.connect(config, function(err, db) {
             if (err) {
               return this.callback(err);
             }
-            meta.getIndexes('Event', this.callback);
+            meta.getIndexes('event', this.callback);
           }.bind(this));
         },
 
@@ -374,29 +386,41 @@ driver.connect(config, function(err, db) {
       }
     }
   }).addBatch({
-    'addForeignKey': {
+    'columnForeignKeySpec': {
       topic: function() {
-        db.createTable('Event', {
-          id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
-          event_id: { type: dataType.INTEGER, notNull: true },
-          title: { type: dataType.STRING }
-        }, function() {
-          db.createTable('EventType', {
+        db.createTable('event_type', {
+
             id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
             title: { type: dataType.STRING }
-          }, function () {
-            db.addForeignKey('Event', 'EventType', 'fk_Event_EventType', {
-              'event_id': 'id'
-            }, {
-              onDelete: 'CASCADE'
-            }, this.callback.bind(this, null));
-          }.bind(this));
+          }, function() {
+
+            db.createTable('event', {
+            id: {
+              type: dataType.INTEGER,
+              primaryKey: true,
+              autoIncrement: true
+            },
+            event_id: {
+              type: dataType.INTEGER,
+              notNull: true,
+              foreignKey: {
+              name: 'fk_event_event_type',
+              table: 'event_type',
+              mapping: 'id',
+              rules: {
+                    onDelete: 'CASCADE'
+                },
+            } },
+            title: {
+              type: dataType.STRING
+            }
+          }, this.callback.bind(this, null));
         }.bind(this));
       },
 
       teardown: function() {
-        db.dropTable('Event');
-        db.dropTable('EventType', this.callback);
+        db.dropTable('event');
+        db.dropTable('event_type', this.callback);
       },
 
       'sets usage and constraints': {
@@ -416,14 +440,154 @@ driver.connect(config, function(err, db) {
             '  usg.TABLE_SCHEMA = ?',
             '  AND usg.TABLE_NAME = ?',
             '  AND usg.COLUMN_NAME = ?'].join('\n');
-          db.runSql(metaQuery, dbName, 'Event', 'event_id', this.callback);
+          db.runSql(metaQuery, dbName, 'event', 'event_id', this.callback);
         },
 
         'with correct references': function(err, rows) {
           assert.isNotNull(rows);
           assert.equal(rows.length, 1);
           var row = rows[0];
-          assert.equal(row.REFERENCED_TABLE_NAME, 'EventType');
+          assert.equal(row.REFERENCED_TABLE_NAME, 'event_type');
+          assert.equal(row.REFERENCED_COLUMN_NAME, 'id');
+        },
+
+        'and correct rules': function(err, rows) {
+          assert.isNotNull(rows);
+          assert.equal(rows.length, 1);
+          var row = rows[0];
+          assert.equal(row.UPDATE_RULE, 'NO ACTION');
+          assert.equal(row.DELETE_RULE, 'CASCADE');
+        }
+      }
+    }
+  }).addBatch({
+    'explicitColumnForeignKeySpec': {
+      topic: function() {
+        db.createTable('event_type', {
+
+            id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
+            title: { type: dataType.STRING }
+          }, function() {
+
+            db.createTable('event', {
+            id: {
+              type: dataType.INTEGER,
+              primaryKey: true,
+              autoIncrement: true
+            },
+            event_id: {
+              type: dataType.INTEGER,
+              notNull: true,
+              foreignKey: {
+              name: 'fk_event_event_type',
+              table: 'event_type',
+              mapping: {
+                event_id: 'id'
+              },
+              rules: {
+                    onDelete: 'CASCADE'
+                },
+            } },
+            title: {
+              type: dataType.STRING
+            }
+          }, this.callback.bind(this, null));
+        }.bind(this));
+      },
+
+      teardown: function() {
+        db.dropTable('event');
+        db.dropTable('event_type', this.callback);
+      },
+
+      'sets usage and constraints': {
+        topic: function() {
+          var metaQuery = ['SELECT',
+            '  usg.REFERENCED_TABLE_NAME,',
+            '  usg.REFERENCED_COLUMN_NAME,',
+            '    cstr.UPDATE_RULE,',
+            '  cstr.DELETE_RULE',
+            'FROM',
+            '  `INFORMATION_SCHEMA`.`KEY_COLUMN_USAGE` AS usg',
+            'INNER JOIN',
+            '  `INFORMATION_SCHEMA`.`REFERENTIAL_CONSTRAINTS` AS cstr',
+            '    ON  cstr.CONSTRAINT_SCHEMA = usg.TABLE_SCHEMA',
+            '    AND cstr.CONSTRAINT_NAME = usg.CONSTRAINT_NAME',
+            'WHERE',
+            '  usg.TABLE_SCHEMA = ?',
+            '  AND usg.TABLE_NAME = ?',
+            '  AND usg.COLUMN_NAME = ?'].join('\n');
+          db.runSql(metaQuery, dbName, 'event', 'event_id', this.callback);
+        },
+
+        'with correct references': function(err, rows) {
+          assert.isNotNull(rows);
+          assert.equal(rows.length, 1);
+          var row = rows[0];
+          assert.equal(row.REFERENCED_TABLE_NAME, 'event_type');
+          assert.equal(row.REFERENCED_COLUMN_NAME, 'id');
+        },
+
+        'and correct rules': function(err, rows) {
+          assert.isNotNull(rows);
+          assert.equal(rows.length, 1);
+          var row = rows[0];
+          assert.equal(row.UPDATE_RULE, 'NO ACTION');
+          assert.equal(row.DELETE_RULE, 'CASCADE');
+        }
+      }
+    }
+  }).addBatch({
+    'addForeignKey': {
+      topic: function() {
+        db.createTable('event', {
+          id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
+          event_id: { type: dataType.INTEGER, notNull: true },
+          title: { type: dataType.STRING }
+        }, function() {
+          db.createTable('event_type', {
+            id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
+            title: { type: dataType.STRING }
+          }, function () {
+            db.addForeignKey('event', 'event_type', 'fk_event_event_type', {
+              'event_id': 'id'
+            }, {
+              onDelete: 'CASCADE'
+            }, this.callback.bind(this, null));
+          }.bind(this));
+        }.bind(this));
+      },
+
+      teardown: function() {
+        db.dropTable('event');
+        db.dropTable('event_type', this.callback);
+      },
+
+      'sets usage and constraints': {
+        topic: function() {
+          var metaQuery = ['SELECT',
+            '  usg.REFERENCED_TABLE_NAME,',
+            '  usg.REFERENCED_COLUMN_NAME,',
+            '    cstr.UPDATE_RULE,',
+            '  cstr.DELETE_RULE',
+            'FROM',
+            '  `INFORMATION_SCHEMA`.`KEY_COLUMN_USAGE` AS usg',
+            'INNER JOIN',
+            '  `INFORMATION_SCHEMA`.`REFERENTIAL_CONSTRAINTS` AS cstr',
+            '    ON  cstr.CONSTRAINT_SCHEMA = usg.TABLE_SCHEMA',
+            '    AND cstr.CONSTRAINT_NAME = usg.CONSTRAINT_NAME',
+            'WHERE',
+            '  usg.TABLE_SCHEMA = ?',
+            '  AND usg.TABLE_NAME = ?',
+            '  AND usg.COLUMN_NAME = ?'].join('\n');
+          db.runSql(metaQuery, dbName, 'event', 'event_id', this.callback);
+        },
+
+        'with correct references': function(err, rows) {
+          assert.isNotNull(rows);
+          assert.equal(rows.length, 1);
+          var row = rows[0];
+          assert.equal(row.REFERENCED_TABLE_NAME, 'event_type');
           assert.equal(row.REFERENCED_COLUMN_NAME, 'id');
         },
 
@@ -439,29 +603,29 @@ driver.connect(config, function(err, db) {
   }).addBatch({
     'removeForeignKey': {
         topic: function() {
-          db.createTable('Event', {
+          db.createTable('event', {
             id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
             event_id: { type: dataType.INTEGER, notNull: true },
             title: { type: dataType.STRING }
           }, function() {
-            db.createTable('EventType', {
+            db.createTable('event_type', {
               id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
               title: { type: dataType.STRING }
             }, function () {
-              db.addForeignKey('Event', 'EventType', 'fk_Event_EventType', {
+              db.addForeignKey('event', 'event_type', 'fk_event_event_type', {
                 'event_id': 'id'
               }, {
                 onDelete: 'CASCADE'
               }, function () {
-                db.removeForeignKey('Event', 'fk_Event_EventType', this.callback.bind(this, null));
+                db.removeForeignKey('event', 'fk_event_event_type', this.callback.bind(this, null));
               }.bind(this));
             }.bind(this));
           }.bind(this));
         },
 
         teardown: function() {
-          db.dropTable('Event');
-          db.dropTable('EventType', this.callback);
+          db.dropTable('event');
+          db.dropTable('event_type', this.callback);
         },
       },
 
@@ -482,7 +646,7 @@ driver.connect(config, function(err, db) {
             '  usg.TABLE_SCHEMA = ?',
             '  AND usg.TABLE_NAME = ?',
             '  AND usg.COLUMN_NAME = ?'].join('\n');
-          db.runSql(metaQuery, dbName, 'Event', 'event_id', this.callback);
+          db.runSql(metaQuery, dbName, 'event', 'event_id', this.callback);
         },
 
         'completely': function(err, rows) {
@@ -514,20 +678,20 @@ driver.connect(config, function(err, db) {
   }).addBatch({
     'insert': {
       topic: function() {
-        db.createTable('Event', {
+        db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
           title: { type: dataType.STRING }
         }, function() {
-          db.insert('Event', ['id','title'], [2,'title'], this.callback.bind(this, null));
+          db.insert('event', ['id','title'], [2,'title'], this.callback.bind(this, null));
         }.bind(this));
       },
 
       teardown: function() {
-        db.dropTable('Event', this.callback);
+        db.dropTable('event', this.callback);
       },
 
       'with additional row' : function() {
-        db.runSql("SELECT * from Event", function(err, data) {
+        db.runSql("SELECT * from event", function(err, data) {
           assert.equal(data.length, 1);
         });
       }
@@ -535,20 +699,20 @@ driver.connect(config, function(err, db) {
   }).addBatch({
     'insertWithSingleQuotes': {
       topic: function() {
-        db.createTable('Event', {
+        db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
           title: { type: dataType.STRING }
         }, function() {
-          db.insert('Event', ['id','title'], [2,"Bill's Mother's House"], this.callback.bind(this, null));
+          db.insert('event', ['id','title'], [2,"Bill's Mother's House"], this.callback.bind(this, null));
         }.bind(this));
       },
 
       teardown: function() {
-        db.dropTable('Event', this.callback);
+        db.dropTable('event', this.callback);
       },
 
       'with additional row' : function() {
-        db.runSql("SELECT * from Event", function(err, data) {
+        db.runSql("SELECT * from event", function(err, data) {
           assert.equal(data.length, 1);
         });
       }
@@ -556,18 +720,18 @@ driver.connect(config, function(err, db) {
   }).addBatch({
     'removeIndex': {
       topic: function() {
-        db.createTable('Event', {
+        db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
           title: { type: dataType.STRING }
         }, function() {
-          db.addIndex('Event', 'event_title', 'title', function(err) {
-            db.removeIndex('Event', 'event_title', this.callback.bind(this, null));
+          db.addIndex('event', 'event_title', 'title', function(err) {
+            db.removeIndex('event', 'event_title', this.callback.bind(this, null));
           }.bind(this));
         }.bind(this));
       },
 
       teardown: function() {
-        db.dropTable('Event', this.callback);
+        db.dropTable('event', this.callback);
       },
 
       'has resulting index metadata': {
@@ -576,7 +740,7 @@ driver.connect(config, function(err, db) {
             if (err) {
               return this.callback(err);
             }
-            meta.getIndexes('Event', this.callback);
+            meta.getIndexes('event', this.callback);
           }.bind(this));
         },
 
@@ -589,11 +753,11 @@ driver.connect(config, function(err, db) {
   }).addBatch({
     'removeIndexInvalidArgs': {
       topic: function() {
-        db.createTable('Event', {
+        db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
           title: { type: dataType.STRING }
         }, function() {
-          db.addIndex('Event', 'event_title', 'title', function(err) {
+          db.addIndex('event', 'event_title', 'title', function(err) {
             db.removeIndex('event_title', this.callback.bind(this, null));
           }.bind(this));
         }.bind(this));
@@ -605,13 +769,13 @@ driver.connect(config, function(err, db) {
       },
 
       teardown: function() {
-        db.dropTable('Event', this.callback);
+        db.dropTable('event', this.callback);
       }
     }
   }).addBatch({
-    '_createMigrationsTable': {
+    'createMigrationsTable': {
       topic: function() {
-        db._createMigrationsTable(this.callback.bind(this, null));
+        db.createMigrationsTable(this.callback.bind(this, null));
       },
 
       teardown: function() {

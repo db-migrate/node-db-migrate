@@ -6,6 +6,8 @@ var driver = require('../../lib/driver');
 
 var config = require('../db.config.json').pg;
 
+global.migrationTable = 'migrations';
+
 driver.connect(config, function(err, db) {
   vows.describe('pg').addBatch({
     'createTable': {
@@ -288,10 +290,15 @@ driver.connect(config, function(err, db) {
       topic: function() {
         db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
-          txt: { type: dataType.TEXT, notNull: true, defaultValue: "foo" }
+          txt: { type: dataType.TEXT, notNull: true, unique: true, defaultValue: "foo" },
+          keep_id: { type: dataType.INTEGER, notNull: true, unique: true }
         }, function() {
-          var spec = { notNull: false, defaultValue: "foo2", unique: true };
-          db.changeColumn('event', 'txt', spec, this.callback.bind(this, null));
+          var spec = { notNull: false, defaultValue: "foo2", unique: false },
+              spec2 = { notNull: true, unsigned: true };
+
+          db.changeColumn('event', 'txt', spec, function() {
+            db.changeColumn('event', 'keep_id', spec2, this.callback.bind(this, null));
+          }.bind(this));
         }.bind(this));
       },
 
@@ -307,11 +314,16 @@ driver.connect(config, function(err, db) {
 
         'with changed title column': function(err, columns) {
           assert.isNotNull(columns);
-          assert.equal(columns.length, 2);
+          assert.equal(columns.length, 3);
           var column = findByName(columns, 'txt');
           assert.equal(column.getName(), 'txt');
           assert.equal(column.isNullable(), true);
           assert.equal(column.getDefaultValue(), "'foo2'::text");
+          assert.equal(column.isUnique(), false);
+
+          column = findByName(columns, 'keep_id');
+          assert.equal(column.getName(), 'keep_id');
+          assert.equal(column.isNullable(), false);
           assert.equal(column.isUnique(), true);
         }
       },
@@ -358,18 +370,18 @@ driver.connect(config, function(err, db) {
   }).addBatch({
     'addForeignKey': {
       topic: function() {
-        db.createTable('Event', {
+        db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
           event_id: { type: dataType.INTEGER, notNull: true },
           title: { type: dataType.STRING }
         }, function() {
-          db.createTable('EventType', {
+          db.createTable('event_type', {
             id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
             title: { type: dataType.STRING }
           }, function () {
             // lowercase table names because they are quoted in the function
             // and pg uses lowercase internally
-            db.addForeignKey('event', 'eventtype', 'fk_Event_EventType', {
+            db.addForeignKey('event', 'event_type', 'fk_event_event_type', {
               'event_id': 'id'
             }, {
               onDelete: 'CASCADE'
@@ -406,7 +418,7 @@ driver.connect(config, function(err, db) {
           assert.isNotNull(rows);
           assert.equal(rows.length, 1);
           var row = rows[0];
-          assert.equal(row.table_name, 'eventtype');
+          assert.equal(row.table_name, 'event_type');
           assert.equal(row.column_name, 'id');
         },
 
@@ -422,35 +434,35 @@ driver.connect(config, function(err, db) {
 
       teardown: function() {
         db.dropTable('event');
-        db.dropTable('eventtype', this.callback);
+        db.dropTable('event_type', this.callback);
       }
     }
   }).addBatch({
     'removeForeignKey': {
       topic: function() {
-        db.createTable('Event', {
+        db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
           event_id: { type: dataType.INTEGER, notNull: true },
           title: { type: dataType.STRING }
         }, function() {
-          db.createTable('EventType', {
+          db.createTable('event_type', {
             id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
             title: { type: dataType.STRING }
           }, function () {
-            db.addForeignKey('event', 'eventtype', 'fk_Event_EventType', {
+            db.addForeignKey('event', 'event_type', 'fk_event_event_type', {
               'event_id': 'id'
             }, {
               onDelete: 'CASCADE'
             }, function () {
-              db.removeForeignKey('event', 'fk_Event_EventType', this.callback.bind(this, null));
+              db.removeForeignKey('event', 'fk_event_event_type', this.callback.bind(this, null));
             }.bind(this));
           }.bind(this));
         }.bind(this));
       },
 
       teardown: function() {
-        db.dropTable('Event');
-        db.dropTable('EventType', this.callback);
+        db.dropTable('event');
+        db.dropTable('event_type', this.callback);
       },
 
       'removes usage and constraints': {
@@ -557,9 +569,9 @@ driver.connect(config, function(err, db) {
       }
     }
   }).addBatch({
-    '_createMigrationsTable': {
+    'createMigrationsTable': {
       topic: function() {
-        db._createMigrationsTable(this.callback.bind(this, null));
+        db.createMigrationsTable(this.callback.bind(this, null));
       },
 
       'has migrations table': {

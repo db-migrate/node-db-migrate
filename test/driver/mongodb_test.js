@@ -194,7 +194,7 @@ driver.connect(config, function(err, db) {
  		} 
  	})
  	.addBatch({
- 		'_createMigrationsTable': {
+ 		'createMigrationsTable': {
  			topic: function() {
  				db._createMigrationsCollection(this.callback);
  			},
@@ -259,7 +259,7 @@ driver.connect(config, function(err, db) {
  		} 
  	})
  	.addBatch({
- 		'_createMigrationsTable': {
+ 		'createMigrationsTable': {
  			topic: function() {
  				db._createMigrationsCollection(this.callback);
  			},

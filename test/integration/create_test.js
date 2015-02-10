@@ -109,5 +109,48 @@ vows.describe('create').addBatch({
       assert.match(file, /third-migration-up\.sql$/);
     }
   }
+}).addBatch({
+  'with coffee-file option set to true from config file' : {
+    topic: function() {
+      var configOption = path.join("--config=", __dirname, 'database_with_coffee_file.json');
+      wipeMigrations(function(err) {
+        assert.isNull(err);
+        dbMigrate( 'create', 'fourth migration', configOption).on('exit', this.callback);
+      }.bind(this));
+    },
+    'does not cause an error': function(code) {
+      assert.isNull(code);
+    },
+    'will create a new coffeescript migration': function(code) {
+      var files = fs.readdirSync(path.join(__dirname, 'migrations'));
+      
+      for (var i = 0; i<files.length; i++) {
+        var file = files[i];
+        var stats = fs.statSync(path.join(__dirname, 'migrations', file));
+        if (stats.isFile()) assert.match(file, /fourth-migration\.coffee$/);
+      }
+    },
+  }
+}).addBatch({
+  'with coffee-file option set to true as a command parameter' : {
+    topic: function() {
+      var configOption = path.join("--coffee-file");
+      wipeMigrations(function(err) {
+        assert.isNull(err);
+        dbMigrate( 'create', 'fifth migration', configOption).on('exit', this.callback);
+      }.bind(this));
+    },
+    'does not cause an error': function(code) {
+      assert.isNull(code);
+    },
+    'will create a new coffeescript migration': function(code) {
+      var files = fs.readdirSync(path.join(__dirname, 'migrations'));
+      
+      for (var i = 0; i<files.length; i++) {
+        var file = files[i];
+        var stats = fs.statSync(path.join(__dirname, 'migrations', file));
+        if (stats.isFile()) assert.match(file, /fifth-migration\.coffee$/);
+      }
+    },
+  }
 }).export(module);
-
