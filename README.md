@@ -8,7 +8,21 @@ Database migration framework for node.js
 
 ## Installation
 
+    $ npm install -g db-migrate
+
+Now you can execute via:
+
+    $ db-migrate
+
+### As local module
+
+Want to use db-migrate as local module?
+
     $ npm install db-migrate
+
+Now you can execute via:
+
+    $ node node_modules/db-migrate/bin/db-migrate
 
 ## Supported Databases
 
@@ -164,7 +178,7 @@ The sql files will have the following content:
 And the javascript file with the following code that load these sql files:
 
 ```javascript
-var dbm = require('db-migrate');
+dbm = dbm || require('db-migrate');
 var type = dbm.dataType;
 var fs = require('fs');
 var path = require('path');

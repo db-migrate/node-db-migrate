@@ -12,6 +12,10 @@ var log = require('../lib/log');
 var pkginfo = require('pkginfo')(module, 'version');
 var dotenv = require('dotenv');
 
+//global declaration for detection like it's done in umigrate
+dbm = require( '../' );
+async = require( 'async' );
+
 dotenv.load();
 
 process.on('uncaughtException', function(err) {
@@ -86,6 +90,7 @@ if (argv.help || argv._.length === 0) {
 }
 
 global.migrationTable = argv.table;
+global.dbm = dbm;
 global.verbose = argv.verbose;
 global.dryRun = argv['dry-run'];
 if(global.dryRun) {
