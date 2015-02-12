@@ -31,7 +31,7 @@ var argv = optimist
       'sql-file': false,
       config: process.cwd() + '/database.json',
       'migrations-dir': process.cwd() + '/migrations' })
-    .usage('Usage: db-migrate [up|down|reset|create] [[dbname/]migrationName|all|dbname] [options]')
+    .usage('Usage: db-migrate [up|down|reset|create] [[dbname/]migrationName|all] [options]')
 
     .describe('env', 'The environment to run the migrations under (dev, test, prod).')
     .alias('e', 'env')
@@ -91,6 +91,7 @@ if (argv.help || argv._.length === 0) {
 
 global.migrationTable = argv.table;
 global.dbm = dbm;
+global.matching = '';
 global.verbose = argv.verbose;
 global.dryRun = argv['dry-run'];
 if(global.dryRun) {
@@ -125,6 +126,8 @@ function loadConfig() {
 }
 
 function executeCreate() {
+  var folder, path;
+
   if(argv._.length === 0) {
     log.error('\'migrationName\' is required.');
     optimist.showHelp();
@@ -138,13 +141,28 @@ function executeCreate() {
     }
 
     argv.title = argv._.shift();
+    folder = argv.title.split('/');
+
+    argv.title = folder[folder.length - 2] || folder[0];
+    path = argv['migrations-dir'];
+
+    if(folder.length > 1) {
+
+      path += '/';
+
+      for(var i = 0; i < folder.length - 1; ++i) {
+
+        path += folder[i] + '/';
+      }
+    }
+
     var templateType = Migration.TemplateType.DEFAULT_JS;
     if (shouldCreateSqlFiles()) {
       templateType = Migration.TemplateType.SQL_FILE_LOADER;
     } else if (shouldCreateCoffeeFile()) {
       templateType = Migration.TemplateType.DEFAULT_COFFEE;
     }
-    var migration = new Migration(argv.title + (shouldCreateCoffeeFile() ? '.coffee' : '.js'), argv['migrations-dir'], new Date(), templateType);
+    var migration = new Migration(argv.title + (shouldCreateCoffeeFile() ? '.coffee' : '.js'), path, new Date(), templateType);
     index.createMigration(migration, function(err, migration) {
       assert.ifError(err);
       log.info(util.format('Created migration at %s', migration.path));
@@ -187,12 +205,19 @@ function createSqlFiles() {
 }
 
 function executeUp() {
+
   if(!argv.count) {
     argv.count = Number.MAX_VALUE;
   }
+
   index.connect(config.getCurrent().settings, function(err, migrator) {
     assert.ifError(err);
-    migrator.migrationsDir = path.resolve(argv['migrations-dir']);
+
+    if(global.locTitle)
+        migrator.migrationsDir = path.resolve(argv['migrations-dir'], global.locTitle);
+    else
+      migrator.migrationsDir = path.resolve(argv['migrations-dir']);
+
     migrator.driver.createMigrationsTable(function(err) {
       assert.ifError(err);
       log.verbose('migration table created');
@@ -202,13 +227,17 @@ function executeUp() {
 }
 
 function executeDown() {
+
   if(!argv.count) {
     log.info('Defaulting to running 1 down migration.');
     argv.count = 1;
   }
+
   index.connect(config.getCurrent().settings, function(err, migrator) {
     assert.ifError(err);
+
     migrator.migrationsDir = path.resolve(argv['migrations-dir']);
+
     migrator.driver.createMigrationsTable(function(err) {
       assert.ifError(err);
       migrator.down(argv, onComplete.bind(this, migrator));
@@ -225,7 +254,11 @@ function onComplete(migrator, originalErr) {
 }
 
 function run() {
-  var action = argv._.shift();
+  var action = argv._.shift(),
+      folder = action.split(':');
+
+  action = folder[0];
+
   switch(action) {
     case 'create':
       loadConfig();
@@ -247,6 +280,13 @@ function run() {
           argv.destination = argv._.shift().toString();
         }
       }
+
+      if(folder[1])
+      {
+        global.matching = folder[1];
+        global.migrationMode = folder[1];
+      }
+
       if(action == 'up') {
         executeUp();
       } else {
