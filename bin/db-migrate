@@ -31,7 +31,7 @@ var argv = optimist
       'sql-file': false,
       config: process.cwd() + '/database.json',
       'migrations-dir': process.cwd() + '/migrations' })
-    .usage('Usage: db-migrate [up|down|create] migrationName [options]')
+    .usage('Usage: db-migrate [up|down|reset|create] [[dbname/]migrationName|all|dbname] [options]')
 
     .describe('env', 'The environment to run the migrations under (dev, test, prod).')
     .alias('e', 'env')
@@ -233,9 +233,14 @@ function run() {
       break;
     case 'up':
     case 'down':
+    case 'reset':
       loadConfig();
+
+      if(action === 'reset')
+        argv.count = Number.MAX_VALUE;
+
       if(argv._.length > 0) {
-        if (action == 'down') {
+        if (action === 'down') {
           log.info('Ignoring migration name for down migrations.  Use --count to control how many down migrations are run.');
           argv.destination = null;
         } else {
