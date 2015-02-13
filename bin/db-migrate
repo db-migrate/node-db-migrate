@@ -31,7 +31,7 @@ var argv = optimist
       'sql-file': false,
       config: process.cwd() + '/database.json',
       'migrations-dir': process.cwd() + '/migrations' })
-    .usage('Usage: db-migrate [up|down|reset|create] [[dbname/]migrationName|all] [options]')
+    .usage('Usage: db-migrate [up|down|reset|create|db] [[dbname/]migrationName|all] [options]')
 
     .describe('env', 'The environment to run the migrations under (dev, test, prod).')
     .alias('e', 'env')
@@ -92,6 +92,7 @@ if (argv.help || argv._.length === 0) {
 global.migrationTable = argv.table;
 global.dbm = dbm;
 global.matching = '';
+global.mode;
 global.verbose = argv.verbose;
 global.dryRun = argv['dry-run'];
 if(global.dryRun) {
@@ -245,6 +246,53 @@ function executeDown() {
   });
 }
 
+function executeDB() {
+
+  if(argv._.length > 0) {
+    argv.dbname = argv._.shift().toString();
+  }
+  else {
+
+    log.info('Error: You must enter a database name!');
+    return;
+  }
+
+  index.driver(config.getCurrent().settings, function(err, db)
+  {
+    if(global.mode === 'create')
+    {
+      db.createDatabase(argv.dbname, { ifNotExists: true }, function()
+      {
+        if(err) {
+          log.info('Error: Failed to create database!');
+        }
+        else {
+          log.info('Created database "' + argv.dbname + '"');
+        }
+
+        db.close();
+      });
+    }
+    else if(global.mode === 'drop')
+    {
+      db.dropDatabase(argv.dbname, { ifExists: true }, function()
+      {
+        if(err) {
+          log.info('Error: Failed to drop database!');
+        }
+        else {
+          log.info('Deleted database "' + argv.dbname + '"');
+        }
+
+        db.close();
+      });
+    }
+    else
+      return;
+  });
+
+}
+
 function onComplete(migrator, originalErr) {
   migrator.driver.close(function(err) {
     assert.ifError(originalErr);
@@ -293,6 +341,20 @@ function run() {
         executeDown();
       }
       break;
+
+    case 'db':
+      loadConfig();
+
+      if(folder.length < 1) {
+
+        log.info('Please enter a valid command, i.e. db:create|db:drop');
+      }
+      else {
+
+        global.mode = folder[1];
+        executeDB();
+      }
+    break;
 
     default:
       log.error('Invalid Action: Must be [up|down|create].');

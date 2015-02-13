@@ -44,6 +44,11 @@ exports.connect = function(config, callback) {
   });
 };
 
+exports.driver = function(config, callback) {
+
+  driver.connect(config, callback);
+};
+
 function migrationFiles(files, callback, config, db, close, cb) {
   var file;
 
