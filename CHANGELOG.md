@@ -238,3 +238,23 @@ Improvement:
   - Use JSON.stringify on non-string objects #185 (via @G3z)
   - Add back quotes around foreign key name #189 (via @sitnin)
   - Mask passwords in verbose logging #195 (via @Crotery)
+
+## 0.9.0 (2015-02-14)
+
+Improvement:
+  - Documentation improvements #223, #210, #199, #158, #138 (Tobias Gurtzick @wzrdtales)
+  - Multiple Scope Support (@wzrdtales)
+  - Fixed bug by generalizing the usage of automatic quoting over all current drivers #204, #140, #155 (@wzrdtales)
+  - MongoDB Driver #205, 217 (Tom Calfish @toymachiner62)
+  - Fix error db-migrate command not found, make db-migrate usable as global module #210, #138 (@wzrdtales)
+  - Add coffeescript template #208 (@richardfickling)
+  - Support for Postgresql foreign keys #203 (@dlaxar and @NOtherDev)
+  - Add support to create new databases and schemas #196, #202 (@wzrdtales)
+  - Add ability to change the migration table name #192 (@wzrdtales)
+  - Fix bug with column unique specification #123 (@wzrdtales)
+  - Added support for constraints on columns #35 (@wzrdtales)
+  - Added reset functionality #221 (@wzrdtales)
+  - Aliased "default" option to "env" #219 (@wzrdtales)
+
+Full log at:
+  [v0.9.0](https://github.com/kunklejr/node-db-migrate/issues?q=milestone%3Av0.9.0)
