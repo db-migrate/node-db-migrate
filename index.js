@@ -2,6 +2,7 @@ var recursive = require('final-fs').readdirRecursive;
 var fs = require('fs');
 var driver = require('./lib/driver');
 var path = require('path');
+var log = require('./lib/log');
 var Migrator = require('./lib/migrator');
 
 exports.dataType = require('./lib/data_type');
@@ -17,8 +18,31 @@ exports.connect = function(config, callback) {
 
       if(global.migrationMode !== 'all')
       {
-        global.locTitle = global.migrationMode;
-        callback(null, new Migrator(db, config['migrations-dir']));
+        var switched = false,
+            newConf;
+
+        if(file !== '')
+        {
+
+          try {
+            newConf = require(path.resolve(__dirname, config['migrations-dir'] || 'migrations', file) + '/config.json');
+            switched = true;
+          } catch(e) {}
+        }
+
+        if(switched) {
+
+          db.switchDatabase(newConf, function()
+          {
+            global.locTitle = global.migrationMode;
+            callback(null, new Migrator(db, config['migrations-dir']));
+          });
+        }
+        else
+        {
+          global.locTitle = global.migrationMode;
+          callback(null, new Migrator(db, config['migrations-dir']));
+        }
       }
       else
       {
@@ -50,7 +74,9 @@ exports.driver = function(config, callback) {
 };
 
 function migrationFiles(files, callback, config, db, close, cb) {
-  var file;
+  var file,
+      switched = false,
+      newConf;
 
   if(files.length === 1)
   {
@@ -59,18 +85,32 @@ function migrationFiles(files, callback, config, db, close, cb) {
 
   file = files.pop();
 
-  global.matching = file.substr(file.indexOf(config['migrations-dir'] || 'migrations') +
-      (config['migrations-dir'] || 'migrations').length + 1);
+  if(file !== '')
+  {
 
-  if(global.matching.length === 0)
-    global.matching = '';
+    try {
+      newConf = require('./' + file + '/config.json');
+      log.info('loaded extra config for migration subfolder: "./' + file + '/config.json"');
+      switched = true;
+    } catch(e) {}
+  }
+
+  db.switchDatabase((switched) ? newConf : config.database, function()
+  {
+    global.matching = file.substr(file.indexOf(config['migrations-dir'] || 'migrations') +
+        (config['migrations-dir'] || 'migrations').length + 1);
+
+    if(global.matching.length === 0)
+      global.matching = '';
 
 
-  global.locTitle = global.matching;
-  callback(null, new Migrator(db, config['migrations-dir']));
+    global.locTitle = global.matching;
+    callback(null, new Migrator(db, config['migrations-dir']));
 
-  if(typeof(cb) === 'function')
-    cb();
+    if(typeof(cb) === 'function')
+      cb();
+
+  });
 }
 
 exports.createMigration = function(migration, callback) {

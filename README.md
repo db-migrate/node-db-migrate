@@ -341,6 +341,28 @@ Alternatively, you can specify a DATABASE_URL
 environment variable that will be used in place of the configuration
 file settings. This is helpful for use with Heroku.
 
+## Multiple migration scopes
+
+You can have multiple migration scopes, which are subfolders within your migrations folder. A scope gets called like the following:
+
+    $ db-migrate up:myScope
+
+#### Scope Configuration
+
+You can also configure the scope to specify a sub configuration. Currently you can only define database and schema within this config.
+
+This config file is used to tell db-migrate to switch to the `database` or
+`schema`. Databases is used for most databases, except **postgres**
+which needs the schema variable.
+
+It's currently also not possible to switch the database over this config with **postgres**.
+
+```json
+{
+  "database": "test",
+  "schema": "test"
+}
+```
 ## Defaults
 
 ## Migrations API - SQL
