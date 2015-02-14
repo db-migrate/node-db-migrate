@@ -3,6 +3,7 @@
 [![devDependency Status](https://david-dm.org/kunklejr/node-db-migrate/dev-status.svg)](https://david-dm.org/kunklejr/node-db-migrate#info=devDependencies)
 
 # db-migrate
+[![NPM](https://nodei.co/npm/db-migrate.png?downloads=true&downloadRank=true)](https://nodei.co/npm/db-migrate/)
 
 Database migration framework for node.js
 
