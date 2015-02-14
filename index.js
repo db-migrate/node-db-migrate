@@ -14,21 +14,18 @@ exports.connect = function(config, callback) {
 
     if(global.migrationMode)
     {
-      var dirPath = path.resolve(__dirname, config['migrations-dir'] || 'migrations');
+      var dirPath = path.resolve(config['migrations-dir'] || 'migrations');
 
       if(global.migrationMode !== 'all')
       {
         var switched = false,
             newConf;
 
-        if(file !== '')
-        {
-
-          try {
-            newConf = require(path.resolve(__dirname, config['migrations-dir'] || 'migrations', file) + '/config.json');
-            switched = true;
-          } catch(e) {}
-        }
+        try {
+          newConf = require(path.resolve(config['migrations-dir'] || 'migrations', global.migrationMode) + '/config.json');
+          log.info('loaded extra config for migration subfolder: "' + global.migrationMode + '/config.json"');
+          switched = true;
+        } catch(e) {}
 
         if(switched) {
 
@@ -89,8 +86,8 @@ function migrationFiles(files, callback, config, db, close, cb) {
   {
 
     try {
-      newConf = require('./' + file + '/config.json');
-      log.info('loaded extra config for migration subfolder: "./' + file + '/config.json"');
+      newConf = require(path.resolve(file + '/config.json'));
+      log.info('loaded extra config for migration subfolder: "' + file + '/config.json"');
       switched = true;
     } catch(e) {}
   }
@@ -115,7 +112,7 @@ function migrationFiles(files, callback, config, db, close, cb) {
 
 exports.createMigration = function(migration, callback) {
   migration.write(function(err) {
-	if (err) { callback(err); return; }
-	callback(null, migration);
+  if (err) { callback(err); return; }
+  callback(null, migration);
   });
 };
