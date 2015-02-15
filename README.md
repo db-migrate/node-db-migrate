@@ -330,7 +330,12 @@ You can also specify environment variables in your config file by using a specia
 In this case, db-migrate will search your environment for variables
 called `PRODUCTION_USERNAME` and `PRODUCTION_PASSWORD`, and use those values for the corresponding configuration entry.
 
-Note that if the settings for an environment are represented by a single string that string will be parsed as a database URL.
+Note that if the settings for an environment are represented by a single string that string will be parsed as a database URL.  You can also provide a database URL through environmental variable like this:
+```javascript
+{
+  "prod": {"ENV": "PRODUCTION_URL"}
+}
+```
 
 You can pass the -e or --env option to db-migrate to select the environment you want to run migrations against. The --config option can be used to specify the path to your database.json file if it's not in the current working directory.
 
