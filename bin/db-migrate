@@ -27,6 +27,7 @@ var argv = optimist
     .default({
       verbose: false,
       table: 'migrations',
+      'seeds-table': 'seeds',
       'force-exit': false,
       'sql-file': false,
       config: process.cwd() + '/database.json',
@@ -77,6 +78,9 @@ var argv = optimist
     .alias('t', 'table')
     .string('t')
 
+    .describe('seeds-table', 'Set the name of the seeds table, which stores the seed history.')
+    .string('seeds-table')
+
     .argv;
 
 if (argv.version) {
@@ -90,6 +94,7 @@ if (argv.help || argv._.length === 0) {
 }
 
 global.migrationTable = argv.table;
+global.seedsTable = argv['seeds-table'];
 global.dbm = dbm;
 global.matching = '';
 global.mode;
