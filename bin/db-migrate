@@ -31,7 +31,9 @@ var argv = optimist
       'force-exit': false,
       'sql-file': false,
       config: process.cwd() + '/database.json',
-      'migrations-dir': process.cwd() + '/migrations' })
+      'migrations-dir': process.cwd() + '/migrations',
+      'vcseeder-dir': process.cwd() + 'VCSeeder',
+      'staticseeder-dir': process.cwd() + 'Seeder'})
     .usage('Usage: db-migrate [up|down|reset|create|db] [[dbname/]migrationName|all] [options]')
 
     .describe('env', 'The environment to run the migrations under (dev, test, prod).')
@@ -80,6 +82,12 @@ var argv = optimist
 
     .describe('seeds-table', 'Set the name of the seeds table, which stores the seed history.')
     .string('seeds-table')
+
+    .describe('vcseeder-dir', 'Set the path to the Version Controlled Seeder directory.')
+    .string('vcseeder-dir')
+
+    .describe('staticseeder-dir', 'Set the path to the Seeder directory.')
+    .string('staticseeder-dir')
 
     .argv;
 
