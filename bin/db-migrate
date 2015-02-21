@@ -8,6 +8,7 @@ var mkdirp = require('mkdirp');
 var optimist = require('optimist');
 var config = require('../lib/config.js');
 var index = require('../index');
+var Migration = require('../lib/migration.js');
 var log = require('../lib/log');
 var pkginfo = require('pkginfo')(module, 'version');
 var dotenv = require('dotenv');
