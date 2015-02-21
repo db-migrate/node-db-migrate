@@ -1,6 +1,6 @@
 var vows = require('vows');
 var assert = require('assert');
-var migration = require('../lib/migration.js');
+var Migration = require('../lib/migration.js');
 
 var date = createDateForTest();
 var dateString = '20140220143050';
