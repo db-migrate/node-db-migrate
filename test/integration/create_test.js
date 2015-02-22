@@ -174,8 +174,7 @@ vows.describe('create').addBatch({
       }.bind(this));
     },
     'does cause an error': function(error, code) {
-      assert.equal(error, null);
-      assert.equal(code, null);
+      assert.equal(error, 1);
     },
     'did create the new migration': function(error, code) {
       var files = fs.readdirSync(path.join(__dirname, 'migrations'));
