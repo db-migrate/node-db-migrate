@@ -33,6 +33,7 @@ var argv = optimist
       'seeds-table': 'seeds',
       'force-exit': false,
       'sql-file': false,
+      'no-transactions': false,
       config: process.cwd() + '/database.json',
       'migrations-dir': process.cwd() + '/migrations',
       'vcseeder-dir': process.cwd() + '/VCSeeder',
@@ -92,6 +93,9 @@ var argv = optimist
     .describe('staticseeder-dir', 'Set the path to the Seeder directory.')
     .string('staticseeder-dir')
 
+    .describe('no-transactions', 'Explicitly disable transactions')
+    .boolean('no-transactions')
+
     .argv;
 
 if (argv.version) {
@@ -110,6 +114,7 @@ global.dbm = dbm;
 global.matching = '';
 global.mode;
 global.verbose = argv.verbose;
+global.notransactions = argv['no-transactions']
 global.dryRun = argv['dry-run'];
 if(global.dryRun) {
   log.info('dry run');
