@@ -3,12 +3,11 @@ var fs = require('fs');
 var driver = require('./lib/driver');
 var path = require('path');
 var log = require('./lib/log');
-var Migrator = require('./lib/migrator');
 
 exports.dataType = require('./lib/data_type');
 exports.config = require('./lib/config');
 
-exports.connect = function(config, callback) {
+exports.connect = function(config, passedClass, callback) {
   driver.connect(config, function(err, db) {
     if (err) { callback(err); return; }
 
@@ -32,13 +31,13 @@ exports.connect = function(config, callback) {
           db.switchDatabase(newConf, function()
           {
             global.locTitle = global.migrationMode;
-            callback(null, new Migrator(db, config['migrations-dir']));
+            callback(null, new passedClass(db, config['migrations-dir'], global.mode !== 'static'));
           });
         }
         else
         {
           global.locTitle = global.migrationMode;
-          callback(null, new Migrator(db, config['migrations-dir']));
+          callback(null, new passedClass(db, config['migrations-dir'], global.mode !== 'static'));
         }
       }
       else
@@ -53,14 +52,14 @@ exports.connect = function(config, callback) {
 
           files.push('');
 
-          db.close = function(cb) { migrationFiles(files, callback, config, db, oldClose, cb); };
+          db.close = function(cb) { migrationFiles(files, callback, config, passedClass, db, oldClose, cb); };
 
           db.close();
         });
       }
     }
     else
-      callback(null, new Migrator(db, config['migrations-dir']));
+      callback(null, new passedClass(db, config['migrations-dir'], global.mode !== 'static'));
 
   });
 };
@@ -70,7 +69,7 @@ exports.driver = function(config, callback) {
   driver.connect(config, callback);
 };
 
-function migrationFiles(files, callback, config, db, close, cb) {
+function migrationFiles(files, callback, config, passedClass, db, close, cb) {
   var file,
       switched = false,
       newConf;
@@ -102,7 +101,7 @@ function migrationFiles(files, callback, config, db, close, cb) {
 
 
     global.locTitle = global.matching;
-    callback(null, new Migrator(db, config['migrations-dir']));
+    callback(null, new passedClass(db, config['migrations-dir'], global.mode !== 'static'));
 
     if(typeof(cb) === 'function')
       cb();
@@ -111,8 +110,15 @@ function migrationFiles(files, callback, config, db, close, cb) {
 }
 
 exports.createMigration = function(migration, callback) {
+
   migration.write(function(err) {
-  if (err) { callback(err); return; }
-  callback(null, migration);
+
+    if (err) {
+
+      callback(err);
+      return;
+    }
+
+    callback(null, migration);
   });
 };

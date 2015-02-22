@@ -1,5 +1,7 @@
 test
 migrations
+VCSeeder
+Seeder
 node_modules
 *.db
 database.json

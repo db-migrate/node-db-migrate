@@ -9,6 +9,8 @@ var optimist = require('optimist');
 var config = require('../lib/config.js');
 var index = require('../index');
 var Migration = require('../lib/migration.js');
+var Seeder = require('../lib/seeder.js');
+var Migrator = require('../lib/migrator.js');
 var log = require('../lib/log');
 var pkginfo = require('pkginfo')(module, 'version');
 var dotenv = require('dotenv');
@@ -33,8 +35,8 @@ var argv = optimist
       'sql-file': false,
       config: process.cwd() + '/database.json',
       'migrations-dir': process.cwd() + '/migrations',
-      'vcseeder-dir': process.cwd() + 'VCSeeder',
-      'staticseeder-dir': process.cwd() + 'Seeder'})
+      'vcseeder-dir': process.cwd() + '/VCSeeder',
+      'staticseeder-dir': process.cwd() + '/Seeder'})
     .usage('Usage: db-migrate [up|down|reset|create|db] [[dbname/]migrationName|all] [options]')
 
     .describe('env', 'The environment to run the migrations under (dev, test, prod).')
@@ -225,7 +227,7 @@ function executeUp() {
     argv.count = Number.MAX_VALUE;
   }
 
-  index.connect(config.getCurrent().settings, function(err, migrator) {
+  index.connect(config.getCurrent().settings, Migrator, function(err, migrator) {
     assert.ifError(err);
 
     if(global.locTitle)
@@ -248,7 +250,7 @@ function executeDown() {
     argv.count = 1;
   }
 
-  index.connect(config.getCurrent().settings, function(err, migrator) {
+  index.connect(config.getCurrent().settings, Migrator, function(err, migrator) {
     assert.ifError(err);
 
     migrator.migrationsDir = path.resolve(argv['migrations-dir']);
@@ -307,6 +309,21 @@ function executeDB() {
 
 }
 
+function executeSeed() {
+
+  if(argv._.length > 0) {
+    argv.destination = argv._.shift().toString();
+  }
+
+  index.connect(config.getCurrent().settings, Seeder, function(err, seeder)
+  {
+    assert.ifError(err);
+
+    seeder.seedDir = path.resolve(argv[(global.mode !== 'static') ? 'vcseeder-dir': 'staticseeder-dir']);
+    seeder.seed(argv, onComplete.bind(this, seeder));
+  });
+}
+
 function onComplete(migrator, originalErr) {
   migrator.driver.close(function(err) {
     assert.ifError(originalErr);
@@ -321,15 +338,15 @@ function run() {
 
   action = folder[0];
 
+  loadConfig();
+
   switch(action) {
     case 'create':
-      loadConfig();
       executeCreate();
       break;
     case 'up':
     case 'down':
     case 'reset':
-      loadConfig();
 
       if(action === 'reset')
         argv.count = Number.MAX_VALUE;
@@ -357,7 +374,6 @@ function run() {
       break;
 
     case 'db':
-      loadConfig();
 
       if(folder.length < 1) {
 
@@ -368,7 +384,13 @@ function run() {
         global.mode = folder[1];
         executeDB();
       }
-    break;
+      break;
+    case 'seed':
+
+      global.mode = folder[1] || 'vc';
+      global.migrationMode = folder[2];
+      executeSeed();
+      break;
 
     default:
       log.error('Invalid Action: Must be [up|down|create].');

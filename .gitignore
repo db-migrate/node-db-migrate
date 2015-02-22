@@ -1,5 +1,7 @@
 migrations/
 node_modules/
+VCSeeder/
+Seeder/
 *.db
 .DS_Store
 .idea
