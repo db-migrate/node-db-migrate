@@ -59,7 +59,7 @@ vows.describe('create').addBatch({
     },
     'will create a new migration': function(code) {
       var files = fs.readdirSync(path.join(__dirname, 'migrations'));
-      
+
       for (var i = 0; i<files.length; i++) {
         var file = files[i];
         var stats = fs.statSync(path.join(__dirname, 'migrations', file));
@@ -91,7 +91,7 @@ vows.describe('create').addBatch({
     },
     'will create a new migration': function(code) {
       var files = fs.readdirSync(path.join(__dirname, 'migrations'));
-      
+
       for (var i = 0; i<files.length; i++) {
         var file = files[i];
         var stats = fs.statSync(path.join(__dirname, 'migrations', file));
@@ -123,7 +123,7 @@ vows.describe('create').addBatch({
     },
     'will create a new coffeescript migration': function(code) {
       var files = fs.readdirSync(path.join(__dirname, 'migrations'));
-      
+
       for (var i = 0; i<files.length; i++) {
         var file = files[i];
         var stats = fs.statSync(path.join(__dirname, 'migrations', file));
@@ -145,12 +145,48 @@ vows.describe('create').addBatch({
     },
     'will create a new coffeescript migration': function(code) {
       var files = fs.readdirSync(path.join(__dirname, 'migrations'));
-      
+
       for (var i = 0; i<files.length; i++) {
         var file = files[i];
         var stats = fs.statSync(path.join(__dirname, 'migrations', file));
         if (stats.isFile()) assert.match(file, /fifth-migration\.coffee$/);
       }
     },
+  }
+}).addBatch({
+  'with sql-file and a bad migration, causes an exit' : {
+    topic: function() {
+      var configOption = path.join("--sql-file");
+      wipeMigrations(function(err) {
+        assert.isNull(err);
+        dbMigrate('create', 'sixth migration', configOption).on('exit', function() {
+          var files = fs.readdirSync(path.join(__dirname, 'migrations'));
+
+          for (var i = 0; i<files.length; i++) {
+            var file = files[i];
+            var stats = fs.statSync(path.join(__dirname, 'migrations', file));
+            if (stats.isFile() && file.match(/sixth-migration\.js$/)) {
+              fs.writeFileSync(path.join(__dirname, 'migrations', file), 'asdfghij;');
+              dbMigrate('up').on('exit', this.callback);
+            }
+          }
+        }.bind(this));
+      }.bind(this));
+    },
+    'does cause an error': function(error, code) {
+      assert.equal(error, 1);
+    },
+    'did create the new migration': function(error, code) {
+      var files = fs.readdirSync(path.join(__dirname, 'migrations'));
+
+      for (var i = 0; i<files.length; i++) {
+        var file = files[i];
+        var stats = fs.statSync(path.join(__dirname, 'migrations', file));
+        if (stats.isFile()) assert.match(file, /sixth-migration\.js$/);
+      }
+    },
+    teardown: function() {
+      cp.exec('rm -r ' + path.join(__dirname, 'migrations'), this.callback);
+    }
   }
 }).export(module);
