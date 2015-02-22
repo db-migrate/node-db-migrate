@@ -34,7 +34,7 @@
     "mysql": "~2.5.4",
     "optimist": "~0.6.1",
     "parse-database-url": "~0.2.2",
-    "pg": "~4.2.0",
+    "pg": "~4.3.0",
     "pkginfo": "~0.3.0",
     "semver": "~4.3.0",
     "sqlite3": "~3.0.4"
