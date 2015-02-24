@@ -353,6 +353,14 @@ You can have multiple migration scopes, which are subfolders within your migrati
 
     $ db-migrate up:myScope
 
+#### Executing all scopes together
+
+If you want to execute all scopes with one command, you can execute the following:
+
+    $ db-migrate up:all
+
+Obviously this means you **CAN'T** create scope which is named all.
+
 #### Scope Configuration
 
 You can also configure the scope to specify a sub configuration. Currently you can only define database and schema within this config.
