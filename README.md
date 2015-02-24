@@ -438,8 +438,6 @@ The following options are available on column specs
 
 __Column ForeignKey Spec Examples__
 
-**Note:** Currently only supported together with mysql!
-
 ```javascript
 exports.up = function(db, callback) {
 
