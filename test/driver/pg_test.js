@@ -7,7 +7,6 @@ var driver = require('../../lib/driver');
 var config = require('../db.config.json').pg;
 
 global.migrationTable = 'migrations';
-global.verbose = true;
 
 driver.connect(config, function(err, db) {
   vows.describe('pg').addBatch({
