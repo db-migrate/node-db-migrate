@@ -17,6 +17,75 @@ var dotenv = require('dotenv');
 dbm = require( './' );
 async = require( 'async' );
 
+function dbmigrate() {
+
+}
+
+
+dbmigrate.prototype = {
+
+
+  argv,
+  /**
+    * Add a global defined variable to db-migrate, to enable access from
+    * local migrations without configuring pathes.
+    *
+    * @return boolean
+    */
+  addGlobal: function(library) {
+
+    try {
+      require(library);
+    } catch(e) {
+      return false;
+    }
+
+    return true;
+  },
+
+
+  /**
+    * Add a configuration option to dbmigrate.
+    *
+    * @return boolean
+    */
+  addConfiguration: function(description, args, type) {
+
+    var name = args.shift();
+    this.argv.describe(name, description);
+
+    for(var i = 0; i < args.length; ++i) {
+
+      this.argv.alias(args[i], name);
+    }
+
+    switch(type) {
+
+      case 'string':
+        this.argv.string(name);
+        break;
+
+      case 'boolean':
+        this.argv.boolean(name);
+        break;
+
+      default:
+        return false;
+    }
+
+    return true;
+  },
+
+
+  /**
+    * Resets and sets argv to a specified new argv.
+    */
+  resetConfiguration: function(argv) {
+    this.argv = argv;
+  }
+
+};
+
 dotenv.load();
 
 process.on('uncaughtException', function(err) {
@@ -409,3 +478,6 @@ if (argv['force-exit']) {
   log.verbose('Forcing exit');
   process.exit(0);
 }
+
+
+module.exports = dbmigrate;
