@@ -19,13 +19,23 @@ async = require( 'async' );
 
 function dbmigrate() {
 
+  dotenv.load();
+  registerEvents();
 }
 
 
+function registerEvents() {
+
+  process.on('uncaughtException', function(err) {
+    log.error(err.stack);
+    process.exit(1);
+  });
+}
+
 dbmigrate.prototype = {
 
-
   argv,
+
   /**
     * Add a global defined variable to db-migrate, to enable access from
     * local migrations without configuring pathes.
@@ -85,13 +95,6 @@ dbmigrate.prototype = {
   }
 
 };
-
-dotenv.load();
-
-process.on('uncaughtException', function(err) {
-  log.error(err.stack);
-  process.exit(1);
-});
 
 var argv = optimist
     .default({
