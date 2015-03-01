@@ -68,21 +68,21 @@ dbmigrate.prototype = {
   addConfiguration: function(description, args, type) {
 
     var name = args.shift();
-    this.argv.describe(name, description);
+    internals.argv.describe(name, description);
 
     for(var i = 0; i < args.length; ++i) {
 
-      this.argv.alias(args[i], name);
+      internals.argv.alias(args[i], name);
     }
 
     switch(type) {
 
       case 'string':
-        this.argv.string(name);
+        internals.argv.string(name);
         break;
 
       case 'boolean':
-        this.argv.boolean(name);
+        internals.argv.boolean(name);
         break;
 
       default:
@@ -97,7 +97,7 @@ dbmigrate.prototype = {
     * Resets and sets argv to a specified new argv.
     */
   resetConfiguration: function(argv) {
-    this.argv = argv;
+    internals.argv = argv;
   },
 
   /**
@@ -196,7 +196,15 @@ dbmigrate.prototype = {
   /**
     * Executes the default routine.
     */
-  run: run
+  run: function() {
+
+    run();
+
+    if (argv['force-exit']) {
+      log.verbose('Forcing exit');
+      process.exit(0);
+    }
+  }
 
 };
 
@@ -583,11 +591,6 @@ function run() {
       process.exit(1);
       break;
   }
-}
-
-if (argv['force-exit']) {
-  log.verbose('Forcing exit');
-  process.exit(0);
 }
 
 
