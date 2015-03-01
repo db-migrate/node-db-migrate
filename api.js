@@ -183,11 +183,19 @@ dbmigrate.prototype = {
     return (argv[param] = value);
   },
 
+
+  /**
+    * Sets the callback to the default onComplete
+    */
   setDefaultCallback: function() {
 
     internals.onComplete = onComplete;
   },
 
+  /**
+    * Let's the user customize the callback, which gets called after all
+    * migrations have been done.
+    */
   setCustomCallback: function(callback) {
 
     internals.onComplete = callback;
