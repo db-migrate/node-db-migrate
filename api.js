@@ -594,7 +594,7 @@ function run() {
       break;
 
     default:
-      log.error('Invalid Action: Must be [up|down|create].');
+      log.error('Invalid Action: Must be [up|down|create|reset|seed|db].');
       optimist.showHelp();
       process.exit(1);
       break;
