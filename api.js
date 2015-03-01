@@ -17,10 +17,18 @@ var dotenv = require('dotenv');
 dbm = require( './' );
 async = require( 'async' );
 
-function dbmigrate() {
+
+var internals = {};
+
+function dbmigrate(callback) {
+
+  if(typeof(callback) === 'function')
+    internals.onComplete = callback;
 
   dotenv.load();
   registerEvents();
+  setDefaultArgv();
+  loadConfig();
 }
 
 
@@ -33,8 +41,6 @@ function registerEvents() {
 }
 
 dbmigrate.prototype = {
-
-  argv,
 
   /**
     * Add a global defined variable to db-migrate, to enable access from
@@ -92,102 +98,204 @@ dbmigrate.prototype = {
     */
   resetConfiguration: function(argv) {
     this.argv = argv;
-  }
+  },
+
+  /**
+    * Executes up a given number of migrations or a specific one.
+    *
+    * Defaults to up all migrations if no count is given.
+    */
+  up: function() {
+
+    if(arguments.length > 0)
+    {
+      if(typeof(arguments[0]) === 'string') {
+        argv.destination = argument[0];
+      }
+      else if(typeof(arguments[0]) === 'number') {
+        argv.count = arguments[0];
+      }
+
+      executeUp();
+    }
+  },
+
+  /**
+    * Executes up a given number of migrations or a specific one.
+    *
+    * Defaults to up all migrations if no count is given.
+    */
+  down: function() {
+
+    if(arguments.length > 0)
+    {
+      if(typeof(arguments[0]) === 'number') {
+        argv.count = arguments[0];
+      }
+
+      executeDown();
+    }
+  },
+
+  /**
+    * Executes down for all currently migrated migrations.
+    */
+  reset: function() {
+
+    argv.count = Number.MAX_VALUE;
+    executeDown();
+  },
+
+  /**
+    * Creates a correctly formatted migration
+    */
+  create: function(migrationName) {
+
+    argv._.push(migrationName);
+    executeCreate();
+  },
+
+  /**
+    * Creates a database of the given dbname.
+    */
+  createDatabase: function(dbname) {
+
+    argv._.push(dbname);
+    global.mode = 'create';
+  },
+
+  /**
+    * Drops a database of the given dbname.
+    */
+  dropDatabase: function(dbname) {
+
+    argv._.push(dbname);
+    global.mode = 'drop';
+  },
+
+  /**
+    * Sets a config variable to the given value.
+    *
+    * @return value
+    */
+  setConfigParam: function(param, value) {
+
+    return (argv[param] = value);
+  },
+
+  setDefaultCallback: function() {
+
+    internals.onComplete = onComplete;
+  },
+
+  setCustomCallback: function(callback) {
+
+    internals.onComplete = callback;
+  },
+
+  /**
+    * Executes the default routine.
+    */
+  run: run
 
 };
 
-var argv = optimist
-    .default({
-      verbose: false,
-      table: 'migrations',
-      'seeds-table': 'seeds',
-      'force-exit': false,
-      'sql-file': false,
-      'no-transactions': false,
-      config: process.cwd() + '/database.json',
-      'migrations-dir': process.cwd() + '/migrations',
-      'vcseeder-dir': process.cwd() + '/VCSeeder',
-      'staticseeder-dir': process.cwd() + '/Seeder'})
-    .usage('Usage: db-migrate [up|down|reset|create|db] [[dbname/]migrationName|all] [options]')
+function setDefaultArgv() {
 
-    .describe('env', 'The environment to run the migrations under (dev, test, prod).')
-    .alias('e', 'env')
-    .string('e')
+  internals.argv = optimist
+      .default({
+        verbose: false,
+        table: 'migrations',
+        'seeds-table': 'seeds',
+        'force-exit': false,
+        'sql-file': false,
+        'no-transactions': false,
+        config: process.cwd() + '/database.json',
+        'migrations-dir': process.cwd() + '/migrations',
+        'vcseeder-dir': process.cwd() + '/VCSeeder',
+        'staticseeder-dir': process.cwd() + '/Seeder'})
+      .usage('Usage: db-migrate [up|down|reset|create|db] [[dbname/]migrationName|all] [options]')
 
-    .describe('migrations-dir', 'The directory containing your migration files.')
-    .alias('m', 'migrations-dir')
-    .string('m')
+      .describe('env', 'The environment to run the migrations under (dev, test, prod).')
+      .alias('e', 'env')
+      .string('e')
 
-    .describe('count', 'Max number of migrations to run.')
-    .alias('c', 'count')
-    .string('c')
+      .describe('migrations-dir', 'The directory containing your migration files.')
+      .alias('m', 'migrations-dir')
+      .string('m')
 
-    .describe('dry-run', 'Prints the SQL but doesn\'t run it.')
-    .boolean('dry-run')
+      .describe('count', 'Max number of migrations to run.')
+      .alias('c', 'count')
+      .string('c')
 
-    .describe('force-exit', 'Forcibly exit the migration process on completion.')
-    .boolean('force-exit')
+      .describe('dry-run', 'Prints the SQL but doesn\'t run it.')
+      .boolean('dry-run')
 
-    .describe('verbose', 'Verbose mode.')
-    .alias('v', 'verbose')
-    .boolean('v')
+      .describe('force-exit', 'Forcibly exit the migration process on completion.')
+      .boolean('force-exit')
 
-    .alias('h', 'help')
-    .alias('h', '?')
-    .boolean('h')
+      .describe('verbose', 'Verbose mode.')
+      .alias('v', 'verbose')
+      .boolean('v')
 
-    .describe('version', 'Print version info.')
-    .alias('i', 'version')
-    .boolean('version')
+      .alias('h', 'help')
+      .alias('h', '?')
+      .boolean('h')
 
-    .describe('config', 'Location of the database.json file.')
-    .string('config')
+      .describe('version', 'Print version info.')
+      .alias('i', 'version')
+      .boolean('version')
 
-    .describe('sql-file', 'Automatically create two sql files for up and down statements in /sqls and generate the javascript code that loads them.')
-    .boolean('sql-file')
+      .describe('config', 'Location of the database.json file.')
+      .string('config')
 
-    .describe('coffee-file', 'Create a coffeescript migration file')
-    .boolean('coffee-file')
+      .describe('sql-file', 'Automatically create two sql files for up and down statements in /sqls and generate the javascript code that loads them.')
+      .boolean('sql-file')
 
-    .describe('migration-table', 'Set the name of the migration table, which stores the migration history.')
-    .alias('table', 'migration-table')
-    .alias('t', 'table')
-    .string('t')
+      .describe('coffee-file', 'Create a coffeescript migration file')
+      .boolean('coffee-file')
 
-    .describe('seeds-table', 'Set the name of the seeds table, which stores the seed history.')
-    .string('seeds-table')
+      .describe('migration-table', 'Set the name of the migration table, which stores the migration history.')
+      .alias('table', 'migration-table')
+      .alias('t', 'table')
+      .string('t')
 
-    .describe('vcseeder-dir', 'Set the path to the Version Controlled Seeder directory.')
-    .string('vcseeder-dir')
+      .describe('seeds-table', 'Set the name of the seeds table, which stores the seed history.')
+      .string('seeds-table')
 
-    .describe('staticseeder-dir', 'Set the path to the Seeder directory.')
-    .string('staticseeder-dir')
+      .describe('vcseeder-dir', 'Set the path to the Version Controlled Seeder directory.')
+      .string('vcseeder-dir')
 
-    .describe('no-transactions', 'Explicitly disable transactions')
-    .boolean('no-transactions')
+      .describe('staticseeder-dir', 'Set the path to the Seeder directory.')
+      .string('staticseeder-dir')
 
-    .argv;
+      .describe('no-transactions', 'Explicitly disable transactions')
+      .boolean('no-transactions')
 
-if (argv.version) {
-  console.log(module.exports.version);
-  process.exit(0);
-}
+      .argv;
 
-if (argv.help || argv._.length === 0) {
-  optimist.showHelp();
-  process.exit(1);
-}
+  if (argv.version) {
+    console.log(module.exports.version);
+    process.exit(0);
+  }
 
-global.migrationTable = argv.table;
-global.seedsTable = argv['seeds-table'];
-global.dbm = dbm;
-global.matching = '';
-global.mode;
-global.verbose = argv.verbose;
-global.notransactions = argv['no-transactions']
-global.dryRun = argv['dry-run'];
-if(global.dryRun) {
-  log.info('dry run');
+  if (argv.help || argv._.length === 0) {
+    optimist.showHelp();
+    process.exit(1);
+  }
+
+  global.migrationTable = argv.table;
+  global.seedsTable = argv['seeds-table'];
+  global.dbm = dbm;
+  global.matching = '';
+  global.mode;
+  global.verbose = argv.verbose;
+  global.notransactions = argv['no-transactions']
+  global.dryRun = argv['dry-run'];
+  if(global.dryRun) {
+    log.info('dry run');
+  }
+
 }
 
 function createMigrationDir(dir, callback) {
@@ -313,7 +421,7 @@ function executeUp() {
     migrator.driver.createMigrationsTable(function(err) {
       assert.ifError(err);
       log.verbose('migration table created');
-      migrator.up(argv, onComplete.bind(this, migrator));
+      migrator.up(argv, internals.onComplete.bind(this, migrator));
     });
   });
 }
@@ -332,7 +440,7 @@ function executeDown() {
 
     migrator.driver.createMigrationsTable(function(err) {
       assert.ifError(err);
-      migrator.down(argv, onComplete.bind(this, migrator));
+      migrator.down(argv, internals.onComplete.bind(this, migrator));
     });
   });
 }
@@ -395,9 +503,11 @@ function executeSeed() {
     assert.ifError(err);
 
     seeder.seedDir = path.resolve(argv[(global.mode !== 'static') ? 'vcseeder-dir': 'staticseeder-dir']);
-    seeder.seed(argv, onComplete.bind(this, seeder));
+    seeder.seed(argv, internals.onComplete.bind(this, seeder));
   });
 }
+
+internals.onComplete = onComplete;
 
 function onComplete(migrator, originalErr) {
   migrator.driver.close(function(err) {
@@ -405,7 +515,7 @@ function onComplete(migrator, originalErr) {
     assert.ifError(err);
     log.info('Done');
   });
-}
+};
 
 function run() {
   var action = argv._.shift(),
@@ -474,8 +584,6 @@ function run() {
       break;
   }
 }
-
-run();
 
 if (argv['force-exit']) {
   log.verbose('Forcing exit');
