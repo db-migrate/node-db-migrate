@@ -202,6 +202,17 @@ dbmigrate.prototype = {
   },
 
   /**
+    * Seeds either the static or version controlled seeders, controlled by
+    * the passed mode.
+    */
+  seed: function(mode, scope) {
+
+    global.mode = mode || 'vc';
+    global.migrationMode = scope;
+    executeSeed();
+  },
+
+  /**
     * Executes the default routine.
     */
   run: function() {
