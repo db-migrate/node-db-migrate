@@ -105,19 +105,26 @@ dbmigrate.prototype = {
     *
     * Defaults to up all migrations if no count is given.
     */
-  up: function() {
+  up: function(specification, scope) {
 
     if(arguments.length > 0)
     {
-      if(typeof(arguments[0]) === 'string') {
-        argv.destination = argument[0];
+      if(typeof(specification) === 'string') {
+
+        argv.destination = specification;
       }
-      else if(typeof(arguments[0]) === 'number') {
-        argv.count = arguments[0];
+      else if(typeof(specification) === 'number') {
+
+        argv.count = specification;
       }
 
-      executeUp();
+      if(scope) {
+
+        global.migrationMode = scope;
+      }
     }
+
+    executeUp();
   },
 
   /**
@@ -125,22 +132,33 @@ dbmigrate.prototype = {
     *
     * Defaults to up all migrations if no count is given.
     */
-  down: function() {
+  down: function(specification, scope) {
 
     if(arguments.length > 0)
     {
       if(typeof(arguments[0]) === 'number') {
+
         argv.count = arguments[0];
       }
 
-      executeDown();
+      if(scope) {
+
+        global.migrationMode = scope;
+      }
     }
+
+    executeDown();
   },
 
   /**
     * Executes down for all currently migrated migrations.
     */
-  reset: function() {
+  reset: function(scope) {
+
+    if(scope) {
+
+      global.migrationMode = scope;
+    }
 
     argv.count = Number.MAX_VALUE;
     executeDown();
@@ -149,7 +167,12 @@ dbmigrate.prototype = {
   /**
     * Creates a correctly formatted migration
     */
-  create: function(migrationName) {
+  create: function(migrationName, scope) {
+
+    if(scope) {
+
+      global.migrationMode = scope;
+    }
 
     argv._.push(migrationName);
     executeCreate();
@@ -207,8 +230,12 @@ dbmigrate.prototype = {
     */
   seed: function(mode, scope) {
 
+    if(scope) {
+
+      global.migrationMode = scope;
+    }
+
     global.mode = mode || 'vc';
-    global.migrationMode = scope;
     executeSeed();
   },
 
