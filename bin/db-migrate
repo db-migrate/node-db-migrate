@@ -91,6 +91,7 @@ if (argv.help || argv._.length === 0) {
 
 global.migrationTable = argv.table;
 global.dbm = dbm;
+global.asyncLib = async;
 global.matching = '';
 global.mode;
 global.verbose = argv.verbose;
