@@ -135,7 +135,7 @@ driver.connect(config, function(err, db) {
           if(err) {
             return this.callback(err);
           }
-          db.insert('event', [{id: 2, title: 'title'}], this.callback);
+          db.insert('event', [{id: 2, title: 'title'}], function(err) { console.log(err); this.callback(err);}.bind(this));
         }.bind(this));
       },
 
@@ -148,8 +148,6 @@ driver.connect(config, function(err, db) {
           if(err) {
             return this.callback(err);
           }
-
-          console.log(data); //debug this
 
           assert.equal(data.length, 1);
         });
