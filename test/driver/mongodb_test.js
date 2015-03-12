@@ -149,6 +149,8 @@ driver.connect(config, function(err, db) {
             return this.callback(err);
           }
 
+          console.log(data); //debug this
+
           assert.equal(data.length, 1);
         });
       }
