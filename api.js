@@ -29,6 +29,7 @@ function dbmigrate(callback) {
   registerEvents();
   setDefaultArgv();
   loadConfig();
+  index.exportInternals({ global: internals });
 }
 
 
@@ -59,6 +60,7 @@ dbmigrate.prototype = {
     return true;
   },
 
+  _internals: internals,
 
   /**
     * Add a configuration option to dbmigrate.
@@ -120,7 +122,7 @@ dbmigrate.prototype = {
 
       if(scope) {
 
-        global.migrationMode = scope;
+        internals.migrationMode = scope;
       }
     }
 
@@ -143,7 +145,7 @@ dbmigrate.prototype = {
 
       if(scope) {
 
-        global.migrationMode = scope;
+        internals.migrationMode = scope;
       }
     }
 
@@ -157,7 +159,7 @@ dbmigrate.prototype = {
 
     if(scope) {
 
-      global.migrationMode = scope;
+      internals.migrationMode = scope;
     }
 
     argv.count = Number.MAX_VALUE;
@@ -171,7 +173,7 @@ dbmigrate.prototype = {
 
     if(scope) {
 
-      global.migrationMode = scope;
+      internals.migrationMode = scope;
     }
 
     argv._.push(migrationName);
@@ -184,7 +186,7 @@ dbmigrate.prototype = {
   createDatabase: function(dbname) {
 
     argv._.push(dbname);
-    global.mode = 'create';
+    internals.mode = 'create';
   },
 
   /**
@@ -193,7 +195,7 @@ dbmigrate.prototype = {
   dropDatabase: function(dbname) {
 
     argv._.push(dbname);
-    global.mode = 'drop';
+    internals.mode = 'drop';
   },
 
   /**
@@ -232,10 +234,10 @@ dbmigrate.prototype = {
 
     if(scope) {
 
-      global.migrationMode = scope;
+      internals.migrationMode = scope;
     }
 
-    global.mode = mode || 'vc';
+    internals.mode = mode || 'vc';
     executeSeed();
   },
 
@@ -338,15 +340,15 @@ function setDefaultArgv() {
     process.exit(1);
   }
 
-  global.migrationTable = argv.table;
-  global.seedsTable = argv['seeds-table'];
-  global.dbm = dbm;
-  global.matching = '';
-  global.mode;
-  global.verbose = argv.verbose;
-  global.notransactions = argv['no-transactions']
-  global.dryRun = argv['dry-run'];
-  if(global.dryRun) {
+  internals.migrationTable = argv.table;
+  internals.seedsTable = argv['seeds-table'];
+  internals.dbm = dbm;
+  internals.matching = '';
+  internals.mode;
+  internals.verbose = argv.verbose;
+  internals.notransactions = argv['no-transactions']
+  internals.dryRun = argv['dry-run'];
+  if(internals.dryRun) {
     log.info('dry run');
   }
 
@@ -372,8 +374,8 @@ function loadConfig() {
     var current = config.getCurrent();
     var s = JSON.parse(JSON.stringify(current.settings));
 
-    if (s["password"])
-      s["password"] = "******";
+    if (s.password)
+      s.password = '******';
 
     log.info('Using', current.env, 'settings:', s);
   }
@@ -467,8 +469,8 @@ function executeUp() {
   index.connect(config.getCurrent().settings, Migrator, function(err, migrator) {
     assert.ifError(err);
 
-    if(global.locTitle)
-        migrator.migrationsDir = path.resolve(argv['migrations-dir'], global.locTitle);
+    if(internals.locTitle)
+        migrator.migrationsDir = path.resolve(argv['migrations-dir'], internals.locTitle);
     else
       migrator.migrationsDir = path.resolve(argv['migrations-dir']);
 
@@ -512,7 +514,7 @@ function executeDB() {
 
   index.driver(config.getCurrent().settings, function(err, db)
   {
-    if(global.mode === 'create')
+    if(internals.mode === 'create')
     {
       db.createDatabase(argv.dbname, { ifNotExists: true }, function()
       {
@@ -526,7 +528,7 @@ function executeDB() {
         db.close();
       });
     }
-    else if(global.mode === 'drop')
+    else if(internals.mode === 'drop')
     {
       db.dropDatabase(argv.dbname, { ifExists: true }, function()
       {
@@ -556,7 +558,7 @@ function executeSeed() {
   {
     assert.ifError(err);
 
-    seeder.seedDir = path.resolve(argv[(global.mode !== 'static') ? 'vcseeder-dir': 'staticseeder-dir']);
+    seeder.seedDir = path.resolve(argv[(internals.mode !== 'static') ? 'vcseeder-dir': 'staticseeder-dir']);
     seeder.seed(argv, internals.onComplete.bind(this, seeder));
   });
 }
@@ -601,8 +603,8 @@ function run() {
 
       if(folder[1])
       {
-        global.matching = folder[1];
-        global.migrationMode = folder[1];
+        internals.matching = folder[1];
+        internals.migrationMode = folder[1];
       }
 
       if(action == 'up') {
@@ -620,14 +622,14 @@ function run() {
       }
       else {
 
-        global.mode = folder[1];
+        internals.mode = folder[1];
         executeDB();
       }
       break;
     case 'seed':
 
-      global.mode = folder[1] || 'vc';
-      global.migrationMode = folder[2];
+      internals.mode = folder[1] || 'vc';
+      internals.migrationMode = folder[2];
       executeSeed();
       break;
 

@@ -7,22 +7,24 @@ var log = require('./lib/log');
 exports.dataType = require('./lib/data_type');
 exports.config = require('./lib/config');
 
+var internals = {};
+
 exports.connect = function(config, passedClass, callback) {
   driver.connect(config, function(err, db) {
     if (err) { callback(err); return; }
 
-    if(global.migrationMode)
+    if(internals.migrationMode)
     {
       var dirPath = path.resolve(config['migrations-dir'] || 'migrations');
 
-      if(global.migrationMode !== 'all')
+      if(internals.migrationMode !== 'all')
       {
         var switched = false,
             newConf;
 
         try {
-          newConf = require(path.resolve(config['migrations-dir'] || 'migrations', global.migrationMode) + '/config.json');
-          log.info('loaded extra config for migration subfolder: "' + global.migrationMode + '/config.json"');
+          newConf = require(path.resolve(config['migrations-dir'] || 'migrations', internals.migrationMode) + '/config.json');
+          log.info('loaded extra config for migration subfolder: "' + internals.migrationMode + '/config.json"');
           switched = true;
         } catch(e) {}
 
@@ -30,14 +32,14 @@ exports.connect = function(config, passedClass, callback) {
 
           db.switchDatabase(newConf, function()
           {
-            global.locTitle = global.migrationMode;
-            callback(null, new passedClass(db, config['migrations-dir'], global.mode !== 'static'));
+            internals.locTitle = internals.migrationMode;
+            callback(null, new passedClass(db, config['migrations-dir'], internals.mode !== 'static', { global: internals }));
           });
         }
         else
         {
-          global.locTitle = global.migrationMode;
-          callback(null, new passedClass(db, config['migrations-dir'], global.mode !== 'static'));
+          internals.locTitle = internals.migrationMode;
+          callback(null, new passedClass(db, config['migrations-dir'], internals.mode !== 'static', { global: internals }));
         }
       }
       else
@@ -59,7 +61,7 @@ exports.connect = function(config, passedClass, callback) {
       }
     }
     else
-      callback(null, new passedClass(db, config['migrations-dir'], global.mode !== 'static'));
+      callback(null, new passedClass(db, config['migrations-dir'], internals.mode !== 'static'));
 
   });
 };
@@ -93,15 +95,15 @@ function migrationFiles(files, callback, config, passedClass, db, close, cb) {
 
   db.switchDatabase((switched) ? newConf : config.database, function()
   {
-    global.matching = file.substr(file.indexOf(config['migrations-dir'] || 'migrations') +
+    internals.matching = file.substr(file.indexOf(config['migrations-dir'] || 'migrations') +
         (config['migrations-dir'] || 'migrations').length + 1);
 
-    if(global.matching.length === 0)
-      global.matching = '';
+    if(internals.matching.length === 0)
+      internals.matching = '';
 
 
-    global.locTitle = global.matching;
-    callback(null, new passedClass(db, config['migrations-dir'], global.mode !== 'static'));
+    internals.locTitle = internals.matching;
+    callback(null, new passedClass(db, config['migrations-dir'], internals.mode !== 'static'));
 
     if(typeof(cb) === 'function')
       cb();
@@ -121,4 +123,14 @@ exports.createMigration = function(migration, callback) {
 
     callback(null, migration);
   });
+};
+
+exports.exportInternals = function( inter ) {
+
+  internals = inter.global;
+};
+
+exports.importInternals = function() {
+
+  return internals;
 };
