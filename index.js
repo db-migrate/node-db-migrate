@@ -10,7 +10,7 @@ exports.config = require('./lib/config');
 var internals = {};
 
 exports.connect = function(config, passedClass, callback) {
-  driver.connect(config, function(err, db) {
+  driver.connect(config, internals, function(err, db) {
     if (err) { callback(err); return; }
 
     if(internals.migrationMode)
@@ -33,13 +33,13 @@ exports.connect = function(config, passedClass, callback) {
           db.switchDatabase(newConf, function()
           {
             internals.locTitle = internals.migrationMode;
-            callback(null, new passedClass(db, config['migrations-dir'], internals.mode !== 'static', { global: internals }));
+            callback(null, new passedClass(db, config['migrations-dir'], internals.mode !== 'static', internals));
           });
         }
         else
         {
           internals.locTitle = internals.migrationMode;
-          callback(null, new passedClass(db, config['migrations-dir'], internals.mode !== 'static', { global: internals }));
+          callback(null, new passedClass(db, config['migrations-dir'], internals.mode !== 'static', internals));
         }
       }
       else
@@ -68,7 +68,7 @@ exports.connect = function(config, passedClass, callback) {
 
 exports.driver = function(config, callback) {
 
-  driver.connect(config, callback);
+  driver.connect(config, internals, callback);
 };
 
 function migrationFiles(files, callback, config, passedClass, db, close, cb) {
@@ -125,9 +125,9 @@ exports.createMigration = function(migration, callback) {
   });
 };
 
-exports.exportInternals = function( inter ) {
+exports.exportInternals = function( intern ) {
 
-  internals = inter.global;
+  internals = intern;
 };
 
 exports.importInternals = function() {

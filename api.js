@@ -30,6 +30,11 @@ function dbmigrate(callback) {
   setDefaultArgv();
   loadConfig();
   index.exportInternals({ global: internals });
+  internals.dbm = dbm;
+  global.dbm = dbm;
+  internals.migrationOptions = { dbmigrate: internals.dbm };
+  internals.migrationTable = 'migrations';
+  internals.seedsTable = 'seeds';
 }
 
 
@@ -113,11 +118,11 @@ dbmigrate.prototype = {
     {
       if(typeof(specification) === 'string') {
 
-        argv.destination = specification;
+        internals.argv.destination = specification;
       }
       else if(typeof(specification) === 'number') {
 
-        argv.count = specification;
+        internals.argv.count = specification;
       }
 
       if(scope) {
@@ -140,7 +145,7 @@ dbmigrate.prototype = {
     {
       if(typeof(arguments[0]) === 'number') {
 
-        argv.count = arguments[0];
+        internals.argv.count = arguments[0];
       }
 
       if(scope) {
@@ -162,7 +167,7 @@ dbmigrate.prototype = {
       internals.migrationMode = scope;
     }
 
-    argv.count = Number.MAX_VALUE;
+    internals.argv.count = Number.MAX_VALUE;
     executeDown();
   },
 
@@ -176,7 +181,7 @@ dbmigrate.prototype = {
       internals.migrationMode = scope;
     }
 
-    argv._.push(migrationName);
+    internals.argv._.push(migrationName);
     executeCreate();
   },
 
@@ -185,7 +190,7 @@ dbmigrate.prototype = {
     */
   createDatabase: function(dbname) {
 
-    argv._.push(dbname);
+    internals.argv._.push(dbname);
     internals.mode = 'create';
   },
 
@@ -194,7 +199,7 @@ dbmigrate.prototype = {
     */
   dropDatabase: function(dbname) {
 
-    argv._.push(dbname);
+    internals.argv._.push(dbname);
     internals.mode = 'drop';
   },
 
@@ -342,9 +347,6 @@ function setDefaultArgv() {
 
   internals.migrationTable = argv.table;
   internals.seedsTable = argv['seeds-table'];
-  internals.dbm = dbm;
-  internals.matching = '';
-  internals.mode;
   internals.verbose = argv.verbose;
   internals.notransactions = argv['no-transactions']
   internals.dryRun = argv['dry-run'];
