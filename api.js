@@ -20,21 +20,27 @@ async = require( 'async' );
 
 var internals = {};
 
-function dbmigrate(callback) {
+function dbmigrate(isModule, callback) {
 
   if(typeof(callback) === 'function')
     internals.onComplete = callback;
 
   dotenv.load();
   registerEvents();
-  setDefaultArgv();
+
+  if(typeof(isModule) === 'function')
+  {
+    internals.onComplete = isModule;
+    setDefaultArgv();
+  }
+  else
+    setDefaultArgv(isModule);
+
   loadConfig();
-  index.exportInternals({ global: internals });
+  index.exportInternals(internals);
   internals.dbm = dbm;
   global.dbm = dbm;
   internals.migrationOptions = { dbmigrate: internals.dbm };
-  internals.migrationTable = 'migrations';
-  internals.seedsTable = 'seeds';
 }
 
 
@@ -253,7 +259,7 @@ dbmigrate.prototype = {
 
     run();
 
-    if (argv['force-exit']) {
+    if (internals.argv['force-exit']) {
       log.verbose('Forcing exit');
       process.exit(0);
     }
@@ -261,7 +267,7 @@ dbmigrate.prototype = {
 
 };
 
-function setDefaultArgv() {
+function setDefaultArgv(isModule) {
 
   internals.argv = optimist
       .default({
@@ -335,21 +341,22 @@ function setDefaultArgv() {
 
       .argv;
 
-  if (argv.version) {
+  if (internals.argv.version) {
     console.log(module.exports.version);
     process.exit(0);
   }
 
-  if (argv.help || argv._.length === 0) {
+  if (!isModule && (internals.argv.help || internals.argv._.length === 0)) {
     optimist.showHelp();
     process.exit(1);
   }
 
-  internals.migrationTable = argv.table;
-  internals.seedsTable = argv['seeds-table'];
-  internals.verbose = argv.verbose;
-  internals.notransactions = argv['no-transactions']
-  internals.dryRun = argv['dry-run'];
+  internals.migrationTable = internals.argv.table;
+  internals.seedsTable = internals.argv['seeds-table'];
+  internals.matching = '';
+  internals.verbose = internals.argv.verbose;
+  internals.notransactions = internals.argv['no-transactions']
+  internals.dryRun = internals.argv['dry-run'];
   if(internals.dryRun) {
     log.info('dry run');
   }
@@ -368,11 +375,11 @@ function createMigrationDir(dir, callback) {
 
 function loadConfig() {
   if (process.env.DATABASE_URL) {
-    config.loadUrl(process.env.DATABASE_URL, argv.env);
+    config.loadUrl(process.env.DATABASE_URL, internals.argv.env);
   } else {
-    config.load(argv.config, argv.env);
+    config.load(internals.argv.config, internals.argv.env);
   }
-  if(verbose) {
+  if(internals.verbose) {
     var current = config.getCurrent();
     var s = JSON.parse(JSON.stringify(current.settings));
 
@@ -386,23 +393,23 @@ function loadConfig() {
 function executeCreate() {
   var folder, path;
 
-  if(argv._.length === 0) {
+  if(internals.argv._.length === 0) {
     log.error('\'migrationName\' is required.');
     optimist.showHelp();
     process.exit(1);
   }
 
-  createMigrationDir(argv['migrations-dir'], function(err) {
+  createMigrationDir(internals.argv['migrations-dir'], function(err) {
     if (err) {
-      log.error('Failed to create migration directory at ', argv['migrations-dir'], err);
+      log.error('Failed to create migration directory at ', internals.argv['migrations-dir'], err);
       process.exit(1);
     }
 
-    argv.title = argv._.shift();
-    folder = argv.title.split('/');
+    internals.argv.title = internals.argv._.shift();
+    folder = internals.argv.title.split('/');
 
-    argv.title = folder[folder.length - 2] || folder[0];
-    path = argv['migrations-dir'];
+    internals.argv.title = folder[folder.length - 2] || folder[0];
+    path = internals.argv['migrations-dir'];
 
     if(folder.length > 1) {
 
@@ -420,7 +427,7 @@ function executeCreate() {
     } else if (shouldCreateCoffeeFile()) {
       templateType = Migration.TemplateType.DEFAULT_COFFEE;
     }
-    var migration = new Migration(argv.title + (shouldCreateCoffeeFile() ? '.coffee' : '.js'), path, new Date(), templateType);
+    var migration = new Migration(internals.argv.title + (shouldCreateCoffeeFile() ? '.coffee' : '.js'), path, new Date(), templateType);
     index.createMigration(migration, function(err, migration) {
       assert.ifError(err);
       log.info(util.format('Created migration at %s', migration.path));
@@ -433,15 +440,15 @@ function executeCreate() {
 }
 
 function shouldCreateSqlFiles() {
-  return argv['sql-file'] || config['sql-file'];
+  return internals.argv['sql-file'] || config['sql-file'];
 }
 
 function shouldCreateCoffeeFile() {
-  return argv['coffee-file'] || config['coffee-file'];
+  return internals.argv['coffee-file'] || config['coffee-file'];
 }
 
 function createSqlFiles() {
-  var sqlDir = argv['migrations-dir'] + '/sqls';
+  var sqlDir = internals.argv['migrations-dir'] + '/sqls';
   createMigrationDir(sqlDir, function(err) {
     if (err) {
       log.error('Failed to create migration directory at ', sqlDir, err);
@@ -449,12 +456,12 @@ function createSqlFiles() {
     }
 
     var templateTypeDefaultSQL = Migration.TemplateType.DEFAULT_SQL;
-    var migrationUpSQL = new Migration(argv.title + '-up.sql', sqlDir, new Date(), templateTypeDefaultSQL);
+    var migrationUpSQL = new Migration(internals.argv.title + '-up.sql', sqlDir, new Date(), templateTypeDefaultSQL);
     index.createMigration(migrationUpSQL, function(err, migration) {
       assert.ifError(err);
       log.info(util.format('Created migration up sql file at %s', migration.path));
     });
-    var migrationDownSQL = new Migration(argv.title + '-down.sql', sqlDir, new Date(), templateTypeDefaultSQL);
+    var migrationDownSQL = new Migration(internals.argv.title + '-down.sql', sqlDir, new Date(), templateTypeDefaultSQL);
     index.createMigration(migrationDownSQL, function(err, migration) {
       assert.ifError(err);
       log.info(util.format('Created migration down sql file at %s', migration.path));
@@ -464,49 +471,49 @@ function createSqlFiles() {
 
 function executeUp() {
 
-  if(!argv.count) {
-    argv.count = Number.MAX_VALUE;
+  if(!internals.argv.count) {
+    internals.argv.count = Number.MAX_VALUE;
   }
 
   index.connect(config.getCurrent().settings, Migrator, function(err, migrator) {
     assert.ifError(err);
 
     if(internals.locTitle)
-        migrator.migrationsDir = path.resolve(argv['migrations-dir'], internals.locTitle);
+        migrator.migrationsDir = path.resolve(internals.argv['migrations-dir'], internals.locTitle);
     else
-      migrator.migrationsDir = path.resolve(argv['migrations-dir']);
+      migrator.migrationsDir = path.resolve(internals.argv['migrations-dir']);
 
     migrator.driver.createMigrationsTable(function(err) {
       assert.ifError(err);
       log.verbose('migration table created');
-      migrator.up(argv, internals.onComplete.bind(this, migrator));
+      migrator.up(internals.argv, internals.onComplete.bind(this, migrator));
     });
   });
 }
 
 function executeDown() {
 
-  if(!argv.count) {
+  if(!internals.argv.count) {
     log.info('Defaulting to running 1 down migration.');
-    argv.count = 1;
+    internals.argv.count = 1;
   }
 
   index.connect(config.getCurrent().settings, Migrator, function(err, migrator) {
     assert.ifError(err);
 
-    migrator.migrationsDir = path.resolve(argv['migrations-dir']);
+    migrator.migrationsDir = path.resolve(internals.argv['migrations-dir']);
 
     migrator.driver.createMigrationsTable(function(err) {
       assert.ifError(err);
-      migrator.down(argv, internals.onComplete.bind(this, migrator));
+      migrator.down(internals.argv, internals.onComplete.bind(this, migrator));
     });
   });
 }
 
 function executeDB() {
 
-  if(argv._.length > 0) {
-    argv.dbname = argv._.shift().toString();
+  if(internals.argv._.length > 0) {
+    internals.argv.dbname = internals.argv._.shift().toString();
   }
   else {
 
@@ -518,13 +525,13 @@ function executeDB() {
   {
     if(internals.mode === 'create')
     {
-      db.createDatabase(argv.dbname, { ifNotExists: true }, function()
+      db.createDatabase(internals.argv.dbname, { ifNotExists: true }, function()
       {
         if(err) {
           log.info('Error: Failed to create database!');
         }
         else {
-          log.info('Created database "' + argv.dbname + '"');
+          log.info('Created database "' + internals.argv.dbname + '"');
         }
 
         db.close();
@@ -532,13 +539,13 @@ function executeDB() {
     }
     else if(internals.mode === 'drop')
     {
-      db.dropDatabase(argv.dbname, { ifExists: true }, function()
+      db.dropDatabase(internals.argv.dbname, { ifExists: true }, function()
       {
         if(err) {
           log.info('Error: Failed to drop database!');
         }
         else {
-          log.info('Deleted database "' + argv.dbname + '"');
+          log.info('Deleted database "' + internals.argv.dbname + '"');
         }
 
         db.close();
@@ -552,16 +559,16 @@ function executeDB() {
 
 function executeSeed() {
 
-  if(argv._.length > 0) {
-    argv.destination = argv._.shift().toString();
+  if(internals.argv._.length > 0) {
+    internals.argv.destination = internals.argv._.shift().toString();
   }
 
   index.connect(config.getCurrent().settings, Seeder, function(err, seeder)
   {
     assert.ifError(err);
 
-    seeder.seedDir = path.resolve(argv[(internals.mode !== 'static') ? 'vcseeder-dir': 'staticseeder-dir']);
-    seeder.seed(argv, internals.onComplete.bind(this, seeder));
+    seeder.seedDir = path.resolve(internals.argv[(internals.mode !== 'static') ? 'vcseeder-dir': 'staticseeder-dir']);
+    seeder.seed(internals.argv, internals.onComplete.bind(this, seeder));
   });
 }
 
@@ -576,12 +583,10 @@ function onComplete(migrator, originalErr) {
 };
 
 function run() {
-  var action = argv._.shift(),
+  var action = internals.argv._.shift(),
       folder = action.split(':');
 
   action = folder[0];
-
-  loadConfig();
 
   switch(action) {
     case 'create':
@@ -592,14 +597,14 @@ function run() {
     case 'reset':
 
       if(action === 'reset')
-        argv.count = Number.MAX_VALUE;
+        internals.argv.count = Number.MAX_VALUE;
 
-      if(argv._.length > 0) {
+      if(internals.argv._.length > 0) {
         if (action === 'down') {
           log.info('Ignoring migration name for down migrations.  Use --count to control how many down migrations are run.');
-          argv.destination = null;
+          internals.argv.destination = null;
         } else {
-          argv.destination = argv._.shift().toString();
+          internals.argv.destination = internals.argv._.shift().toString();
         }
       }
 

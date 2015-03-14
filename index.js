@@ -61,7 +61,7 @@ exports.connect = function(config, passedClass, callback) {
       }
     }
     else
-      callback(null, new passedClass(db, config['migrations-dir'], internals.mode !== 'static'));
+      callback(null, new passedClass(db, config['migrations-dir'], internals.mode !== 'static', internals));
 
   });
 };
@@ -103,7 +103,7 @@ function migrationFiles(files, callback, config, passedClass, db, close, cb) {
 
 
     internals.locTitle = internals.matching;
-    callback(null, new passedClass(db, config['migrations-dir'], internals.mode !== 'static'));
+    callback(null, new passedClass(db, config['migrations-dir'], internals.mode !== 'static', internals));
 
     if(typeof(cb) === 'function')
       cb();
