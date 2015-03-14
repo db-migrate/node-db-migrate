@@ -7,7 +7,8 @@ var driver = require('../../lib/driver');
 
 var client = new pg.Client('postgres://localhost/db_migrate_test');
 
-global.migrationTable = 'migrations';
+var internals = {};
+internals.migrationTable = 'migrations';
 
 vows.describe('pg').addBatch({
     'create schema and connect': {
@@ -16,7 +17,7 @@ vows.describe('pg').addBatch({
 
             client.connect(function(err) {
                 client.query('CREATE SCHEMA test_schema', function(err) {
-                    driver.connect({ driver: 'pg', database: 'db_migrate_test', schema: 'test_schema' }, function(err, db) {
+                    driver.connect({ driver: 'pg', database: 'db_migrate_test', schema: 'test_schema' }, internals, function(err, db) {
                         callback(null, db);
                     });
                 });

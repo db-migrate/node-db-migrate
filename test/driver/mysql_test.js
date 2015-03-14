@@ -6,10 +6,11 @@ var driver = require('../../lib/driver');
 
 var config = require('../db.config.json').mysql;
 
-global.migrationTable = 'migrations';
+var internals = {};
+internals.migrationTable = 'migrations';
 
 var dbName = config.database;
-driver.connect(config, function(err, db) {
+driver.connect(config, internals, function(err, db) {
     assert.isNull(err);
   vows.describe('mysql').addBatch({
     'createTable': {
@@ -250,7 +251,7 @@ driver.connect(config, function(err, db) {
   }).addBatch({
     'renameColumn': {
       topic: function() {
-        driver.connect(config, function(err) {
+        driver.connect(config, internals, function(err) {
           db.createTable('event', {
             id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
             title: dataType.STRING

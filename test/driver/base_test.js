@@ -2,11 +2,12 @@ var vows = require('vows');
 var assert = require('assert');
 var Base = require('../../lib/driver/base');
 
-global.migrationTable = 'migrations';
+var internals = {};
+internals.migrationTable = 'migrations';
 
 vows.describe('base').addBatch({
   'default implementation': {
-    topic: new Base(),
+    topic: new Base(internals),
 
     'inherits from EventEmitter': function(base) {
       assert.isNotNull(base.on);

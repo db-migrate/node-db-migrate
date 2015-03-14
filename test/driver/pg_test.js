@@ -6,9 +6,10 @@ var driver = require('../../lib/driver');
 
 var config = require('../db.config.json').pg;
 
-global.migrationTable = 'migrations';
+var internals = {};
+internals.migrationTable = 'migrations';
 
-driver.connect(config, function(err, db) {
+driver.connect(config, internals, function(err, db) {
   vows.describe('pg').addBatch({
     'createTable': {
       topic: function() {

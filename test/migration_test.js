@@ -9,11 +9,14 @@ var fileNameNoExtension = 'filename';
 var fileName = 'filename.js';
 var templateType = Migration.TemplateType.SQL_FILE_LOADER;
 
+var internals = {};
+internals.migrationTable = 'migrations';
+
 vows.describe('migration').addBatch({
   'when creating a new migration object': {
-    'with 1 parameter as the complete filepath': {
+    'with 2 parameters as the complete filepath': {
       topic: function() {
-        var migration = new Migration(dirName + dateString+'-'+fileName);
+        var migration = new Migration(dirName + dateString+'-'+fileName, internals);
         return migration;
       },
       'should have title set without file extension': function(migration) {
@@ -55,9 +58,9 @@ vows.describe('migration').addBatch({
         assert.equal(migration.templateType, undefined);
       }
     },
-    'with 4 parameters': {
+    'with 5 parameters': {
       topic: function() {
-        var migration = new Migration(fileName, dirName, date, templateType);
+        var migration = new Migration(fileName, dirName, date, templateType, internals);
         return migration;
       },
       'should have title set': function(migration) {
@@ -81,7 +84,7 @@ vows.describe('migration').addBatch({
   'get template' : {
     'when template type is not set': {
       topic: function() {
-          var migration = new Migration(fileName, dirName, date);
+          var migration = new Migration(fileName, dirName, date, internals);
           return migration;
         },
       'should return default javascript template': function(migration) {
@@ -92,7 +95,7 @@ vows.describe('migration').addBatch({
     'when template type is set': {
       'as sql file loader' : {
         topic: function() {
-            var migration = new Migration(fileName, dirName, date, Migration.TemplateType.SQL_FILE_LOADER);
+            var migration = new Migration(fileName, dirName, date, Migration.TemplateType.SQL_FILE_LOADER, internals);
             return migration;
           },
         'should return sql file loader template': function(migration) {
@@ -102,7 +105,7 @@ vows.describe('migration').addBatch({
       },
       'as default sql' : {
         topic: function() {
-            var migration = new Migration(fileName, dirName, date, Migration.TemplateType.DEFAULT_SQL);
+            var migration = new Migration(fileName, dirName, date, Migration.TemplateType.DEFAULT_SQL, internals);
             return migration;
           },
         'should return default sql template': function(migration) {
@@ -112,7 +115,7 @@ vows.describe('migration').addBatch({
       },
       'as default coffee' : {
         topic: function() {
-            var migration = new Migration(fileName, dirName, date, Migration.TemplateType.DEFAULT_COFFEE);
+            var migration = new Migration(fileName, dirName, date, Migration.TemplateType.DEFAULT_COFFEE, internals);
             return migration;
           },
         'should return default coffee template': function(migration) {
@@ -122,7 +125,7 @@ vows.describe('migration').addBatch({
       },
       'as default javascript' : {
         topic: function() {
-            var migration = new Migration(fileName, dirName, date, Migration.TemplateType.DEFAULT_JS);
+            var migration = new Migration(fileName, dirName, date, Migration.TemplateType.DEFAULT_JS, internals);
             return migration;
           },
         'should return default sql template': function(migration) {

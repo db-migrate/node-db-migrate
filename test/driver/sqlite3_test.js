@@ -7,12 +7,13 @@ var driver = require('../../lib/driver');
 
 var config = require('../db.config.json').sqlite3;
 
-global.migrationTable = 'migrations';
+var internals = {};
+internals.migrationTable = 'migrations';
 
 vows.describe('sqlite3').addBatch({
   'createTable': {
     topic: function () {
-      driver.connect(config, function (err, db) {
+      driver.connect(config, internals, function (err, db) {
         db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true, notNull: true },
           str: { type: dataType.STRING, unique: true },
@@ -113,7 +114,7 @@ vows.describe('sqlite3').addBatch({
 }).addBatch({
     'dropTable': {
       topic: function () {
-        driver.connect(config, function (err, db) {
+        driver.connect(config, internals, function (err, db) {
           db.createTable('event', {
             id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true }
           }, function (err) {
@@ -150,7 +151,7 @@ vows.describe('sqlite3').addBatch({
   }).addBatch({
     'renameTable': {
       topic: function () {
-        driver.connect(config, function (err, db) {
+        driver.connect(config, internals, function (err, db) {
           db.createTable('event', {
             id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true }
           }, function () {
@@ -186,7 +187,7 @@ vows.describe('sqlite3').addBatch({
   }).addBatch({
     'addColumn': {
       topic: function () {
-        driver.connect(config, function (err, db) {
+        driver.connect(config, internals, function (err, db) {
           db.createTable('event', {
             id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true }
           }, function () {
@@ -226,7 +227,7 @@ vows.describe('sqlite3').addBatch({
   }).addBatch({
     'addIndex': {
       topic: function () {
-        driver.connect(config, function (err, db) {
+        driver.connect(config, internals, function (err, db) {
           db.createTable('event', {
             id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
             title: { type: dataType.STRING }
@@ -264,7 +265,7 @@ vows.describe('sqlite3').addBatch({
   }).addBatch({
     'insert': {
       topic: function () {
-        driver.connect(config, function (err, db) {
+        driver.connect(config, internals, function (err, db) {
           db.createTable('event', {
             id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
             title: { type: dataType.STRING }
@@ -289,7 +290,7 @@ vows.describe('sqlite3').addBatch({
   }).addBatch({
     'insertWithSingleQuotes': {
       topic: function () {
-        driver.connect(config, function (err, db) {
+        driver.connect(config, internals, function (err, db) {
           db.createTable('event', {
             id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
             title: { type: dataType.STRING }
@@ -314,7 +315,7 @@ vows.describe('sqlite3').addBatch({
   }).addBatch({
     'removeIndex': {
       topic: function () {
-        driver.connect(config, function (err, db) {
+        driver.connect(config, internals, function (err, db) {
           db.createTable('event', {
             id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
             title: { type: dataType.STRING }
@@ -351,7 +352,7 @@ vows.describe('sqlite3').addBatch({
   }).addBatch({
     'removeIndexWithTableName': {
       topic: function () {
-        driver.connect(config, function (err, db) {
+        driver.connect(config, internals, function (err, db) {
           db.createTable('event', {
             id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
             title: { type: dataType.STRING }
@@ -388,7 +389,7 @@ vows.describe('sqlite3').addBatch({
   }).addBatch({
     'createMigrationsTable': {
       topic: function () {
-        driver.connect(config, function (err, db) {
+        driver.connect(config, internals, function (err, db) {
           db.createMigrationsTable(this.callback.bind(this, null, db));
         }.bind(this));
       },

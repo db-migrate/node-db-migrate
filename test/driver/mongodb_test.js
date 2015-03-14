@@ -6,10 +6,11 @@ var driver = require('../../lib/driver');
 
 var config = require('../db.config.json').mongodb;
 
-global.migrationTable = 'migrations';
+var internals = {};
+internals.migrationTable = 'migrations';
 
 var dbName = config.database;
-driver.connect(config, function(err, db) {
+driver.connect(config, internals, function(err, db) {
   assert.isNull(err);
   vows.describe('mongodb')
   .addBatch({
