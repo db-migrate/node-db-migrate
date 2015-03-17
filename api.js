@@ -14,8 +14,8 @@ var pkginfo = require('pkginfo')(module, 'version');
 var dotenv = require('dotenv');
 
 //global declaration for detection like it's done in umigrate
-dbm = require( './' );
-async = require( 'async' );
+dbm = require( './' ); //deprecated
+async = require( 'async' ); //deprecated
 
 
 var internals = {};
@@ -39,7 +39,7 @@ function dbmigrate(isModule, callback) {
   loadConfig();
   index.exportInternals(internals);
   internals.dbm = dbm;
-  global.dbm = dbm;
+  global.dbm = dbm; //deprecated
   internals.migrationOptions = { dbmigrate: internals.dbm };
 }
 
@@ -355,6 +355,7 @@ function setDefaultArgv(isModule) {
   internals.seedsTable = internals.argv['seeds-table'];
   internals.matching = '';
   internals.verbose = internals.argv.verbose;
+  global.verbose = internals.verbose;
   internals.notransactions = internals.argv['no-transactions']
   internals.dryRun = internals.argv['dry-run'];
   if(internals.dryRun) {
@@ -580,7 +581,7 @@ function onComplete(migrator, originalErr) {
     assert.ifError(err);
     log.info('Done');
   });
-};
+}
 
 function run() {
   var action = internals.argv._.shift(),
