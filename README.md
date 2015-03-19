@@ -2,7 +2,7 @@
 [![Dependency Status](https://david-dm.org/db-migrate/node-db-migrate.svg)](https://david-dm.org/db-migrate/node-db-migrate)
 [![devDependency Status](https://david-dm.org/db-migrate/node-db-migrate/dev-status.svg)](https://david-dm.org/db-migrate/node-db-migrate#info=devDependencies)
 [![Documentation Status](https://readthedocs.org/projects/db-migrate/badge/?version=latest)](https://readthedocs.org/projects/db-migrate/?badge=latest)
- 
+  
 # db-migrate
 [![NPM](https://nodei.co/npm/db-migrate.png?downloads=true&downloadRank=true)](https://nodei.co/npm/db-migrate/)
 
