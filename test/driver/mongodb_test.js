@@ -145,13 +145,23 @@ driver.connect(config, internals, function(err, db) {
       },
 
       'with additional row' : function() {
-        db._find('event', {title: 'title'}, function(err, data) {
-          if(err) {
-            return this.callback(err);
-          }
 
-          assert.equal(data.length, 1);
-        });
+        /**
+          * We expect a race condition on high load, thus we timeout for a small
+          * amount of time.
+          *
+          * One second should be enough though.
+          */
+        setTimeout(function() {
+
+          db._find('event', {title: 'title'}, function(err, data) {
+            if(err) {
+              return this.callback(err);
+            }
+
+            assert.equal(data.length, 1);
+          });
+        }.bind(this), 1000);
       }
     }
   })
