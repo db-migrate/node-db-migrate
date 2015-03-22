@@ -130,13 +130,13 @@ driver.connect(config, internals, function(err, db) {
     }
   })
   .addBatch({
-    'insert': {
+    'insertOne': {
       topic: function() {
         db.createCollection('event', function(err, collection) {
           if(err) {
             return this.callback(err);
           }
-          db.insert('event', [{id: 2, title: 'title'}], function(err) {
+          db.insert('event', {id: 2, title: 'title'}, function(err) {
 
               if(err) {
 
@@ -156,6 +156,38 @@ driver.connect(config, internals, function(err, db) {
       'with additional row' : function(err, data) {
 
         assert.equal(data.length, 1);
+      }
+    }
+  })
+  .addBatch({
+    'insertMany': {
+      topic: function() {
+        db.createCollection('event', function(err, collection) {
+          if(err) {
+            return this.callback(err);
+          }
+          db.insert('event', [{id: 2, title: 'title'},
+            {id: 3, title: 'lol'},
+            {id: 4, title: 'title'}], function(err) {
+
+              if(err) {
+
+                return this.callback(err);
+              }
+
+              db._find('event', {title: 'title'}, this.callback);
+
+          }.bind(this));
+        }.bind(this));
+      },
+
+      teardown: function() {
+        db.dropCollection('event', this.callback);
+      },
+
+      'with additional row' : function(err, data) {
+
+        assert.equal(data.length, 2);
       }
     }
   })

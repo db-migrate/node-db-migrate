@@ -30,7 +30,7 @@
     "final-fs": "^1.6.0",
     "mkdirp": "~0.5.0",
     "moment": "~2.9.0",
-    "mongodb": "^1.4.30",
+    "mongodb": "^2.0.23",
     "mysql": "~2.5.4",
     "optimist": "~0.6.1",
     "parse-database-url": "~0.2.2",
