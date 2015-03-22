@@ -136,7 +136,20 @@ driver.connect(config, internals, function(err, db) {
           if(err) {
             return this.callback(err);
           }
-          db.insert('event', [{id: 2, title: 'title'}], this.callback);
+          db.insert('event', [{id: 2, title: 'title'}], function() {
+
+            /**
+              * We expect a race condition on high load, thus we timeout for a small
+              * amount of time.
+              *
+              * One second should be enough though.
+              */
+            setTimeout(function() {
+
+              this.callback.apply(arguments);
+            }.bind(this));
+
+          }.bind(this));
         }.bind(this));
       },
 
@@ -146,22 +159,13 @@ driver.connect(config, internals, function(err, db) {
 
       'with additional row' : function() {
 
-        /**
-          * We expect a race condition on high load, thus we timeout for a small
-          * amount of time.
-          *
-          * One second should be enough though.
-          */
-        setTimeout(function() {
+        db._find('event', {title: 'title'}, function(err, data) {
+          if(err) {
+            return this.callback(err);
+          }
 
-          db._find('event', {title: 'title'}, function(err, data) {
-            if(err) {
-              return this.callback(err);
-            }
-
-            assert.equal(data.length, 1);
-          });
-        }.bind(this), 1000);
+          assert.equal(data.length, 1);
+        });
       }
     }
   })
