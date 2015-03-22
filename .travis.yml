@@ -21,7 +21,6 @@ env:
 
 before_script:
     - until nc -z localhost 27017 ; do echo Waiting for MongoDB; sleep 1; done
-    - sleep 10
     - sh -c "if [ '$DB' = 'mariadb' ]; then sudo apt-get install python-software-properties; fi"
     - sh -c "if [ '$DB' = 'mariadb' ]; then sudo apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xcbcb082a1bb943db; fi"
     - sh -c "if [ '$DB' = 'mariadb' ]; then sudo add-apt-repository 'deb http://ftp.osuosl.org/pub/mariadb/repo/10.0/ubuntu precise main'; fi"
