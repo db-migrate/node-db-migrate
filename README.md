@@ -6,6 +6,7 @@
 # db-migrate
 
 [![Join the chat at https://gitter.im/db-migrate/node-db-migrate](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/db-migrate/node-db-migrate?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![NPM](https://nodei.co/npm/db-migrate.png?downloads=true&downloadRank=true)](https://nodei.co/npm/db-migrate/)
 
 Database migration framework for node.js
