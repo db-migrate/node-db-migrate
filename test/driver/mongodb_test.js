@@ -135,7 +135,16 @@ driver.connect(config, function(err, db) {
           if(err) {
             return this.callback(err);
           }
-          db.insert('event', [{id: 2, title: 'title'}], this.callback);
+          db.insert('event', [{id: 2, title: 'title'}], function(err) {
+
+              if(err) {
+
+                return this.callback(err);
+              }
+
+              db._find('event', {title: 'title'}, this.callback);
+
+          }.bind(this));
         }.bind(this));
       },
 
@@ -143,14 +152,9 @@ driver.connect(config, function(err, db) {
         db.dropCollection('event', this.callback);
       },
 
-      'with additional row' : function() {
-        db._find('event', {title: 'title'}, function(err, data) {
-          if(err) {
-            return this.callback(err);
-          }
+      'with additional row' : function(err, data) {
 
-          assert.equal(data.length, 1);
-        });
+        assert.equal(data.length, 1);
       }
     }
   })
