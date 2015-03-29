@@ -381,6 +381,32 @@ It's currently also not possible to switch the database over this config with **
   "schema": "test"
 }
 ```
+
+## Connecting through an SSH tunnel
+
+If you need to connect to the database through an SSH tunnel, you can set the `tunnel` config:
+
+```json
+{
+  "tunnel": {
+    "localPort" : 33333,
+    "host": "ssh-machine.example.com",
+    "username": "sshuser",
+    "privateKeyPath": "/home/sshuser/privatekey.pem"
+  }
+}
+```
+
+One common use case for this is when the remote DB does not accept connections from the host that will be running db-migrate. For example, a database within an AWS
+[Virtual Private Cloud (VPC)](http://aws.amazon.com/vpc) that is only open to [EC2](http://aws.amazon.com/ec2) hosts within the same VPC. By pointing the tunnel sshConfig to a host within the DB's
+VPC, you can run your migrations from any host.
+
+### Tunnel configuration properties
+
+The `tunnel` config must specify the `localPort` in addition to any configuration necessary to connect to the SSH tunnel. Please see the [https://github.com/Finanzchef24-GmbH/tunnel-ssh](tunnel-ssh)
+documentation for more details about what properties to set on the tunnel config. The only addition to that config is the `privateKeyPath` property. If the connection to your SSH host
+requires a private key file, you can specify its path using this property.
+
 ## Defaults
 
 ## Generic Datatypes
