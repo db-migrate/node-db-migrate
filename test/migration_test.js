@@ -141,7 +141,7 @@ vows.describe('migration').addBatch({
 function createDateForTest() {
   var date = new Date();
   date.setUTCFullYear(2014);
-  date.setUTCMonth('01');
+  date.setMonth('02');
   date.setUTCDate('20');
   date.setUTCHours('14');
   date.setUTCMinutes('30');
