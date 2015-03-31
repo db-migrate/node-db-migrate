@@ -1,6 +1,23 @@
 #!/usr/bin/env node
 
-var DBMigrate = require('../api.js'),
-    dbmigrate = new DBMigrate();
+var resolve = require( 'resolve' );
 
-dbmigrate.run();
+process.title = 'db-migrate';
+
+resolve( 'db-migrate', {
+
+  basedir: process.cwd()
+}, function ( error, localModule ) {
+
+  var DBMigrate, dbmigrate;
+
+  if ( error ) {
+    DBMigrate = require( '../' );
+  }
+  else {
+    DBMigrate = require( localModule );
+  }
+
+  dbmigrate = new DBMigrate();
+  dbmigrate.run();
+} );

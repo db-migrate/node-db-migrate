@@ -37,6 +37,7 @@
     "pg": "~4.3.0",
     "pg-native": "^1.8.0",
     "pkginfo": "~0.3.0",
+    "resolve": "^1.1.6",
     "semver": "~4.3.0",
     "sqlite3": "~3.0.4",
     "tunnel-ssh": "^1.0.0"
