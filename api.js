@@ -25,7 +25,7 @@ function dbmigrate(isModule, callback) {
   if(typeof(callback) === 'function')
     internals.onComplete = callback;
 
-  dotenv.load();
+  dotenv.load({ silent: true });
   registerEvents();
 
   if(typeof(isModule) === 'function')
