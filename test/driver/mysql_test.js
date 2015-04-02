@@ -125,7 +125,7 @@ driver.connect(config, internals, function(err, db) {
           assert.equal(column.getDataType(), 'TINYINT');
           assert.equal(column.isNullable(), true);
           assert.equal(column.getDefaultValue(), 0);
-        },
+        }
       }
     }
   }).addBatch({
