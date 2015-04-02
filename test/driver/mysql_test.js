@@ -18,6 +18,7 @@ driver.connect(config, internals, function(err, db) {
         db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
           str: { type: dataType.STRING, unique: true, defaultValue: 'foo' },
+          strDefaultNull: { type: dataType.STRING, defaultValue: null },
           txt: { type: dataType.TEXT, notNull: true },
           intg: dataType.INTEGER,
           rel: dataType.REAL,
@@ -58,9 +59,9 @@ driver.connect(config, internals, function(err, db) {
           }.bind(this));
         },
 
-        'with 9 columns': function(err, columns) {
+        'with 10 columns': function(err, columns) {
           assert.isNotNull(columns);
-          assert.equal(columns.length, 9);
+          assert.equal(columns.length, 10);
         },
 
         'that has integer id column that is primary key, non-nullable, and auto increments': function(err, columns) {
@@ -76,6 +77,11 @@ driver.connect(config, internals, function(err, db) {
           assert.equal(column.getDataType(), 'VARCHAR');
           assert.equal(column.getDefaultValue(), 'foo');
   //        assert.equal(column.isUnique(), true);
+        },
+
+        'that has text strDefaultNull column that has a default null value': function(err, columns) {
+          var column = findByName(columns, 'strDefaultNull');
+          assert.equal(column.getDefaultValue(), null);
         },
 
         'that has text txt column that is non-nullable': function(err, columns) {
@@ -119,7 +125,7 @@ driver.connect(config, internals, function(err, db) {
           assert.equal(column.getDataType(), 'TINYINT');
           assert.equal(column.isNullable(), true);
           assert.equal(column.getDefaultValue(), 0);
-        }
+        },
       }
     }
   }).addBatch({
