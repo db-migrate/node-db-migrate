@@ -35,7 +35,7 @@
     "parse-database-url": "~0.2.2",
     "pg": "~4.2.0",
     "pkginfo": "~0.3.0",
-    "semver": "~4.3.0",
+    "semver": "~4.3.3",
     "sqlite3": "~3.0.4"
   },
   "devDependencies": {
