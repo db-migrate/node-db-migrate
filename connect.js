@@ -4,9 +4,6 @@ var driver = require('./lib/driver');
 var path = require('path');
 var log = require('./lib/log');
 
-exports.dataType = require('./lib/data_type');
-exports.config = require('./lib/config');
-
 var internals = {};
 
 exports.connect = function(config, passedClass, callback) {

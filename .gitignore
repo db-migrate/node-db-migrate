@@ -9,3 +9,4 @@ test/db.config.json
 database.json
 *.sublime-project
 *.sublime-workspace
+archive

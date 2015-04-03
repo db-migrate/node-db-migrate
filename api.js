@@ -13,10 +13,10 @@ var log = require('./lib/log');
 var pkginfo = require('pkginfo')(module, 'version');
 var dotenv = require('dotenv');
 
+
 //global declaration for detection like it's done in umigrate
 dbm = require( './' ); //deprecated
 async = require( 'async' ); //deprecated
-
 
 var internals = {};
 
@@ -25,6 +25,8 @@ function dbmigrate(isModule, callback) {
   if(typeof(callback) === 'function')
     internals.onComplete = callback;
 
+  this.dataType = dbm.dataType;
+  this.version = dbm.version;
   dotenv.load({ silent: true });
   registerEvents();
 
@@ -342,7 +344,7 @@ function setDefaultArgv(isModule) {
       .argv;
 
   if (internals.argv.version) {
-    console.log(module.exports.version);
+    console.log(dbm.version);
     process.exit(0);
   }
 
