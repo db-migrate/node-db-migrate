@@ -486,15 +486,26 @@ driver.connect(config, internals, function(err, db) {
               type: dataType.INTEGER,
               notNull: true,
               foreignKey: {
-              name: 'fk_event_event_type',
-              table: 'event_type',
-              mapping: {
-                event_id: 'id'
-              },
-              rules: {
-                    onDelete: 'CASCADE'
-                },
-            } },
+                name: 'fk_event_event_type',
+                table: 'event_type',
+                mapping: 'id',
+                rules: {
+                      onDelete: 'CASCADE'
+                  },
+              }
+            },
+            event_id2: {
+              type: dataType.INTEGER,
+              notNull: true,
+              foreignKey: {
+                name: 'fk_event_event2_type',
+                table: 'event_type',
+                mapping: 'id',
+                rules: {
+                      onDelete: 'CASCADE'
+                  },
+              }
+            },
             title: {
               type: dataType.STRING
             }
@@ -523,22 +534,36 @@ driver.connect(config, internals, function(err, db) {
             'WHERE',
             '  usg.TABLE_SCHEMA = ?',
             '  AND usg.TABLE_NAME = ?',
-            '  AND usg.COLUMN_NAME = ?'].join('\n');
-          db.runSql(metaQuery, dbName, 'event', 'event_id', this.callback);
+            '  AND ( usg.COLUMN_NAME = ? OR usg.COLUMN_NAME = ? )'].join('\n');
+          db.runSql(metaQuery, dbName, 'event', 'event_id', 'event_id2', this.callback);
         },
 
         'with correct references': function(err, rows) {
           assert.isNotNull(rows);
-          assert.equal(rows.length, 1);
+          assert.equal(rows.length, 2);
           var row = rows[0];
           assert.equal(row.REFERENCED_TABLE_NAME, 'event_type');
           assert.equal(row.REFERENCED_COLUMN_NAME, 'id');
+
+          var row = rows[1];
+          assert.equal(row.REFERENCED_TABLE_NAME, 'event_type');
+          assert.equal(row.REFERENCED_COLUMN_NAME, 'id');
+          var row = rows[1];
+          assert.equal(row.UPDATE_RULE, 'NO ACTION');
+          assert.equal(row.DELETE_RULE, 'CASCADE');
         },
 
         'and correct rules': function(err, rows) {
           assert.isNotNull(rows);
-          assert.equal(rows.length, 1);
+          assert.equal(rows.length, 2);
           var row = rows[0];
+          assert.equal(row.UPDATE_RULE, 'NO ACTION');
+          assert.equal(row.DELETE_RULE, 'CASCADE');
+
+          var row = rows[1];
+          assert.equal(row.REFERENCED_TABLE_NAME, 'event_type');
+          assert.equal(row.REFERENCED_COLUMN_NAME, 'id');
+          var row = rows[1];
           assert.equal(row.UPDATE_RULE, 'NO ACTION');
           assert.equal(row.DELETE_RULE, 'CASCADE');
         }
