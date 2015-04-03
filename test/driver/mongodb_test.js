@@ -81,9 +81,14 @@ driver.connect(config, internals, function(err, db) {
         },
 
         'containing the functions table': function(err, tables) {
+          var index = 0;
           assert.isNotNull(tables);
           assert.equal(tables.length, 2);	// Should be 2 b/c of the system collection
-          assert.equal(tables[1].collectionName, 'functions');
+
+          if( tables[0].collectionName === 'system.indexes' )
+            index = 1;
+
+          assert.equal(tables[index].collectionName, 'functions');
         }
       }
     }
@@ -110,9 +115,14 @@ driver.connect(config, internals, function(err, db) {
         },
 
         'of the functions original table': function(err, tables) {
+          var index = 0;
           assert.isNotNull(tables);
           assert.equal(tables.length, 2);	// Should be 2 b/c of the system collection
-          assert.equal(tables[1].collectionName, 'event');
+
+          if( tables[0].collectionName === 'system.indexes' )
+            index = 1;
+
+          assert.equal(tables[index].collectionName, 'event');
         }
       },
 
@@ -248,10 +258,14 @@ driver.connect(config, internals, function(err, db) {
         },
 
         'has migrations table' : function(err, tables) {
+          var index = 0;
           assert.isNull(err);
           assert.isNotNull(tables);
           assert.equal(tables.length, 2);	// Should be 2 b/c of the system collection
-          assert.equal(tables[1].collectionName, 'migrations');
+          if( tables[0].collectionName === 'system.indexes' )
+            index = 1;
+
+          assert.equal(tables[index].collectionName, 'migrations');
         }
       }
     }
@@ -313,10 +327,15 @@ driver.connect(config, internals, function(err, db) {
         },
 
         'has migrations table' : function(err, tables) {
+          var index = 0;
           assert.isNull(err);
           assert.isNotNull(tables);
           assert.equal(tables.length, 2);	// Should be 2 b/c of the system collection
-          assert.equal(tables[1].collectionName, 'migrations');
+
+          if( tables[0].collectionName === 'system.indexes' )
+            index = 1;
+
+          assert.equal(tables[index].collectionName, 'migrations');
         }
       }
     }
