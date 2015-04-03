@@ -37,7 +37,7 @@
     "pg": "~4.3.0",
     "pg-native": "^1.8.0",
     "pkginfo": "~0.3.0",
-    "semver": "~4.3.0",
+    "semver": "~4.3.3",
     "sqlite3": "~3.0.4"
   },
   "devDependencies": {
