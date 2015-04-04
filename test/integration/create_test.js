@@ -187,7 +187,7 @@ vows.describe('create').addBatch({
       }
     },
     teardown: function() {
-      //cp.exec('rm -r ' + path.join(__dirname, 'migrations'), this.callback);
+      cp.exec('rm -r ' + path.join(__dirname, 'migrations'), this.callback);
     }
   }
 }).export(module);
