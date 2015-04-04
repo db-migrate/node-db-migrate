@@ -174,7 +174,6 @@ vows.describe('create').addBatch({
       }.bind(this));
     },
     'does cause an error': function(error, code) {
-      console.log(arguments);
       assert.equal(error, 1);
     },
     'did create the new migration': function(error, code) {
