@@ -52,6 +52,11 @@ function registerEvents() {
     log.error(err.stack);
     process.exit(1);
   });
+
+  process.on("unhandledRejection", function(reason, promise) {
+    log.error(err.stack);
+    process.exit(1);
+  });
 }
 
 dbmigrate.prototype = {
@@ -578,6 +583,7 @@ function executeSeed() {
 internals.onComplete = onComplete;
 
 function onComplete(migrator, originalErr) {
+
   migrator.driver.close(function(err) {
     assert.ifError(originalErr);
     assert.ifError(err);

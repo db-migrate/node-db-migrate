@@ -174,6 +174,7 @@ vows.describe('create').addBatch({
       }.bind(this));
     },
     'does cause an error': function(error, code) {
+      console.log(arguments);
       assert.equal(error, 1);
     },
     'did create the new migration': function(error, code) {
@@ -186,7 +187,7 @@ vows.describe('create').addBatch({
       }
     },
     teardown: function() {
-      cp.exec('rm -r ' + path.join(__dirname, 'migrations'), this.callback);
+      //cp.exec('rm -r ' + path.join(__dirname, 'migrations'), this.callback);
     }
   }
 }).export(module);
