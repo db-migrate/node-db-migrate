@@ -1,6 +1,6 @@
 {
   "dev": {
     "driver": "sqlite3",
-    "filename": "memory"
+    "filename": ":memory:"
   }
 }
