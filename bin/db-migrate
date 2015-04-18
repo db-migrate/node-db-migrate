@@ -18,6 +18,6 @@ resolve( 'db-migrate', {
     DBMigrate = require( localModule );
   }
 
-  dbmigrate = new DBMigrate();
+  dbmigrate = DBMigrate.getInstance();
   dbmigrate.run();
 } );
