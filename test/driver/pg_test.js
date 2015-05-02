@@ -1,3 +1,4 @@
+var util = require('util');
 var vows = require('vows');
 var assert = require('assert');
 var dbmeta = require('db-meta');
@@ -292,17 +293,20 @@ driver.connect(config, internals, function(err, db) {
         db.createTable('event', {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
           txt: { type: dataType.TEXT, notNull: true, unique: true, defaultValue: "foo" },
-          keep_id: { type: dataType.INTEGER, notNull: true, unique: true }
+          keep_id: { type: dataType.INTEGER, notNull: true, unique: true },
+          type_test: {type:dataType.BLOB, notNull:true}
         }, function() {
           var spec = { notNull: false, defaultValue: "foo2", unique: false },
-              spec2 = { notNull: true, unsigned: true };
+              spec2 = { notNull: true, unsigned: true},
+              spec3 = { type:dataType.INTEGER, using:util.format('USING CAST(CAST("type_test" AS %s) AS %s)', dataType.TEXT, dataType.INTEGER) };
 
           db.changeColumn('event', 'txt', spec, function() {
-            db.changeColumn('event', 'keep_id', spec2, this.callback.bind(this, null));
+            db.changeColumn('event', 'keep_id', spec2, function(){
+              db.changeColumn('event', 'type_test', spec3, this.callback.bind(this, null));
+            }.bind(this));
           }.bind(this));
         }.bind(this));
       },
-
       'has column metadata': {
         topic: function() {
           dbmeta('pg', { connection:db.connection}, function (err, meta) {
@@ -315,7 +319,8 @@ driver.connect(config, internals, function(err, db) {
 
         'with changed title column': function(err, columns) {
           assert.isNotNull(columns);
-          assert.equal(columns.length, 3);
+          assert.equal(columns.length, 4);
+
           var column = findByName(columns, 'txt');
           assert.equal(column.getName(), 'txt');
           assert.equal(column.isNullable(), true);
@@ -326,6 +331,10 @@ driver.connect(config, internals, function(err, db) {
           assert.equal(column.getName(), 'keep_id');
           assert.equal(column.isNullable(), false);
           assert.equal(column.isUnique(), true);
+
+          column = findByName(columns, 'type_test');
+          assert.equal(column.getName(), 'type_test');
+          assert.equal(dataType[column.getDataType()], dataType.INTEGER);
         }
       },
 
