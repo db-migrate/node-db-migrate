@@ -43,6 +43,7 @@ function dbmigrate(isModule, callback) {
   internals.dbm = dbm;
   global.dbm = dbm; //deprecated
   internals.migrationOptions = { dbmigrate: internals.dbm };
+  internals.seederOptions = { dbmigrate: internals.dbm };
 }
 
 
