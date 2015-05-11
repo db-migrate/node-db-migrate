@@ -5,57 +5,95 @@ var pg = require('pg');
 var dataType = require('../../lib/data_type');
 var driver = require('../../lib/driver');
 
-var client = new pg.Client('postgres://localhost/db_migrate_test');
+var databaseUrl = 'postgres://localhost/db_migrate_test';
 
 global.migrationTable = 'migrations';
 
 vows.describe('pg').addBatch({
-    'connect to database': {
-        topic: function () {
+    'create schema which needs escaping and connect': {
+        topic: function() {
             var callback = this.callback;
+            var client = new pg.Client(databaseUrl);
 
             client.connect(function (err) {
-                callback(err, client);
+                if (err) { return callback(err); }
+                client.query('CREATE SCHEMA "test-schema"', function(err) {
+                    driver.connect({ driver: 'pg', database: 'db_migrate_test', schema: 'test-schema' }, function(err, db) {
+                        callback(err, db, client);
+                    });
+                });
             });
         },
 
-        teardown: function () {
-          client.end();
-          this.callback();
-        },
-
-        'create schema and connect': {
-            topic: function() {
+        'migrations': {
+            topic: function(db, client) {
                 var callback = this.callback;
 
-                client.query('CREATE SCHEMA test_schema', function(err) {
-                    driver.connect({ driver: 'pg', database: 'db_migrate_test', schema: 'test_schema' }, function(err, db) {
-                        callback(null, db);
+                db.createMigrationsTable(function() {
+                    client.query("SELECT table_name FROM information_schema.tables WHERE table_schema = 'test-schema' AND table_name = 'migrations'", function(err, result) {
+                        callback(err, result);
                     });
                 });
             },
 
-            'migrations table': {
-                topic: function(db) {
-                    var callback = this.callback;
+            'is in test-schema': function(err, result) {
+                assert.isNull(err);
+                assert.isNotNull(result);
+                assert.equal(result.rowCount, 1);
+            }
+        },
 
-                    db.createMigrationsTable(function() {
-                        client.query("SELECT table_name FROM information_schema.tables WHERE table_schema = 'test_schema' AND table_name = 'migrations'", function(err, result) {
-                            callback(err, result);
-                        });
+        teardown: function(db, client) {
+            var callback = this.callback;
+            client.query('DROP SCHEMA "test-schema" CASCADE', function (err) {
+              if (err) { return callback(err); }
+              client.end();
+              callback();
+          });
+        }
+    }
+})
+.addBatch({
+    'create schema and connect': {
+        topic: function() {
+            var callback = this.callback;
+            var client = new pg.Client(databaseUrl);
+
+            client.connect(function (err) {
+                if (err) { return callback(err); }
+                client.query('CREATE SCHEMA test_schema', function(err) {
+                    driver.connect({ driver: 'pg', database: 'db_migrate_test', schema: 'test_schema' }, function(err, db) {
+                        callback(err, db, client);
                     });
-                },
+                });
+            });
+        },
 
-                'is in test_schema': function(err, result) {
-                    assert.isNull(err);
-                    assert.isNotNull(result);
-                    assert.equal(result.rowCount, 1);
-                }
+        'migrations table': {
+            topic: function(db, client) {
+                var callback = this.callback;
+
+                db.createMigrationsTable(function() {
+                    client.query("SELECT table_name FROM information_schema.tables WHERE table_schema = 'test_schema' AND table_name = 'migrations'", function(err, result) {
+                        callback(err, result);
+                    });
+                });
             },
 
-            teardown: function() {
-                client.query('DROP SCHEMA test_schema CASCADE', this.callback);
+            'is in test_schema': function(err, result) {
+                assert.isNull(err);
+                assert.isNotNull(result);
+                assert.equal(result.rowCount, 1);
             }
+        },
+
+        teardown: function(db, client) {
+            var callback = this.callback;
+            client.query('DROP SCHEMA test_schema CASCADE', function (err) {
+              if (err) { return callback(err); }
+              client.end();
+              callback();
+          });
         }
     }
 }).export(module);
