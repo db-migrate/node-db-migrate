@@ -55,7 +55,7 @@ function registerEvents() {
   });
 
   process.on("unhandledRejection", function(reason, promise) {
-    log.error(err.stack);
+    log.error(reason);
     process.exit(1);
   });
 }
