@@ -19,7 +19,7 @@ vows.describe('pg').addBatch({
             client.connect(function (err) {
                 if (err) { return callback(err); }
                 client.query('CREATE SCHEMA "test-schema"', function(err) {
-                    driver.connect({ driver: 'pg', database: 'db_migrate_test', schema: 'test-schema' }, function(err, db) {
+                    driver.connect({ driver: 'pg', database: 'db_migrate_test', schema: 'test-schema' }, internals, function(err, db) {
                         callback(err, db, client);
                     });
                 });
@@ -63,7 +63,7 @@ vows.describe('pg').addBatch({
             client.connect(function (err) {
                 if (err) { return callback(err); }
                 client.query('CREATE SCHEMA test_schema', function(err) {
-                    driver.connect({ driver: 'pg', database: 'db_migrate_test', schema: 'test_schema' }, function(err, db) {
+                    driver.connect({ driver: 'pg', database: 'db_migrate_test', schema: 'test_schema' }, internals, function(err, db) {
                         callback(err, db, client);
                     });
                 });
