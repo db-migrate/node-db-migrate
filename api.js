@@ -431,7 +431,9 @@ function executeCreate() {
     }
 
     var templateType = Migration.TemplateType.DEFAULT_JS;
-    if (shouldCreateSqlFiles()) {
+    if (shouldCreateSqlFiles() && shouldCreateCoffeeFile()) {
+      templateType = Migration.TemplateType.COFFEE_SQL_FILE_LOADER;
+    } else if (shouldCreateSqlFiles()) {
       templateType = Migration.TemplateType.SQL_FILE_LOADER;
     } else if (shouldCreateCoffeeFile()) {
       templateType = Migration.TemplateType.DEFAULT_COFFEE;
