@@ -123,6 +123,16 @@ vows.describe('migration').addBatch({
           assert.equal(actual, migration.defaultCoffeeTemplate());
         }
       },
+      'as coffee sql loader' : {
+        topic: function() {
+            var migration = new Migration(fileName, dirName, date, Migration.TemplateType.COFFEE_SQL_FILE_LOADER, internals);
+            return migration;
+          },
+        'should return default coffee template': function(migration) {
+          var actual = migration.getTemplate();
+          assert.equal(actual, migration.coffeeSqlFileLoaderTemplate());
+        }
+      },
       'as default javascript' : {
         topic: function() {
             var migration = new Migration(fileName, dirName, date, Migration.TemplateType.DEFAULT_JS, internals);
