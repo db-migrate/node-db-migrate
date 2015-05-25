@@ -24,6 +24,7 @@
     "url": "https://github.com/kunklejr/node-db-migrate.git"
   },
   "dependencies": {
+    "async": "^1.0.0",
     "bluebird": "^2.9.12",
     "dotenv": "~1.1.0",
     "final-fs": "^1.6.0",
