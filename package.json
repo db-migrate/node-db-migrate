@@ -31,7 +31,7 @@
     "mkdirp": "~0.5.0",
     "moment": "~2.10.2",
     "mongodb": "^2.0.23",
-    "mysql": "~2.6.0",
+    "mysql": "~2.7.0",
     "optimist": "~0.6.1",
     "parse-database-url": "~0.2.2",
     "pg": "~4.3.0",
