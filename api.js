@@ -20,15 +20,31 @@ async = require( 'async' ); //deprecated
 
 var internals = {};
 
-function dbmigrate(isModule, callback) {
+function dbmigrate(isModule, options, callback) {
 
   if(typeof(callback) === 'function')
     internals.onComplete = callback;
+  else if(typeof(options) === 'function')
+    internals.onComplete = options;
 
   this.dataType = dbm.dataType;
   this.version = dbm.version;
   dotenv.load({ silent: true });
   registerEvents();
+
+
+  if(typeof(options) === 'object') {
+
+    if(typeof(options.config) === 'string')
+      internals.configFile = options.string;
+
+    if(typeof(options.cwd) === 'string')
+      internals.cwd = options.cwd;
+    else
+      internals.cwd = process.cwd();
+  }
+  else
+    internals.cwd = process.cwd();
 
   if(typeof(isModule) === 'function')
   {
@@ -186,6 +202,14 @@ dbmigrate.prototype = {
   },
 
   /**
+    * Silence the log output completely.
+    */
+  silence: function(isSilent) {
+
+    return log.silence(isSilent);
+  },
+
+  /**
     * Creates a correctly formatted migration
     */
   create: function(migrationName, scope) {
@@ -224,7 +248,7 @@ dbmigrate.prototype = {
     */
   setConfigParam: function(param, value) {
 
-    return (argv[param] = value);
+    return (internals.argv[param] = value);
   },
 
 
@@ -285,10 +309,10 @@ function setDefaultArgv(isModule) {
         'force-exit': false,
         'sql-file': false,
         'no-transactions': false,
-        config: process.cwd() + '/database.json',
-        'migrations-dir': process.cwd() + '/migrations',
-        'vcseeder-dir': process.cwd() + '/VCSeeder',
-        'staticseeder-dir': process.cwd() + '/Seeder'})
+        config: internals.configFile || internals.cwd + '/database.json',
+        'migrations-dir': internals.cwd + '/migrations',
+        'vcseeder-dir': internals.cwd + '/VCSeeder',
+        'staticseeder-dir': internals.cwd + '/Seeder'})
       .usage('Usage: db-migrate [up|down|reset|create|db] [[dbname/]migrationName|all] [options]')
 
       .describe('env', 'The environment to run the migrations under (dev, test, prod).')

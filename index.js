@@ -48,9 +48,9 @@ searchCache = function (moduleName, callback) {
     }
 };
 
-module.exports.getInstance = function(isModule, callback) {
+module.exports.getInstance = function(isModule, options, callback) {
 
   uncache('./api.js');
   var mod = require( './api.js' );
-  return new mod(isModule, callback);
+  return new mod(isModule, options, callback);
 };

@@ -143,6 +143,10 @@ vows.describe('config').addBatch({
 
     'should something': function(err) {
         assert.isNull(err);
+    },
+
+    teardown: function() {
+      delete require.cache[require.resolve('../lib/config')];
     }
   }
 }).export(module);
