@@ -291,10 +291,6 @@ dbmigrate.prototype = {
 
     run();
 
-    if (internals.argv['force-exit']) {
-      log.verbose('Forcing exit');
-      process.exit(0);
-    }
   }
 
 };
@@ -615,6 +611,11 @@ function onComplete(migrator, originalErr) {
     assert.ifError(originalErr);
     assert.ifError(err);
     log.info('Done');
+
+    if (internals.argv['force-exit']) {
+      log.verbose('Forcing exit');
+      process.exit(0);
+    }
   });
 }
 
