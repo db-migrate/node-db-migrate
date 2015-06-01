@@ -49,6 +49,8 @@ vows.describe('api').addBatch({
         var ret = called;
         called = true;
 
+        process.exit = process_exit;
+
         if(!ret)
           this.callback(true);
       }.bind(this));
@@ -63,10 +65,11 @@ vows.describe('api').addBatch({
     teardown: function() {
 
       restore();
-      cp.exec('rm -r ' + path.join(__dirname, 'migrations'), function() { this.callback.apply(this, arguments) }.bind(this));
+      cp.exec('rm -r ' + path.join(__dirname, 'migrations'), this.callback);
     },
 
     'process exited after migrations have been run': function(called) {
+
       assert.isTrue(called);
     }
   }
