@@ -44,10 +44,14 @@ vows.describe('api').addBatch({
           this.callback(false);
       }.bind(this);
 
-      var dbmigrate = DBMigrate.getInstance(true, config, function() {
+      var dbmigrate = DBMigrate.getInstance(true, config, function(migrator) {
 
         var ret = called;
         called = true;
+
+        migrator.driver.close(function(err) {
+          delete migrator.driver;
+        });
 
         process.exit = process_exit;
 
