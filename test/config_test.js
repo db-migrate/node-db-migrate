@@ -16,14 +16,6 @@ vows.describe('config').addBatch({
       return config;
     },
 
-    'should remove the load function': function (config) {
-      assert.isUndefined(config.load);
-    },
-
-    'should remove the loadUrl function': function (config) {
-      assert.isUndefined(config.loadUrl);
-    },
-
     'should export all environment settings': function (config) {
       assert.isDefined(config.dev);
       assert.isDefined(config.test);
@@ -102,14 +94,6 @@ vows.describe('config').addBatch({
       config.loadUrl = _configLoadUrl;
       config.loadUrl(databaseUrl, 'dev');
       return config;
-    },
-
-    'should remove the load function': function (config) {
-      assert.isUndefined(config.load);
-    },
-
-    'should remove the loadUrl function': function (config) {
-      assert.isUndefined(config.loadUrl);
     },
 
     'should export the settings as the current environment': function (config) {
