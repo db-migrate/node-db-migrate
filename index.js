@@ -50,7 +50,8 @@ searchCache = function (moduleName, callback) {
 
 module.exports.getInstance = function(isModule, options, callback) {
 
-  uncache('./api.js');
+  delete require.cache[require.resolve('./api.js')];
+  delete require.cache[require.resolve('optimist')];
   var mod = require( './api.js' );
   return new mod(isModule, options, callback);
 };
