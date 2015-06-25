@@ -26,7 +26,7 @@
   "dependencies": {
     "async": "^1.0.0",
     "bluebird": "^2.9.12",
-    "dotenv": "~1.1.0",
+    "dotenv": "~1.2.0",
     "final-fs": "^1.6.0",
     "mkdirp": "~0.5.0",
     "moment": "~2.10.2",
