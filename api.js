@@ -308,7 +308,8 @@ function setDefaultArgv(isModule) {
         config: internals.configFile || internals.cwd + '/database.json',
         'migrations-dir': internals.cwd + '/migrations',
         'vcseeder-dir': internals.cwd + '/VCSeeder',
-        'staticseeder-dir': internals.cwd + '/Seeder'})
+        'staticseeder-dir': internals.cwd + '/Seeder',
+        'ignore-completed-migrations': false})
       .usage('Usage: db-migrate [up|down|reset|create|db] [[dbname/]migrationName|all] [options]')
 
       .describe('env', 'The environment to run the migrations under (dev, test, prod).')
@@ -364,8 +365,14 @@ function setDefaultArgv(isModule) {
       .describe('staticseeder-dir', 'Set the path to the Seeder directory.')
       .string('staticseeder-dir')
 
-      .describe('no-transactions', 'Explicitly disable transactions')
-      .boolean('no-transactions')
+      .describe('non-transactional', 'Explicitly disable transactions')
+      .boolean('non-transactional')
+
+      .describe('ignore-completed-migrations', 'Begin execution from the first migration.')
+      .boolean('ignore-completed-migrations')
+
+      .describe('log-level', 'Define the log-level, for example sql|warn')
+      .string('log-level')
 
       .argv;
 
@@ -379,13 +386,21 @@ function setDefaultArgv(isModule) {
     process.exit(1);
   }
 
+  if(internals.argv['log-level']) {
+
+    log.setLogLevel(internals.argv['log-level']);
+  }
+
+  internals.ignoreCompleted = internals.argv['ignore-completed-migrations'];
   internals.migrationTable = internals.argv.table;
   internals.seedsTable = internals.argv['seeds-table'];
   internals.matching = '';
   internals.verbose = internals.argv.verbose;
   global.verbose = internals.verbose;
-  internals.notransactions = internals.argv['no-transactions']
+  internals.notransactions = internals.argv['non-transactional'];
   internals.dryRun = internals.argv['dry-run'];
+  global.dryRun = internals.argv['dry-run'];
+
   if(internals.dryRun) {
     log.info('dry run');
   }
