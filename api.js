@@ -66,7 +66,7 @@ function dbmigrate(isModule, options, callback) {
 function registerEvents() {
 
   process.on('uncaughtException', function(err) {
-    log.error(err.stack);
+    log.error(err);
     process.exit(1);
   });
 
@@ -304,7 +304,7 @@ function setDefaultArgv(isModule) {
         'seeds-table': 'seeds',
         'force-exit': false,
         'sql-file': false,
-        'no-transactions': false,
+        'non-transactional': false,
         config: internals.configFile || internals.cwd + '/database.json',
         'migrations-dir': internals.cwd + '/migrations',
         'vcseeder-dir': internals.cwd + '/VCSeeder',
@@ -368,10 +368,10 @@ function setDefaultArgv(isModule) {
       .describe('non-transactional', 'Explicitly disable transactions')
       .boolean('non-transactional')
 
-      .describe('ignore-completed-migrations', 'Begin execution from the first migration.')
+      .describe('ignore-completed-migrations', 'Start at the first migration')
       .boolean('ignore-completed-migrations')
 
-      .describe('log-level', 'Define the log-level, for example sql|warn')
+      .describe('log-level', 'Set the log-level, for example sql|warn')
       .string('log-level')
 
       .argv;
@@ -386,9 +386,9 @@ function setDefaultArgv(isModule) {
     process.exit(1);
   }
 
-  if(internals.argv['log-level']) {
+  if( internals.argv['log-level'] ) {
 
-    log.setLogLevel(internals.argv['log-level']);
+    log.setLogLevel( internals.argv['log-level'] );
   }
 
   internals.ignoreCompleted = internals.argv['ignore-completed-migrations'];
@@ -397,9 +397,9 @@ function setDefaultArgv(isModule) {
   internals.matching = '';
   internals.verbose = internals.argv.verbose;
   global.verbose = internals.verbose;
-  internals.notransactions = internals.argv['non-transactional'];
+  internals.notransactions = internals.argv['non-transactional']
   internals.dryRun = internals.argv['dry-run'];
-  global.dryRun = internals.argv['dry-run'];
+  global.dryRun = internals.dryRun;
 
   if(internals.dryRun) {
     log.info('dry run');
