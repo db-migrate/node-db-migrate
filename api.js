@@ -22,6 +22,9 @@ var internals = {};
 
 function dbmigrate(isModule, options, callback) {
 
+  this.internals = {};
+  internals = this.internals;
+
   if(typeof(callback) === 'function')
     internals.onComplete = callback;
   else if(typeof(options) === 'function')
