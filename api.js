@@ -22,13 +22,16 @@ var internals = {};
 
 function dbmigrate(isModule, options, callback) {
 
-  this.internals = {};
+  this.internals = {
+
+    onComplete: internals.onComplete
+  };
   internals = this.internals;
 
   if(typeof(callback) === 'function')
-    internals.onComplete = callback;
+    this.internals.onComplete = callback;
   else if(typeof(options) === 'function')
-    internals.onComplete = options;
+    this.internals.onComplete = options;
 
   this.dataType = dbm.dataType;
   this.version = dbm.version;
@@ -51,7 +54,7 @@ function dbmigrate(isModule, options, callback) {
 
   if(typeof(isModule) === 'function')
   {
-    internals.onComplete = isModule;
+    this.internals.onComplete = isModule;
     setDefaultArgv();
   }
   else
