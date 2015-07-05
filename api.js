@@ -527,7 +527,10 @@ function executeUp() {
     internals.argv.count = Number.MAX_VALUE;
   }
 
-  index.connect(config.getCurrent().settings, Migrator, function(err, migrator) {
+  index.connect({
+      config: config.getCurrent().settings,
+      internals: internals
+    }, Migrator, function(err, migrator) {
     assert.ifError(err);
 
     if(internals.locTitle)
@@ -550,7 +553,10 @@ function executeDown() {
     internals.argv.count = 1;
   }
 
-  index.connect(config.getCurrent().settings, Migrator, function(err, migrator) {
+  index.connect({
+      config: config.getCurrent().settings,
+      internals: internals
+   }, Migrator, function(err, migrator) {
     assert.ifError(err);
 
     migrator.migrationsDir = path.resolve(internals.argv['migrations-dir']);
@@ -615,7 +621,10 @@ function executeSeed() {
     internals.argv.destination = internals.argv._.shift().toString();
   }
 
-  index.connect(config.getCurrent().settings, Seeder, function(err, seeder)
+  index.connect({
+      config: config.getCurrent().settings,
+      internals: internals
+  }, Seeder, function(err, seeder)
   {
     assert.ifError(err);
 

@@ -7,6 +7,13 @@ var log = require('./lib/log');
 var internals = {};
 
 exports.connect = function(config, passedClass, callback) {
+  var internals = {};
+  var _config = config;
+  if( config.config ) {
+    internals = config.internals;
+    config = config.config;
+  }
+
   driver.connect(config, internals, function(err, db) {
     if (err) { callback(err); return; }
 
@@ -65,6 +72,13 @@ exports.connect = function(config, passedClass, callback) {
 
 exports.driver = function(config, callback) {
 
+  var internals = {};
+  var _config = config;
+  if( config.config ) {
+    internals = config.internals;
+    config = config.config;
+  }
+
   driver.connect(config, internals, callback);
 };
 
@@ -72,6 +86,13 @@ function migrationFiles(files, callback, config, passedClass, db, close, cb) {
   var file,
       switched = false,
       newConf;
+
+  var internals = {};
+  var _config = config;
+  if( config.config ) {
+    internals = config.internals;
+    config = config.config;
+  }
 
   if(files.length === 1)
   {
