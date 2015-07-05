@@ -72,7 +72,7 @@ function dbmigrate(isModule, options, callback) {
 function registerEvents() {
 
   process.on('uncaughtException', function(err) {
-    log.error(err.stack);
+    log.error(err);
     process.exit(1);
   });
 
@@ -310,11 +310,12 @@ function setDefaultArgv(isModule) {
         'seeds-table': 'seeds',
         'force-exit': false,
         'sql-file': false,
-        'no-transactions': false,
+        'non-transactional': false,
         config: internals.configFile || internals.cwd + '/database.json',
         'migrations-dir': internals.cwd + '/migrations',
         'vcseeder-dir': internals.cwd + '/VCSeeder',
-        'staticseeder-dir': internals.cwd + '/Seeder'})
+        'staticseeder-dir': internals.cwd + '/Seeder',
+        'ignore-completed-migrations': false})
       .usage('Usage: db-migrate [up|down|reset|create|db] [[dbname/]migrationName|all] [options]')
 
       .describe('env', 'The environment to run the migrations under (dev, test, prod).')
@@ -370,8 +371,14 @@ function setDefaultArgv(isModule) {
       .describe('staticseeder-dir', 'Set the path to the Seeder directory.')
       .string('staticseeder-dir')
 
-      .describe('no-transactions', 'Explicitly disable transactions')
-      .boolean('no-transactions')
+      .describe('non-transactional', 'Explicitly disable transactions')
+      .boolean('non-transactional')
+
+      .describe('ignore-completed-migrations', 'Start at the first migration')
+      .boolean('ignore-completed-migrations')
+
+      .describe('log-level', 'Set the log-level, for example sql|warn')
+      .string('log-level')
 
       .argv;
 
@@ -385,13 +392,21 @@ function setDefaultArgv(isModule) {
     process.exit(1);
   }
 
+  if( internals.argv['log-level'] ) {
+
+    log.setLogLevel( internals.argv['log-level'] );
+  }
+
+  internals.ignoreCompleted = internals.argv['ignore-completed-migrations'];
   internals.migrationTable = internals.argv.table;
   internals.seedsTable = internals.argv['seeds-table'];
   internals.matching = '';
   internals.verbose = internals.argv.verbose;
   global.verbose = internals.verbose;
-  internals.notransactions = internals.argv['no-transactions']
+  internals.notransactions = internals.argv['non-transactional']
   internals.dryRun = internals.argv['dry-run'];
+  global.dryRun = internals.dryRun;
+
   if(internals.dryRun) {
     log.info('dry run');
   }
