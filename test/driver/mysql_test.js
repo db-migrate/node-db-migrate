@@ -3,11 +3,13 @@ var assert = require('assert');
 var dbmeta = require('db-meta');
 var dataType = require('../../lib/data_type');
 var driver = require('../../lib/driver');
+var log = require('../..//lib/log.js');
 
 var config = require('../db.config.json').mysql;
 
 var internals = {};
 internals.migrationTable = 'migrations';
+log.silence(true);
 
 var dbName = config.database;
 driver.connect(config, internals, function(err, db) {
