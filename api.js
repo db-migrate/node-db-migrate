@@ -72,12 +72,12 @@ function dbmigrate(isModule, options, callback) {
 function registerEvents() {
 
   process.on('uncaughtException', function(err) {
-    log.error(err);
+    log.error(err.stack);
     process.exit(1);
   });
 
   process.on("unhandledRejection", function(reason, promise) {
-    log.error(reason);
+    log.error(reason.stack);
     process.exit(1);
   });
 }
