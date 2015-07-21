@@ -111,21 +111,21 @@ dbmigrate.prototype = {
   addConfiguration: function(description, args, type) {
 
     var name = args.shift();
-    internals.argv.describe(name, description);
+    this.internals.argv.describe(name, description);
 
     for(var i = 0; i < args.length; ++i) {
 
-      internals.argv.alias(args[i], name);
+      this.internals.argv.alias(args[i], name);
     }
 
     switch(type) {
 
       case 'string':
-        internals.argv.string(name);
+        this.internals.argv.string(name);
         break;
 
       case 'boolean':
-        internals.argv.boolean(name);
+        this.internals.argv.boolean(name);
         break;
 
       default:
@@ -140,7 +140,7 @@ dbmigrate.prototype = {
     * Resets and sets argv to a specified new argv.
     */
   resetConfiguration: function(argv) {
-    internals.argv = argv;
+    this.internals.argv = argv;
   },
 
   /**
@@ -154,16 +154,16 @@ dbmigrate.prototype = {
     {
       if(typeof(specification) === 'string') {
 
-        internals.argv.destination = specification;
+        this.internals.argv.destination = specification;
       }
       else if(typeof(specification) === 'number') {
 
-        internals.argv.count = specification;
+        this.internals.argv.count = specification;
       }
 
       if(scope) {
 
-        internals.migrationMode = scope;
+        this.internals.migrationMode = scope;
       }
     }
 
@@ -181,12 +181,12 @@ dbmigrate.prototype = {
     {
       if(typeof(arguments[0]) === 'number') {
 
-        internals.argv.count = arguments[0];
+        this.internals.argv.count = arguments[0];
       }
 
       if(scope) {
 
-        internals.migrationMode = scope;
+        this.internals.migrationMode = scope;
       }
     }
 
@@ -200,10 +200,10 @@ dbmigrate.prototype = {
 
     if(scope) {
 
-      internals.migrationMode = scope;
+      this.internals.migrationMode = scope;
     }
 
-    internals.argv.count = Number.MAX_VALUE;
+    this.internals.argv.count = Number.MAX_VALUE;
     executeDown();
   },
 
@@ -222,10 +222,10 @@ dbmigrate.prototype = {
 
     if(scope) {
 
-      internals.migrationMode = scope;
+      this.internals.migrationMode = scope;
     }
 
-    internals.argv._.push(migrationName);
+    this.internals.argv._.push(migrationName);
     executeCreate();
   },
 
@@ -234,8 +234,8 @@ dbmigrate.prototype = {
     */
   createDatabase: function(dbname) {
 
-    internals.argv._.push(dbname);
-    internals.mode = 'create';
+    this.internals.argv._.push(dbname);
+    this.internals.mode = 'create';
   },
 
   /**
@@ -243,8 +243,8 @@ dbmigrate.prototype = {
     */
   dropDatabase: function(dbname) {
 
-    internals.argv._.push(dbname);
-    internals.mode = 'drop';
+    this.internals.argv._.push(dbname);
+    this.internals.mode = 'drop';
   },
 
   /**
@@ -254,7 +254,7 @@ dbmigrate.prototype = {
     */
   setConfigParam: function(param, value) {
 
-    return (internals.argv[param] = value);
+    return (this.internals.argv[param] = value);
   },
 
 
@@ -263,7 +263,7 @@ dbmigrate.prototype = {
     */
   setDefaultCallback: function() {
 
-    internals.onComplete = onComplete;
+    this.internals.onComplete = onComplete;
   },
 
   /**
@@ -272,7 +272,7 @@ dbmigrate.prototype = {
     */
   setCustomCallback: function(callback) {
 
-    internals.onComplete = callback;
+    this.internals.onComplete = callback;
   },
 
   /**
@@ -283,10 +283,10 @@ dbmigrate.prototype = {
 
     if(scope) {
 
-      internals.migrationMode = scope;
+      this.internals.migrationMode = scope;
     }
 
-    internals.mode = mode || 'vc';
+    this.internals.mode = mode || 'vc';
     executeSeed();
   },
 
@@ -316,7 +316,7 @@ function setDefaultArgv(isModule) {
         'vcseeder-dir': internals.cwd + '/VCSeeder',
         'staticseeder-dir': internals.cwd + '/Seeder',
         'ignore-completed-migrations': false})
-      .usage('Usage: db-migrate [up|down|reset|create|db] [[dbname/]migrationName|all] [options]')
+      .usage('Usage: db-migrate [up|down|reset|create|db|seed] [[dbname/]migrationName|all] [options]')
 
       .describe('env', 'The environment to run the migrations under (dev, test, prod).')
       .alias('e', 'env')
