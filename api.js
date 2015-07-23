@@ -167,7 +167,7 @@ dbmigrate.prototype = {
       }
     }
 
-    executeUp();
+    executeUp( this.internals );
   },
 
   /**
@@ -190,7 +190,7 @@ dbmigrate.prototype = {
       }
     }
 
-    executeDown();
+    executeDown( this.internals );
   },
 
   /**
@@ -204,7 +204,7 @@ dbmigrate.prototype = {
     }
 
     this.internals.argv.count = Number.MAX_VALUE;
-    executeDown();
+    executeDown( this.internals );
   },
 
   /**
@@ -226,7 +226,7 @@ dbmigrate.prototype = {
     }
 
     this.internals.argv._.push(migrationName);
-    executeCreate();
+    executeCreate( this.internals );
   },
 
   /**
@@ -236,6 +236,7 @@ dbmigrate.prototype = {
 
     this.internals.argv._.push(dbname);
     this.internals.mode = 'create';
+    executeDB( this.internals );
   },
 
   /**
@@ -245,6 +246,7 @@ dbmigrate.prototype = {
 
     this.internals.argv._.push(dbname);
     this.internals.mode = 'drop';
+    executeDB( this.internals );
   },
 
   /**
@@ -295,7 +297,7 @@ dbmigrate.prototype = {
     */
   run: function() {
 
-    run();
+    run( this.internals );
 
   }
 
@@ -440,7 +442,7 @@ function loadConfig() {
   }
 }
 
-function executeCreate() {
+function executeCreate( internals ) {
   var folder, path;
 
   if(internals.argv._.length === 0) {
@@ -649,7 +651,7 @@ function onComplete(migrator, originalErr) {
   });
 }
 
-function run() {
+function run( internals ) {
   var action = internals.argv._.shift(),
       folder = action.split(':');
 
@@ -657,7 +659,7 @@ function run() {
 
   switch(action) {
     case 'create':
-      executeCreate();
+      executeCreate( internals );
       break;
     case 'up':
     case 'down':
@@ -682,9 +684,9 @@ function run() {
       }
 
       if(action == 'up') {
-        executeUp();
+        executeUp( internals );
       } else {
-        executeDown();
+        executeDown( internals );
       }
       break;
 
@@ -697,14 +699,14 @@ function run() {
       else {
 
         internals.mode = folder[1];
-        executeDB();
+        executeDB( internals );
       }
       break;
     case 'seed':
 
       internals.mode = folder[1] || 'vc';
       internals.migrationMode = folder[2];
-      executeSeed();
+      executeSeed( internals );
       break;
 
     default:
