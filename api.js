@@ -226,7 +226,7 @@ dbmigrate.prototype = {
     }
 
     this.internals.argv._.push(migrationName);
-    executeCreate( this.internals );
+    executeCreateMigration( this.internals );
   },
 
   /**
@@ -442,7 +442,7 @@ function loadConfig() {
   }
 }
 
-function executeCreate( internals ) {
+function executeCreateMigration( internals ) {
   var folder, path;
 
   if(internals.argv._.length === 0) {
@@ -659,7 +659,7 @@ function run( internals ) {
 
   switch(action) {
     case 'create':
-      executeCreate( internals );
+      executeCreateMigration( internals );
       break;
     case 'up':
     case 'down':
