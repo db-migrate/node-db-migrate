@@ -76,7 +76,7 @@ function registerEvents() {
     process.exit(1);
   });
 
-  process.on("unhandledRejection", function(reason, promise) {
+  process.on('unhandledRejection', function(reason, promise) {
     log.error(reason.stack);
     process.exit(1);
   });
@@ -289,7 +289,7 @@ dbmigrate.prototype = {
     }
 
     this.internals.mode = mode || 'vc';
-    executeSeed();
+    executeSeed( this.internals );
   },
 
   /**
@@ -405,7 +405,7 @@ function setDefaultArgv(isModule) {
   internals.matching = '';
   internals.verbose = internals.argv.verbose;
   global.verbose = internals.verbose;
-  internals.notransactions = internals.argv['non-transactional']
+  internals.notransactions = internals.argv['non-transactional'];
   internals.dryRun = internals.argv['dry-run'];
   global.dryRun = internals.dryRun;
 
@@ -523,7 +523,7 @@ function createSqlFiles() {
   });
 }
 
-function executeUp() {
+function executeUp( internals ) {
 
   if(!internals.argv.count) {
     internals.argv.count = Number.MAX_VALUE;
@@ -548,7 +548,7 @@ function executeUp() {
   });
 }
 
-function executeDown() {
+function executeDown( internals ) {
 
   if(!internals.argv.count) {
     log.info('Defaulting to running 1 down migration.');
@@ -570,7 +570,7 @@ function executeDown() {
   });
 }
 
-function executeDB() {
+function executeDB( internals ) {
 
   if(internals.argv._.length > 0) {
     internals.argv.dbname = internals.argv._.shift().toString();
@@ -617,7 +617,7 @@ function executeDB() {
 
 }
 
-function executeSeed() {
+function executeSeed( internals ) {
 
   if(internals.argv._.length > 0) {
     internals.argv.destination = internals.argv._.shift().toString();
