@@ -442,7 +442,7 @@ function loadConfig() {
   }
 }
 
-function executeCreateMigration( internals ) {
+function executeCreateMigration( internals, callback ) {
   var folder, path;
 
   if(internals.argv._.length === 0) {
@@ -483,13 +483,15 @@ function executeCreateMigration( internals ) {
     }
     var migration = new Migration(internals.argv.title + (shouldCreateCoffeeFile() ? '.coffee' : '.js'), path, new Date(), templateType);
     index.createMigration(migration, function(err, migration) {
-      assert.ifError(err);
-      log.info(util.format('Created migration at %s', migration.path));
+      if ( _assert( err, callback ) ) {
+
+        log.info(util.format('Created migration at %s', migration.path));
+      }
     });
   });
 
-  if (shouldCreateSqlFiles()) {
-    createSqlFiles();
+  if (shouldCreateSqlFiles( internals )) {
+    createSqlFiles( internals, callback );
   }
 }
 
@@ -501,26 +503,58 @@ function shouldCreateCoffeeFile() {
   return internals.argv['coffee-file'] || config['coffee-file'];
 }
 
-function createSqlFiles() {
+function createSqlFiles( internals, callback ) {
   var sqlDir = internals.argv['migrations-dir'] + '/sqls';
   createMigrationDir(sqlDir, function(err) {
     if (err) {
       log.error('Failed to create migration directory at ', sqlDir, err);
-      process.exit(1);
+
+      if( typeof(callback) !== 'function' ) {
+
+        process.exit(1);
+      }
+      else {
+
+        return callback( err );
+      }
     }
 
     var templateTypeDefaultSQL = Migration.TemplateType.DEFAULT_SQL;
     var migrationUpSQL = new Migration(internals.argv.title + '-up.sql', sqlDir, new Date(), templateTypeDefaultSQL);
     index.createMigration(migrationUpSQL, function(err, migration) {
-      assert.ifError(err);
-      log.info(util.format('Created migration up sql file at %s', migration.path));
-    });
-    var migrationDownSQL = new Migration(internals.argv.title + '-down.sql', sqlDir, new Date(), templateTypeDefaultSQL);
-    index.createMigration(migrationDownSQL, function(err, migration) {
-      assert.ifError(err);
-      log.info(util.format('Created migration down sql file at %s', migration.path));
+      if( _assert( err, callback ) ) {
+
+        log.info(util.format('Created migration up sql file at %s', migration.path));
+
+        var migrationDownSQL = new Migration(internals.argv.title + '-down.sql', sqlDir, new Date(), templateTypeDefaultSQL);
+        index.createMigration(migrationDownSQL, function(err, migration) {
+          if( _assert( err, callback ) ) {
+
+            log.info(util.format('Created migration down sql file at %s', migration.path));
+            callback();
+          }
+        });
+      }
     });
   });
+}
+
+function _assert( err, callback ) {
+  if ( err ) {
+
+    if (typeof(callback) === 'function') {
+
+      callback(err);
+      return false;
+    }
+    else {
+
+      assert.ifError(err);
+      return false;
+    }
+  }
+
+  return true;
 }
 
 function executeUp( internals ) {
