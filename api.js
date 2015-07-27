@@ -14,7 +14,7 @@ var pkginfo = require('pkginfo')(module, 'version');
 var dotenv = require('dotenv');
 
 
-//global declaration for detection like it's done in umigrate
+//global declaration for detection like it's done in umigrate //deprecated
 dbm = require( './' ); //deprecated
 async = require( 'async' ); //deprecated
 
@@ -651,7 +651,7 @@ function executeDB( internals ) {
 
 }
 
-function executeSeed( internals ) {
+function executeSeed( internals, callback ) {
 
   if(internals.argv._.length > 0) {
     internals.argv.destination = internals.argv._.shift().toString();
@@ -665,22 +665,51 @@ function executeSeed( internals ) {
     assert.ifError(err);
 
     seeder.seedDir = path.resolve(internals.argv[(internals.mode !== 'static') ? 'vcseeder-dir': 'staticseeder-dir']);
-    seeder.seed(internals.argv, internals.onComplete.bind(this, seeder));
+
+    if(internals.mode !== 'static') {
+
+      seeder.seed(internals.argv, internals.onComplete.bind(this, seeder));
+    }
+    else {
+
+      seeder.driver.createMigrationsTable(function(err) {
+        if( _assert( err, callback ) ) {
+
+          seeder.seed(internals.argv, internals.onComplete.bind(this, seeder, callback));
+        }
+      });
+    }
   });
 }
 
 internals.onComplete = onComplete;
 
-function onComplete(migrator, originalErr) {
+function onComplete(migrator, callback, originalErr) {
+
+  if( typeof(callback) !== 'function' ) {
+    originalErr = callback;
+  }
 
   migrator.driver.close(function(err) {
-    assert.ifError(originalErr);
-    assert.ifError(err);
-    log.info('Done');
+    if( ( err || originalErr ) && typeof(callback) === 'function' ) {
+
+      callback({ err: err, originalErr: originalErr });
+      return;
+    }
+    else {
+
+      assert.ifError(originalErr);
+      assert.ifError(err);
+      log.info('Done');
+    }
 
     if (internals.argv['force-exit']) {
       log.verbose('Forcing exit');
       process.exit(0);
+    }
+
+    if( typeof( callback ) === 'function' ) {
+      callback();
     }
   });
 }
