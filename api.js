@@ -686,7 +686,7 @@ internals.onComplete = onComplete;
 function onComplete(migrator, callback, originalErr) {
 
   if( typeof(callback) !== 'function' ) {
-    originalErr = callback;
+    originalErr = originalErr || callback;
   }
 
   migrator.driver.close(function(err) {
