@@ -401,7 +401,7 @@ function setDefaultArgv(isModule) {
 
   internals.ignoreCompleted = internals.argv['ignore-completed-migrations'];
   internals.migrationTable = internals.argv.table;
-  internals.seedsTable = internals.argv['seeds-table'];
+  internals.seedTable = internals.argv['seeds-table'];
   internals.matching = '';
   internals.verbose = internals.argv.verbose;
   global.verbose = internals.verbose;
@@ -666,13 +666,12 @@ function executeSeed( internals, callback ) {
 
     seeder.seedDir = path.resolve(internals.argv[(internals.mode !== 'static') ? 'vcseeder-dir': 'staticseeder-dir']);
 
-    if(internals.mode !== 'static') {
+    if(internals.mode === 'static') {
 
       seeder.seed(internals.argv, internals.onComplete.bind(this, seeder));
     }
     else {
-
-      seeder.driver.createMigrationsTable(function(err) {
+      seeder.createSeedsTable(function(err) {
         if( _assert( err, callback ) ) {
 
           seeder.seed(internals.argv, internals.onComplete.bind(this, seeder, callback));
