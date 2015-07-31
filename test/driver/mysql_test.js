@@ -349,7 +349,9 @@ driver.connect(config, internals, function(err, db) {
           id: { type: dataType.INTEGER, primaryKey: true, autoIncrement: true },
           title: { type: dataType.STRING }
         }, function() {
-          db.addIndex('event', 'event_title', 'title', this.callback.bind(this, null));
+          db.addIndex('event', 'event_title', 'title', function() {
+            db.addIndex('event', 'event_title_sub_part', { name: 'title', length: 8 }, this.callback.bind(this, null));
+          }.bind(this));
         }.bind(this));
       },
 
@@ -384,13 +386,20 @@ driver.connect(config, internals, function(err, db) {
           }.bind(this));
         },
 
-        'with additional index': function(err, indexes) {
+        'with additional indexes': function(err, indexes) {
           assert.isNotNull(indexes);
-          assert.equal(indexes.length, 2);
+          assert.equal(indexes.length, 3);
+
           var index = findByName(indexes, 'event_title');
           assert.equal(index.getName(), 'event_title');
           assert.equal(index.getTableName(), 'event');
           assert.equal(index.getColumnName(), 'title');
+
+          var indexSubpart = findByName(indexes, 'event_title_sub_part');
+          assert.equal(indexSubpart.getName(), 'event_title_sub_part');
+          assert.equal(indexSubpart.getTableName(), 'event');
+          assert.equal(indexSubpart.getColumnName(), 'title');
+          assert.equal(indexSubpart.meta.sub_part, '8');
         }
       }
     }
