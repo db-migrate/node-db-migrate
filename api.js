@@ -531,7 +531,8 @@ function createSqlFiles( internals, callback ) {
           if( _assert( err, callback ) ) {
 
             log.info(util.format('Created migration down sql file at %s', migration.path));
-            callback();
+            if( typeof( callback ) === 'function' )
+              callback();
           }
         });
       }
