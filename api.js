@@ -68,11 +68,10 @@ function dbmigrate(isModule, options, callback) {
   internals.seederOptions = { dbmigrate: internals.dbm };
 }
 
-
 function registerEvents() {
 
   process.on('uncaughtException', function(err) {
-    log.error(err.stack, err);
+    log.error(err.stack);
     process.exit(1);
   });
 
@@ -521,7 +520,10 @@ function executeCreateMigration( internals, callback ) {
     createSqlFiles( internals, callback );
   }
   else {
-    callback();
+    if( typeof(callback) === 'function' ) {
+
+      callback();
+    }
   }
 }
 

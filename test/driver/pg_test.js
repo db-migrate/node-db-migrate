@@ -4,11 +4,13 @@ var assert = require('assert');
 var dbmeta = require('db-meta');
 var dataType = require('../../lib/data_type');
 var driver = require('../../lib/driver');
+var log = require('../..//lib/log.js');
 
 var config = require('../db.config.json').pg;
 
 var internals = {};
 internals.migrationTable = 'migrations';
+log.silence(true);
 
 driver.connect(config, internals, function(err, db) {
   vows.describe('pg').addBatch({
@@ -718,4 +720,3 @@ function findByName(columns, name) {
   }
   return null;
 }
-
