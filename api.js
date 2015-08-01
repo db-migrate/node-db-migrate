@@ -218,15 +218,19 @@ dbmigrate.prototype = {
   /**
     * Creates a correctly formatted migration
     */
-  create: function(migrationName, scope) {
+  create: function(migrationName, scope, callback) {
 
-    if(scope) {
+    if( typeof( scope ) === 'function' ) {
+
+      callback = scope;
+    }
+    else if(scope) {
 
       this.internals.migrationMode = scope;
     }
 
     this.internals.argv._.push(migrationName);
-    executeCreateMigration( this.internals );
+    executeCreateMigration( this.internals, callback );
   },
 
   /**
@@ -492,6 +496,9 @@ function executeCreateMigration( internals, callback ) {
 
   if (shouldCreateSqlFiles( internals )) {
     createSqlFiles( internals, callback );
+  }
+  else {
+    callback();
   }
 }
 

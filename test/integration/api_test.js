@@ -26,44 +26,44 @@ vows.describe('api').addBatch({
           config = { cwd: process.cwd() + '/test/integration' };
 
       var api = DBMigrate.getInstance(true, config);
-      api.create('test');
+      api.create( 'test', function( err ) {
+        process.argv.push('up');
 
-      process.argv.push('up');
+        process.exit = function(err) {
 
-      process.exit = function(err) {
+          var ret = called;
+          called = true;
 
-        var ret = called;
-        called = true;
+          process.exit = process_exit;
 
-        process.exit = process_exit;
+          if(err)
+            process.exit.apply(arguments);
 
-        if(err)
-          process.exit.apply(arguments);
+          if(!ret)
+            this.callback(false);
+        }.bind(this);
 
-        if(!ret)
-          this.callback(false);
-      }.bind(this);
+        var dbmigrate = DBMigrate.getInstance(true, config, function(migrator) {
 
-      var dbmigrate = DBMigrate.getInstance(true, config, function(migrator) {
+          var ret = called;
+          called = true;
 
-        var ret = called;
-        called = true;
+          migrator.driver.close(function(err) {
+            delete migrator.driver;
+          });
 
-        migrator.driver.close(function(err) {
-          delete migrator.driver;
-        });
+          process.exit = process_exit;
 
-        process.exit = process_exit;
+          if(!ret)
+            this.callback(true);
+        }.bind(this));
 
-        if(!ret)
-          this.callback(true);
-      }.bind(this));
-
-      dbmigrate.setConfigParam('force-exit', true);
-      dbmigrate.silence(true);
+        dbmigrate.setConfigParam('force-exit', true);
+        dbmigrate.silence(true);
 
 
-      dbmigrate.run();
+        dbmigrate.run();
+      }.bind( this ) );
     },
 
     teardown: function() {
