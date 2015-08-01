@@ -72,7 +72,7 @@ function dbmigrate(isModule, options, callback) {
 function registerEvents() {
 
   process.on('uncaughtException', function(err) {
-    log.error(err.stack);
+    log.error(err.stack, err);
     process.exit(1);
   });
 
@@ -294,6 +294,29 @@ dbmigrate.prototype = {
 
     this.internals.mode = mode || 'vc';
     executeSeed( this.internals );
+  },
+
+  /**
+    * Execute the down function of currently executed seeds.
+    */
+  undoSeed: function( specification, scope ) {
+
+    if(arguments.length > 0)
+    {
+      if(typeof(specification) === 'number') {
+
+        this.internals.argv.count = specification;
+
+        if(scope) {
+
+          this.internals.migrationMode = scope;
+        }
+      }
+      else if( typeof(specification) === 'string' ) {
+
+        this.internals.migrationMode = scope;
+      }
+    }
   },
 
   /**
@@ -776,7 +799,15 @@ function run( internals ) {
 
       internals.mode = folder[1] || 'vc';
       internals.migrationMode = folder[2];
-      executeSeed( internals );
+
+      if( internals.argv._[0] === 'down' ) {
+
+          internals.argv._.shift();
+      }
+      else {
+
+        executeSeed( internals );
+      }
       break;
 
     default:
