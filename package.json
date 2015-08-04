@@ -1,7 +1,7 @@
 {
   "name": "db-migrate",
   "description": "Database migration framework for node.js",
-  "author": "Jeff Kunkle",
+  "author": "Tobias Gurtick",
   "bin": "./bin/db-migrate",
   "keywords": [
     "database",
@@ -9,19 +9,39 @@
     "migrate",
     "migration",
     "sqlite",
-    "mysql"
+    "mysql",
+    "pg",
+    "postgre",
+    "sql",
+    "migrations",
+    "db-migrate",
+    "postgresql",
+    "extensible",
+    "expandable",
+    "nosql",
+    "coffee",
+    "coffescript",
+    "mongo",
+    "mongodb",
+    "seed",
+    "seeds",
+    "seeder",
+    "migrator",
+    "programatic",
+    "programable",
+    "api"
   ],
   "version": "0.9.12",
   "engines": {
     "node": ">=0.6.0"
   },
   "bugs": {
-    "url": "https://github.com/kunklejr/node-db-migrate/issues"
+    "url": "https://github.com/db-migrate/node-db-migrate/issues"
   },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kunklejr/node-db-migrate.git"
+    "url": "https://github.com/db-migrate/node-db-migrate.git"
   },
   "dependencies": {
     "async": "^1.0.0",

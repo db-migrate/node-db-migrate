@@ -817,6 +817,7 @@ and adjust appropriate to setup configuration for your database instances.
 
 (The MIT License)
 
+Copyright (c) 2015 Tobias Gurtzick
 Copyright (c) 2013 Jeff Kunkle
 
 Permission is hereby granted, free of charge, to any person obtaining
