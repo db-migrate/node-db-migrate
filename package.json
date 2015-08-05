@@ -55,7 +55,6 @@
     "optimist": "~0.6.1",
     "parse-database-url": "~0.2.2",
     "pg": "~4.4.0",
-    "pg-native": "^1.8.0",
     "pkginfo": "~0.3.0",
     "resolve": "^1.1.6",
     "semver": "~5.0.1",
