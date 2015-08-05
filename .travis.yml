@@ -24,7 +24,10 @@ services:
 
 sudo: false
 
-cache: npm
+cache:
+  npm: true
+  directories:
+    - node_modules
 
 addons:
   mariadb: "10.0"
