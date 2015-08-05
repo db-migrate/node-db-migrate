@@ -33,13 +33,9 @@ addons:
 env:
     - DB=mysql
     - DB=mariadb
-    - DB=postgres92
-    - DB=postgres93
 
 before_script:
     - until nc -z localhost 27017 ; do echo Waiting for MongoDB; sleep 1; done
-    - sh -c "if [ '$DB' = 'postgres92' ]; then sudo /etc/init.d/postgresql stop && sudo /etc/init.d/postgresql start 9.2; fi"
-    - sh -c "if [ '$DB' = 'postgres93' ]; then sudo /etc/init.d/postgresql stop && sudo /etc/init.d/postgresql start 9.3; fi"
     - mysql -e "create database db_migrate_test;"
     - createdb db_migrate_test
     - cp test/db.config.ci test/db.config.json
