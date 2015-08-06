@@ -617,9 +617,34 @@ __Arguments__
 
 * tableName - table to add the index too
 * indexName - the name of the index
-* columns - an array of column names contained in the index
+* columns - an array of column names contained in the index, or as an object
+definition
 * unique - whether the index is unique (optional, default false)
 * callback(err) - callback that will be invoked after adding the index
+
+Column Object:
+* name - the column name
+* length - the length of index
+
+Adding a column with defined index length (MySQL/MariaDB only):
+
+```javascript
+exports.up = function (db) {
+  return db.addIndex('pets', 'cats', [
+    { name: 'color', length: 9},
+    { name: 'gender', length: 1},
+    'is_insane'
+  ]);
+}
+```
+
+Adding new keys to columns:
+
+```javascript
+exports.up = function (db) {
+  return db.addIndex('pets', 'cats', ['color', 'gender', 'columnC']);
+}
+```
 
 ### addForeignKey
 
