@@ -469,6 +469,14 @@ function loadConfig() {
 }
 
 function executeCreateMigration( internals, callback ) {
+  var migrationsDir = internals.argv['migrations-dir']
+
+  if( internals.migrationMode && internals.migrationMode !== 'all' ) {
+
+    migrationsDir = internals.argv['migrations-dir'] + '/'
+      + internals.migrationMode;
+  }
+
   var folder, path;
 
   if(internals.argv._.length === 0) {
@@ -477,9 +485,9 @@ function executeCreateMigration( internals, callback ) {
     process.exit(1);
   }
 
-  createMigrationDir(internals.argv['migrations-dir'], function(err) {
+  createMigrationDir(migrationsDir, function(err) {
     if (err) {
-      log.error('Failed to create migration directory at ', internals.argv['migrations-dir'], err);
+      log.error('Failed to create migration directory at ', migrationsDir, err);
       process.exit(1);
     }
 
@@ -487,7 +495,7 @@ function executeCreateMigration( internals, callback ) {
     folder = internals.argv.title.split('/');
 
     internals.argv.title = folder[folder.length - 2] || folder[0];
-    path = internals.argv['migrations-dir'];
+    path = migrationsDir;
 
     if(folder.length > 1) {
 
@@ -536,7 +544,15 @@ function shouldCreateCoffeeFile() {
 }
 
 function createSqlFiles( internals, callback ) {
-  var sqlDir = internals.argv['migrations-dir'] + '/sqls';
+  var migrationsDir = internals.argv['migrations-dir']
+
+  if( internals.migrationMode && internals.migrationMode !== 'all' ) {
+
+    migrationsDir = internals.argv['migrations-dir'] + '/'
+      + internals.migrationMode;
+  }
+
+  var sqlDir = migrationsDir + '/sqls';
   createMigrationDir(sqlDir, function(err) {
     if (err) {
       log.error('Failed to create migration directory at ', sqlDir, err);
@@ -754,6 +770,12 @@ function run( internals ) {
 
   switch(action) {
     case 'create':
+
+      if(folder[1])
+      {
+        internals.matching = folder[1];
+        internals.migrationMode = folder[1];
+      }
       executeCreateMigration( internals );
       break;
     case 'up':
