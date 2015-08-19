@@ -39,7 +39,7 @@ DB-Migrate is now available to you via:
 ## Usage
 
 ```
-Usage: db-migrate [up|down|reset|create|db] [[dbname/]migrationName|all] [options]
+Usage: db-migrate [up|down|reset|create|db] [dbname|migrationName] [options]
 
 Down migrations are run in reverse run order, so migrationName is ignored for down migrations.
 Use the --count option to control how many down migrations are run (default is 1).
@@ -59,6 +59,25 @@ Options:
 ```
 
 ## Creating Migrations
+
+DB-Migrate can be used to create migration boilerplates from templates.
+Currently there are only basic templates available, which may change in some
+future versions.
+
+#### Parameters
+
+* migration name
+* flags
+
+#### Flags
+
+* coffee-file
+* sql-file
+
+The flags --coffee-file and --sql-file can be combined to create sql-file
+migrations in coffee script.
+
+### Examples
 
 To create a migration, execute `db-migrate create` with a title. `node-db-migrate` will create a node module within `./migrations/` which contains the following two exports:
 
@@ -357,7 +376,8 @@ file settings. This is helpful for use with Heroku.
 
 ## Multiple migration scopes
 
-You can have multiple migration scopes, which are subfolders within your migrations folder. A scope gets called like the following:
+You can have multiple configurable migration scopes, which are subfolders within
+your migrations folder. A scope gets called like the following:
 
     $ db-migrate up:myScope
 
@@ -371,13 +391,19 @@ Obviously this means you **CAN'T** create scope which is named all.
 
 #### Scope Configuration
 
-You can also configure the scope to specify a sub configuration. Currently you can only define database and schema within this config.
+You can also configure the scope to specify a sub configuration. Currently you
+can only define a database and schema which you want to switch to within this
+config.
 
-This config file is used to tell db-migrate to switch to the `database` or
-`schema`. Databases is used for most databases, except **postgres**
-which needs the schema variable.
+This config file tells db-migrate to switch to the specified `database` or
+`schema`. The `database` option switches to the specified database, this is what
+you want most of the time. The `schema` option switches to the specified schema,
+which is a concept that is related to special databases like **postgres**.
+Therefor you can't use schema with any other db than **postgres**.
 
-It's currently also not possible to switch the database over this config with **postgres**.
+**Note:** It's currently only possible to switch a schema when using
+**postgres**, as switching to a database means to create a complete new
+connection for **postgres**.
 
 ```json
 {
