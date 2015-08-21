@@ -147,7 +147,7 @@ dbmigrate.prototype = {
     *
     * Defaults to up all migrations if no count is given.
     */
-  up: function(specification, scope) {
+  up: function(specification, scope, callback) {
 
     if(arguments.length > 0)
     {
@@ -166,7 +166,7 @@ dbmigrate.prototype = {
       }
     }
 
-    executeUp( this.internals );
+    executeUp( this.internals, callback );
   },
 
   /**
@@ -174,7 +174,7 @@ dbmigrate.prototype = {
     *
     * Defaults to up all migrations if no count is given.
     */
-  down: function(specification, scope) {
+  down: function(specification, scope, callback) {
 
     if(arguments.length > 0)
     {
@@ -189,13 +189,13 @@ dbmigrate.prototype = {
       }
     }
 
-    executeDown( this.internals );
+    executeDown( this.internals, callback );
   },
 
   /**
     * Executes down for all currently migrated migrations.
     */
-  reset: function(scope) {
+  reset: function(scope, callback) {
 
     if(scope) {
 
@@ -203,7 +203,7 @@ dbmigrate.prototype = {
     }
 
     this.internals.argv.count = Number.MAX_VALUE;
-    executeDown( this.internals );
+    executeDown( this.internals, callback );
   },
 
   /**
@@ -235,21 +235,21 @@ dbmigrate.prototype = {
   /**
     * Creates a database of the given dbname.
     */
-  createDatabase: function(dbname) {
+  createDatabase: function(dbname, callback) {
 
     this.internals.argv._.push(dbname);
     this.internals.mode = 'create';
-    executeDB( this.internals );
+    executeDB( this.internals, callback );
   },
 
   /**
     * Drops a database of the given dbname.
     */
-  dropDatabase: function(dbname) {
+  dropDatabase: function(dbname, callback) {
 
     this.internals.argv._.push(dbname);
     this.internals.mode = 'drop';
-    executeDB( this.internals );
+    executeDB( this.internals, callback );
   },
 
   /**
@@ -284,7 +284,7 @@ dbmigrate.prototype = {
     * Seeds either the static or version controlled seeders, controlled by
     * the passed mode.
     */
-  seed: function(mode, scope) {
+  seed: function(mode, scope, callback) {
 
     if(scope) {
 
@@ -292,13 +292,13 @@ dbmigrate.prototype = {
     }
 
     this.internals.mode = mode || 'vc';
-    executeSeed( this.internals );
+    executeSeed( this.internals, callback );
   },
 
   /**
     * Execute the down function of currently executed seeds.
     */
-  undoSeed: function( specification, scope ) {
+  undoSeed: function( specification, scope, callback ) {
 
     if(arguments.length > 0)
     {
