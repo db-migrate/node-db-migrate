@@ -469,12 +469,12 @@ function loadConfig() {
 }
 
 function executeCreateMigration( internals, callback ) {
-  var migrationsDir = internals.argv['migrations-dir']
+  var migrationsDir = internals.argv['migrations-dir'];
 
   if( internals.migrationMode && internals.migrationMode !== 'all' ) {
 
-    migrationsDir = internals.argv['migrations-dir'] + '/'
-      + internals.migrationMode;
+    migrationsDir = internals.argv['migrations-dir'] + '/' +
+      internals.migrationMode;
   }
 
   var folder, path;
