@@ -623,6 +623,8 @@ function executeUp( internals, callback ) {
     else
       migrator.migrationsDir = path.resolve(internals.argv['migrations-dir']);
 
+    internals.migrationsDir = migrator.migrationsDir;
+
     migrator.driver.createMigrationsTable(function(err) {
       assert.ifError(err);
       log.verbose('migration table created');
