@@ -64,7 +64,8 @@ function dbmigrate(isModule, options, callback) {
   internals.dbm = dbm;
   global.dbm = dbm; //deprecated
   internals.migrationOptions = {
-    dbmigrate: internals.dbm
+    dbmigrate: internals.dbm,
+    ignoreOnInit: internals['argv']['ignore-on-init']
   };
   internals.seederOptions = {
     dbmigrate: internals.dbm
