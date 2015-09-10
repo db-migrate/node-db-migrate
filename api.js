@@ -695,28 +695,30 @@ function executeDB(internals, callback) {
     if (internals.mode === 'create') {
       db.createDatabase(internals.argv.dbname, {
         ifNotExists: true
-      }, function() {
+      }, function(err) {
         if (err) {
-          log.info('Error: Failed to create database!');
+          log.info('Error: Failed to create database!', err.error);
         } else {
           log.info('Created database "' + internals.argv.dbname + '"');
         }
 
         db.close();
-        callback();
+        if( typeof(callback) === 'function' )
+          callback();
       });
     } else if (internals.mode === 'drop') {
       db.dropDatabase(internals.argv.dbname, {
         ifExists: true
-      }, function() {
+      }, function(err) {
         if (err) {
-          log.info('Error: Failed to drop database!');
+          log.info('Error: Failed to drop database!', err.error);
         } else {
           log.info('Deleted database "' + internals.argv.dbname + '"');
         }
 
         db.close();
-        callback();
+        if( typeof(callback) === 'function' )
+          callback();
       });
     } else
       return;
