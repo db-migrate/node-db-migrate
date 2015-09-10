@@ -67,6 +67,7 @@
     "db-migrate-sqlite3": "^0.1.2",
     "lab": "^5.2.1",
     "mysql": "^2.9.0",
+    "pg": "^4.4.1",
     "proxyquire": "^1.4.0",
     "rimraf": "~2.4.0",
     "sinon": "^1.14.1",
