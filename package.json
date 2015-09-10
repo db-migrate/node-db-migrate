@@ -68,7 +68,7 @@
     "proxyquire": "^1.4.0",
     "rimraf": "~2.4.0",
     "sinon": "^1.14.1",
-    "sqlite3": "^3.0.11",
+    "sqlite3": "^3.1.0",
     "vows": "0.8.0"
   },
   "scripts": {
