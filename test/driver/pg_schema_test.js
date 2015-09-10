@@ -18,7 +18,6 @@ vows.describe('pg').addBatch({
             var client = new pg.Client(databaseUrl);
 
             client.connect(function (err) {
-                  console.log('hello', err)
                 if (err) { return callback(err); }
                 client.query('CREATE SCHEMA "test-schema"', function(err) {
                     driver.connect({ driver: 'pg', database: 'db_migrate_test', schema: 'test-schema' }, internals, function(err, db) {
