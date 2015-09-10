@@ -66,6 +66,7 @@
     "db-migrate-mysql": "^1.1.2",
     "db-migrate-sqlite3": "^0.1.2",
     "lab": "^5.2.1",
+    "mysql": "^2.9.0",
     "proxyquire": "^1.4.0",
     "rimraf": "~2.4.0",
     "sinon": "^1.14.1",

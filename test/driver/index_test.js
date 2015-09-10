@@ -14,6 +14,10 @@ var validDbConfigWithTunnel = {
   }
 };
 
+var internals = {
+  migrationTable: 'migrations'
+};
+
 var indexConnectCallback = function(self, tunnelStub, driverSpy) {
   return function(err, db) {
     if (err) {
@@ -37,7 +41,7 @@ vows.describe('index').addBatch({
       var driverSpy = sinon.spy(driver, 'connect');
       var tunnelStub = sinon.stub().callsArg(1);
 
-      var index = proxyquire('db-migrate-index', {
+      var index = proxyquire('../../lib/driver/index', {
         'tunnel-ssh': tunnelStub,
         './mysql': driver
       });
@@ -85,7 +89,7 @@ vows.describe('index').addBatch({
       var tunnelStub = sinon.stub().callsArgWith(1, new Error('error'));
       var driverSpy = sinon.spy(driver, 'connect');
 
-      var index = proxyquire('db-migrate-index', {
+      var index = proxyquire('../../lib/driver/index', {
         'tunnel-ssh': tunnelStub,
         './mysql': driver
       });
