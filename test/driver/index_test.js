@@ -23,21 +23,21 @@ var indexConnectCallback = function(self, tunnelStub, driverSpy) {
     db.close(function() {
       self.callback(err, db, tunnelStub, driverSpy);
     });
-  }
+  };
 };
 
 vows.describe('index').addBatch({
   'a connection with ssh tunnel': {
     topic: function() {
       // Ensure that require gets a new copy of the module for each test
-      delete require.cache[require.resolve('../../lib/driver/mysql')];
-      var driver = require('../../lib/driver/mysql');
+      delete require.cache[require.resolve('db-migrate-mysql')];
+      var driver = require('db-migrate-mysql');
 
       // Set up stubs/spies to verify correct flow
       var driverSpy = sinon.spy(driver, 'connect');
       var tunnelStub = sinon.stub().callsArg(1);
 
-      var index = proxyquire('../../lib/driver/index', {
+      var index = proxyquire('db-migrate-index', {
         'tunnel-ssh': tunnelStub,
         './mysql': driver
       });
@@ -78,14 +78,14 @@ vows.describe('index').addBatch({
   'a failed tunnel connection': {
     topic: function() {
       // Ensure that require gets a new copy of the module for each test
-      delete require.cache[require.resolve('../../lib/driver/mysql')];
-      var driver = require('../../lib/driver/mysql');
+      delete require.cache[require.resolve('db-migrate-mysql')];
+      var driver = require('db-migrate-mysql');
 
       // Set up stubs/spies to verify correct flow
-      var tunnelStub = sinon.stub().callsArgWith(1, new Error("error"));
+      var tunnelStub = sinon.stub().callsArgWith(1, new Error('error'));
       var driverSpy = sinon.spy(driver, 'connect');
 
-      var index = proxyquire('../../lib/driver/index', {
+      var index = proxyquire('db-migrate-index', {
         'tunnel-ssh': tunnelStub,
         './mysql': driver
       });
@@ -93,12 +93,12 @@ vows.describe('index').addBatch({
       index.connect(validDbConfigWithTunnel, {}, indexConnectCallback(this, tunnelStub, driverSpy));
     },
     'should pass the error to the callback': function (err, db) {
-      assert(err, "err should be non-null");
-      assert(!db, "driver should be null or undefined");
+      assert(err, 'err should be non-null');
+      assert(!db, 'driver should be null or undefined');
     },
     'should call tunnel, but not driver.connect': function (err, db, tunnelStub, driverSpy) {
-      assert(tunnelStub.calledOnce, "tunnel should be called once");
-      assert(driverSpy.notCalled, "driver.connect should not be called");
+      assert(tunnelStub.calledOnce, 'tunnel should be called once');
+      assert(driverSpy.notCalled, 'driver.connect should not be called');
     }
   }
 }).export(module);
