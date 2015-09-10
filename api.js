@@ -697,7 +697,9 @@ function executeDB(internals, callback) {
         ifNotExists: true
       }, function(err) {
         if (err) {
-          log.info('Error: Failed to create database!', err.error);
+          if( err.error )
+            err = err.error;
+          log.info('Error: Failed to create database!', err);
         } else {
           log.info('Created database "' + internals.argv.dbname + '"');
         }
@@ -711,7 +713,9 @@ function executeDB(internals, callback) {
         ifExists: true
       }, function(err) {
         if (err) {
-          log.info('Error: Failed to drop database!', err.error);
+          if( err.error )
+            err = err.error;
+          log.info('Error: Failed to drop database!', err);
         } else {
           log.info('Deleted database "' + internals.argv.dbname + '"');
         }
