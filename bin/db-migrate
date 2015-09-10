@@ -16,7 +16,7 @@ var dotenv = require('dotenv');
 dbm = require( '../' );
 async = require( 'async' );
 
-dotenv.load();
+dotenv.load({ silent: true });
 
 process.on('uncaughtException', function(err) {
   log.error(err.stack);
