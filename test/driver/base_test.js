@@ -1,9 +1,14 @@
 var vows = require('vows');
 var assert = require('assert');
-var Base = require('../../lib/driver/base');
+var Base = require('db-migrate-base');
 
-var internals = {};
-internals.migrationTable = 'migrations';
+var internals = {
+  migrationTable: 'migrations',
+  mod: {
+    log: require('../../lib/log.js'),
+    type: require('../../lib/data_type.js')
+  }
+};
 
 vows.describe('base').addBatch({
   'default implementation': {
@@ -77,4 +82,3 @@ vows.describe('base').addBatch({
     }
   }
 }).export(module);
-
