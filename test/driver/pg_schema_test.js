@@ -32,7 +32,7 @@ vows.describe('pg').addBatch({
                 var callback = this.callback;
 
                 db.createMigrationsTable(function() {
-                    client.query("SELECT table_name FROM information_schema.tables WHERE table_schema = 'test-schema' AND table_name = 'migrations'", function(err, result) {
+                    client.query('SELECT table_name FROM information_schema.tables WHERE table_schema = \'test-schema\' AND table_name = \'migrations\'', function(err, result) {
                         callback(err, result);
                     });
                 });
@@ -63,7 +63,7 @@ vows.describe('pg').addBatch({
             var query = Promise.promisify( client.query ).bind(client);
 
             client.connect(function (err) {
-                if (err) { return callback(err) };
+                if (err) { return callback(err); }
                 Promise.all([
                   query('CREATE SCHEMA test_schema'),
                   query('CREATE TABLE migrations ()')
@@ -85,7 +85,7 @@ vows.describe('pg').addBatch({
                 var callback = this.callback;
 
                 db.createMigrationsTable(function() {
-                    client.query("SELECT table_name FROM information_schema.tables WHERE table_schema = 'test_schema' AND table_name = 'migrations'", function(err, result) {
+                    client.query('SELECT table_name FROM information_schema.tables WHERE table_schema = \'test_schema\' AND table_name = \'migrations\'', function(err, result) {
                         callback(err, result);
                     });
                 });
@@ -137,7 +137,7 @@ vows.describe('pg').addBatch({
                 var callback = this.callback;
 
                 db.createMigrationsTable(function() {
-                    client.query("SELECT table_name FROM information_schema.tables WHERE table_schema = 'test_schema' AND table_name = 'migrations'", function(err, result) {
+                    client.query('SELECT table_name FROM information_schema.tables WHERE table_schema = \'test_schema\' AND table_name = \'migrations\'', function(err, result) {
                         callback(err, result);
                     });
                 });
