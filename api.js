@@ -4,7 +4,6 @@ var path = require('path');
 var util = require('util');
 var mkdirp = require('mkdirp');
 var optimist = require('optimist');
-var config = require('./lib/config.js');
 var index = require('./connect');
 var Migration = require('./lib/migration.js');
 var Seeder = require('./lib/seeder.js');
@@ -59,16 +58,17 @@ function dbmigrate(isModule, options, callback) {
   } else
     setDefaultArgv(this.internals, isModule);
 
-  loadConfig();
+  this.config = loadConfig( require('./lib/config.js'), this.internals );
+
   index.exportInternals(internals);
-  internals.dbm = dbm;
+  this.internals.dbm = dbm;
   global.dbm = dbm; //deprecated
-  internals.migrationOptions = {
-    dbmigrate: internals.dbm,
-    ignoreOnInit: internals['argv']['ignore-on-init']
+  this.internals.migrationOptions = {
+    dbmigrate: this.internals.dbm,
+    ignoreOnInit: this.internals['argv']['ignore-on-init']
   };
-  internals.seederOptions = {
-    dbmigrate: internals.dbm
+  this.internals.seederOptions = {
+    dbmigrate: this.internals.dbm
   };
 }
 
@@ -168,7 +168,7 @@ dbmigrate.prototype = {
       }
     }
 
-    executeUp(this.internals, callback);
+    executeUp(this.internals, this.config, callback);
   },
 
   /**
@@ -190,7 +190,7 @@ dbmigrate.prototype = {
       }
     }
 
-    executeDown(this.internals, callback);
+    executeDown(this.internals, this.config, callback);
   },
 
   /**
@@ -204,7 +204,7 @@ dbmigrate.prototype = {
     }
 
     this.internals.argv.count = Number.MAX_VALUE;
-    executeDown(this.internals, callback);
+    executeDown(this.internals, this.config, callback);
   },
 
   /**
@@ -239,7 +239,7 @@ dbmigrate.prototype = {
 
     this.internals.argv._.push(dbname);
     this.internals.mode = 'create';
-    executeDB(this.internals, callback);
+    executeDB(this.internals, this.config, callback);
   },
 
   /**
@@ -249,7 +249,7 @@ dbmigrate.prototype = {
 
     this.internals.argv._.push(dbname);
     this.internals.mode = 'drop';
-    executeDB(this.internals, callback);
+    executeDB(this.internals, this.config, callback);
   },
 
   /**
@@ -292,7 +292,7 @@ dbmigrate.prototype = {
     }
 
     this.internals.mode = mode || 'vc';
-    executeSeed(this.internals, callback);
+    executeSeed(this.internals, this.config, callback);
   },
 
   /**
@@ -321,7 +321,7 @@ dbmigrate.prototype = {
    */
   run: function() {
 
-    run(this.internals);
+    run(this.internals, this.config);
 
   }
 
@@ -462,14 +462,15 @@ function createMigrationDir(dir, callback) {
   });
 }
 
-function loadConfig() {
+function loadConfig( config, internals ) {
+  var out;
   if (process.env.DATABASE_URL) {
-    config.loadUrl(process.env.DATABASE_URL, internals.argv.env);
+    out = config.loadUrl(process.env.DATABASE_URL, internals.argv.env);
   } else {
-    config.load(internals.argv.config, internals.argv.env);
+    out = config.load(internals.argv.config, internals.argv.env);
   }
   if (internals.verbose) {
-    var current = config.getCurrent();
+    var current = out.getCurrent();
     var s = JSON.parse(JSON.stringify(current.settings));
 
     if (s.password)
@@ -477,6 +478,8 @@ function loadConfig() {
 
     log.info('Using', current.env, 'settings:', s);
   }
+
+  return out;
 }
 
 function executeCreateMigration(internals, callback) {
@@ -629,7 +632,7 @@ function _assert(err, callback) {
   return true;
 }
 
-function executeUp(internals, callback) {
+function executeUp(internals, config, callback) {
 
   if (!internals.argv.count) {
     internals.argv.count = Number.MAX_VALUE;
@@ -658,7 +661,7 @@ function executeUp(internals, callback) {
   });
 }
 
-function executeDown(internals, callback) {
+function executeDown(internals, config, callback) {
 
   if (!internals.argv.count) {
     log.info('Defaulting to running 1 down migration.');
@@ -681,7 +684,7 @@ function executeDown(internals, callback) {
   });
 }
 
-function executeDB(internals, callback) {
+function executeDB(internals, config, callback) {
 
   if (internals.argv._.length > 0) {
     internals.argv.dbname = internals.argv._.shift().toString();
@@ -730,7 +733,7 @@ function executeDB(internals, callback) {
 
 }
 
-function executeSeed(internals, callback) {
+function executeSeed(internals, config, callback) {
 
   if (internals.argv._.length > 0) {
     internals.argv.destination = internals.argv._.shift().toString();
@@ -795,7 +798,7 @@ function onComplete(migrator, callback, originalErr) {
   });
 }
 
-function run(internals) {
+function run(internals, config) {
   var action = internals.argv._.shift(),
     folder = action.split(':');
 
@@ -834,9 +837,9 @@ function run(internals) {
       }
 
       if (action == 'up') {
-        executeUp(internals);
+        executeUp(internals, config);
       } else {
-        executeDown(internals);
+        executeDown(internals, config);
       }
       break;
 
@@ -848,7 +851,7 @@ function run(internals) {
       } else {
 
         internals.mode = folder[1];
-        executeDB(internals);
+        executeDB(internals, config);
       }
       break;
     case 'seed':
@@ -861,7 +864,7 @@ function run(internals) {
         internals.argv._.shift();
       } else {
 
-        executeSeed(internals);
+        executeSeed(internals, config);
       }
       break;
 

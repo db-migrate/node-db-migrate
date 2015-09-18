@@ -103,8 +103,8 @@ function migrationFiles(files, callback, config, passedClass, db, close, cb) {
 
   if(file !== '')
   {
-
     try {
+      fs.statSync(path.resolve(file + '/config.json'));
       newConf = require(path.resolve(file + '/config.json'));
       log.info('loaded extra config for migration subfolder: "' + file + '/config.json"');
       switched = true;
