@@ -10,10 +10,7 @@ vows.describe('config').addBatch({
   'loading from a file': {
     topic: function() {
       var configPath = path.join(__dirname, 'database.json');
-      config.load = _configLoad;
-      config.loadUrl = _configLoadUrl;
-      config.load(configPath, 'dev');
-      return config;
+      return config.load(configPath, 'dev');
     },
 
     'should export all environment settings': function (config) {
@@ -34,8 +31,6 @@ vows.describe('config').addBatch({
   'loading from a broken config file': {
     topic: function() {
       var configPath = path.join(__dirname, 'database_with_syntax_error.json');
-      config.load = _configLoad;
-      config.loadUrl = _configLoadUrl;
       try {
         config.load(configPath, 'dev');
       } catch (e) {
@@ -54,10 +49,7 @@ vows.describe('config').addBatch({
     topic: function() {
       process.env['DB_MIGRATE_TEST_VAR'] = 'username_from_env';
       var configPath = path.join(__dirname, 'database_with_env.json');
-      config.load = _configLoad;
-      config.loadUrl = _configLoadUrl;
-      config.load(configPath, 'prod');
-      return config;
+      return config.load(configPath, 'prod');
     },
 
     'should load a value from the environments': function (config) {
@@ -70,10 +62,7 @@ vows.describe('config').addBatch({
     topic: function() {
       process.env['DB_MIGRATE_TEST_VAR'] = 'postgres://uname:pw@server.com/dbname';
       var configPath = path.join(__dirname, 'database_with_env_url.json');
-      config.load = _configLoad;
-      config.loadUrl = _configLoadUrl;
-      config.load(configPath, 'prod');
-      return config;
+      return config.load(configPath, 'prod');
     },
 
     'should load a value from the environments': function (config) {
@@ -90,10 +79,7 @@ vows.describe('config').addBatch({
   'loading from an URL': {
     topic: function() {
       var databaseUrl = 'postgres://uname:pw@server.com/dbname';
-      config.load = _configLoad;
-      config.loadUrl = _configLoadUrl;
-      config.loadUrl(databaseUrl, 'dev');
-      return config;
+      return config.loadUrl(databaseUrl, 'dev');
     },
 
     'should export the settings as the current environment': function (config) {
