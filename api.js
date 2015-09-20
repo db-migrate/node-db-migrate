@@ -76,6 +76,7 @@ function registerEvents() {
 
   process.on('uncaughtException', function(err) {
     log.error(err.stack);
+console.log(err.stack);
     process.exit(1);
   });
 
@@ -229,7 +230,7 @@ dbmigrate.prototype = {
     }
 
     this.internals.argv._.push(migrationName);
-    executeCreateMigration(this.internals, callback);
+    executeCreateMigration(this.internals, this.config, callback);
   },
 
   /**
@@ -482,7 +483,7 @@ function loadConfig( config, internals ) {
   return out;
 }
 
-function executeCreateMigration(internals, callback) {
+function executeCreateMigration(internals, config, callback) {
   var migrationsDir = internals.argv['migrations-dir'];
 
   if (internals.migrationMode && internals.migrationMode !== 'all') {
@@ -523,17 +524,23 @@ function executeCreateMigration(internals, callback) {
     }
 
     var templateType = Migration.TemplateType.DEFAULT_JS;
-    if (shouldCreateSqlFiles() && shouldCreateCoffeeFile()) {
+    if (shouldCreateSqlFiles( internals, config ) &&
+        shouldCreateCoffeeFile( internals, config )) {
+
       templateType = Migration.TemplateType.COFFEE_SQL_FILE_LOADER;
-    } else if (shouldCreateSqlFiles() && shouldIgnoreOnInitFiles()) {
+    } else if (shouldCreateSqlFiles( internals, config ) &&
+               shouldIgnoreOnInitFiles( internals, config )) {
+
       templateType = Migration.TemplateType.SQL_FILE_LOADER_IGNORE_ON_INIT;
-    } else if (shouldCreateSqlFiles()) {
+    } else if (shouldCreateSqlFiles( internals, config )) {
+
       templateType = Migration.TemplateType.SQL_FILE_LOADER;
-    } else if (shouldCreateCoffeeFile()) {
+    } else if (shouldCreateCoffeeFile( internals, config )) {
+      
       templateType = Migration.TemplateType.DEFAULT_COFFEE;
     }
     var migration = new Migration(internals.argv.title + (
-        shouldCreateCoffeeFile() ? '.coffee' : '.js'), path, new Date(),
+        shouldCreateCoffeeFile( internals, config ) ? '.coffee' : '.js'), path, new Date(),
       templateType);
     index.createMigration(migration, function(err, migration) {
       if (_assert(err, callback)) {
@@ -543,8 +550,8 @@ function executeCreateMigration(internals, callback) {
     });
   });
 
-  if (shouldCreateSqlFiles(internals)) {
-    createSqlFiles(internals, callback);
+  if (shouldCreateSqlFiles(internals, config)) {
+    createSqlFiles(internals, config, callback);
   } else {
     if (typeof(callback) === 'function') {
 
@@ -553,20 +560,20 @@ function executeCreateMigration(internals, callback) {
   }
 }
 
-function shouldCreateSqlFiles() {
+function shouldCreateSqlFiles( internals, config ) {
   return internals.argv['sql-file'] || config['sql-file'];
 }
 
-function shouldIgnoreOnInitFiles() {
+function shouldIgnoreOnInitFiles( internals, config ) {
   return internals.argv['ignore-on-init'] || config[
     'ignore-on-init'];
 }
 
-function shouldCreateCoffeeFile() {
+function shouldCreateCoffeeFile( intenrals, config ) {
   return internals.argv['coffee-file'] || config['coffee-file'];
 }
 
-function createSqlFiles(internals, callback) {
+function createSqlFiles(internals, config, callback) {
   var migrationsDir = internals.argv['migrations-dir'];
 
   if (internals.migrationMode && internals.migrationMode !== 'all') {
@@ -811,7 +818,7 @@ function run(internals, config) {
         internals.matching = folder[1];
         internals.migrationMode = folder[1];
       }
-      executeCreateMigration(internals);
+      executeCreateMigration(internals, config);
       break;
     case 'up':
     case 'down':
