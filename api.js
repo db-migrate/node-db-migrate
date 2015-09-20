@@ -76,7 +76,6 @@ function registerEvents() {
 
   process.on('uncaughtException', function(err) {
     log.error(err.stack);
-console.log(err.stack);
     process.exit(1);
   });
 
@@ -536,7 +535,7 @@ function executeCreateMigration(internals, config, callback) {
 
       templateType = Migration.TemplateType.SQL_FILE_LOADER;
     } else if (shouldCreateCoffeeFile( internals, config )) {
-      
+
       templateType = Migration.TemplateType.DEFAULT_COFFEE;
     }
     var migration = new Migration(internals.argv.title + (
