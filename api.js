@@ -65,7 +65,7 @@ function dbmigrate(isModule, options, callback) {
   global.dbm = dbm; //deprecated
   this.internals.migrationOptions = {
     dbmigrate: this.internals.dbm,
-    ignoreOnInit: this.internals['argv']['ignore-on-init']
+    ignoreOnInit: this.internals.argv.ignore-on-init
   };
   this.internals.seederOptions = {
     dbmigrate: this.internals.dbm

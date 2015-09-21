@@ -1,5 +1,4 @@
 {
-  "es5": true,
   "expr": true,
   "-W092": false,
   "quotmark": true
