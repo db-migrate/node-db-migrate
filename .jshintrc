@@ -4,5 +4,7 @@
   "quotmark": true,
   "curly": false,
   "bitwise": false,
-  "eqeqeq": true
+  "eqeqeq": true,
+  "funcscope": true,
+  "futurehostile": true
 }

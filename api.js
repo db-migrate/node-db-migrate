@@ -14,8 +14,8 @@ var dotenv = require('dotenv');
 
 
 //global declaration for detection like it's done in umigrate //deprecated
-dbm = require('./'); //deprecated
-async = require('async'); //deprecated
+global.dbm = require('./'); //deprecated
+global.async = require('async'); //deprecated
 
 var internals = {};
 
