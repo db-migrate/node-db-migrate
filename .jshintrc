@@ -1,5 +1,8 @@
 {
   "expr": true,
   "-W092": false,
-  "quotmark": true
+  "quotmark": true,
+  "curly": false,
+  "bitwise": false,
+  "eqeqeq": true
 }
