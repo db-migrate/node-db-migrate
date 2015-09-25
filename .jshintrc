@@ -6,5 +6,8 @@
   "bitwise": false,
   "eqeqeq": true,
   "funcscope": true,
-  "futurehostile": true
+  "futurehostile": true,
+  "nonew": true,
+  "unused": true,
+  "loopfunc": true
 }
