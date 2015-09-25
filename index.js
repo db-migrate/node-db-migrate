@@ -1,4 +1,4 @@
-var pkginfo = require('pkginfo')(module, 'version');
+var pkginfo = require('pkginfo')(module, 'version'); // jshint ignore:line
 
 exports.dataType = require('./lib/data_type');
 

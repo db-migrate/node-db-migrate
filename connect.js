@@ -8,7 +8,6 @@ var internals = {};
 
 exports.connect = function(config, passedClass, callback) {
   var internals = {};
-  var _config = config;
   if( config.config ) {
     internals = config.internals;
     config = config.config;

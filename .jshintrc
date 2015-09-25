@@ -9,5 +9,6 @@
   "futurehostile": true,
   "nonew": true,
   "unused": true,
+  "shadow": true,
   "loopfunc": true
 }

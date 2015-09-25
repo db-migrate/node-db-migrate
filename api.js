@@ -9,7 +9,7 @@ var Migration = require('./lib/migration.js');
 var Seeder = require('./lib/seeder.js');
 var Migrator = require('./lib/migrator.js');
 var log = require('./lib/log');
-var pkginfo = require('pkginfo')(module, 'version');
+var pkginfo = require('pkginfo')(module, 'version'); // jshint ignore:line
 var dotenv = require('dotenv');
 
 
@@ -65,7 +65,7 @@ function dbmigrate(isModule, options, callback) {
   global.dbm = dbm; //deprecated
   this.internals.migrationOptions = {
     dbmigrate: this.internals.dbm,
-    ignoreOnInit: this.internals.argv.ignore-on-init
+    ignoreOnInit: this.internals.argv['ignore-on-init']
   };
   this.internals.seederOptions = {
     dbmigrate: this.internals.dbm
