@@ -66,7 +66,7 @@
     "db-migrate-pg": "^0.1.4",
     "db-migrate-sqlite3": "^0.1.2",
     "jscs": "^2.1.1",
-    "lab": "^5.2.1",
+    "lab": "^6.1.0",
     "mysql": "^2.9.0",
     "pg": "^4.4.1",
     "proxyquire": "^1.4.0",
