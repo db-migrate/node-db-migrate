@@ -11,6 +11,7 @@ var Migrator = require('./lib/migrator.js');
 var log = require('./lib/log');
 var pkginfo = require('pkginfo')(module, 'version'); // jshint ignore:line
 var dotenv = require('dotenv');
+var Promise = require('bluebird');
 
 
 //global declaration for detection like it's done in umigrate //deprecated
@@ -65,10 +66,12 @@ function dbmigrate(isModule, options, callback) {
   global.dbm = dbm; //deprecated
   this.internals.migrationOptions = {
     dbmigrate: this.internals.dbm,
-    ignoreOnInit: this.internals.argv['ignore-on-init']
+    ignoreOnInit: this.internals.argv['ignore-on-init'],
+    Promise: Promise
   };
   this.internals.seederOptions = {
-    dbmigrate: this.internals.dbm
+    dbmigrate: this.internals.dbm,
+    Promise: Promise
   };
 }
 
