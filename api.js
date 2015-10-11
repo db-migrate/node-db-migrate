@@ -317,6 +317,8 @@ dbmigrate.prototype = {
         this.internals.migrationMode = scope;
       }
     }
+
+    executeUndoSeed(this.internals, this.config, callback);
   },
 
   /**
@@ -773,6 +775,37 @@ function executeSeed(internals, config, callback) {
   });
 }
 
+function executeUndoSeed(internals, config, callback) {
+
+  if (internals.argv._.length > 0) {
+    internals.argv.destination = internals.argv._.shift().toString();
+  }
+
+  index.connect({
+    config: config.getCurrent().settings,
+    internals: internals
+  }, Seeder, function(err, seeder) {
+    assert.ifError(err);
+
+    seeder.seedDir = path.resolve(internals.argv[(internals.mode !==
+      'static') ? 'vcseeder-dir' : 'staticseeder-dir']);
+
+    if (internals.mode === 'static') {
+
+      internals.onComplete( seeder, callback,
+        { stack: 'Static seeders can\'t be undone. Use VC Seeders instead!' } );
+    } else {
+      seeder.createSeedsTable(function(err) {
+        if (_assert(err, callback)) {
+
+          seeder.down(internals.argv, internals.onComplete.bind(this,
+            seeder, callback));
+        }
+      });
+    }
+  });
+}
+
 internals.onComplete = onComplete;
 
 function onComplete(migrator, callback, originalErr) {
@@ -845,7 +878,7 @@ function run(internals, config) {
         internals.migrationMode = folder[1];
       }
 
-      if (action == 'up') {
+      if (action === 'up') {
         executeUp(internals, config);
       } else {
         executeDown(internals, config);
@@ -871,6 +904,7 @@ function run(internals, config) {
       if (internals.argv._[0] === 'down') {
 
         internals.argv._.shift();
+        executeUndoSeed(internals, config);
       } else {
 
         executeSeed(internals, config);
