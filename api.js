@@ -322,6 +322,30 @@ dbmigrate.prototype = {
   },
 
   /**
+   * Execute the reset function of currently executed seeds.
+   */
+  resetSeed: function(specification, scope, callback) {
+
+    if (arguments.length > 0) {
+      if (typeof(specification) === 'number') {
+
+        this.internals.argv.count = specification;
+
+        if (scope) {
+
+          this.internals.migrationMode = scope;
+        }
+      } else if (typeof(specification) === 'string') {
+
+        this.internals.migrationMode = scope;
+      }
+    }
+
+    this.internals.argv.count = Number.MAX_VALUE;
+    executeUndoSeed(this.internals, this.config, callback);
+  },
+
+  /**
    * Executes the default routine.
    */
   run: function() {
@@ -776,6 +800,10 @@ function executeSeed(internals, config, callback) {
 }
 
 function executeUndoSeed(internals, config, callback) {
+  if (!internals.argv.count) {
+    log.info('Defaulting to running 1 down seed.');
+    internals.argv.count = 1;
+  }
 
   if (internals.argv._.length > 0) {
     internals.argv.destination = internals.argv._.shift().toString();
@@ -901,7 +929,10 @@ function run(internals, config) {
       internals.mode = folder[1] || 'vc';
       internals.migrationMode = folder[2];
 
-      if (internals.argv._[0] === 'down') {
+      if (internals.argv._[0] === 'down' || internals.argv._[0] === 'reset') {
+
+        if (internals.argv._[0] === 'reset')
+          internals.argv.count = Number.MAX_VALUE;
 
         internals.argv._.shift();
         executeUndoSeed(internals, config);
