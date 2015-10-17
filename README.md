@@ -42,7 +42,7 @@ https://github.com/db-migrate/mongodb
 
 ## Resources
 
-Documentation: https://readthedocs.org/projects/db-migrate/?badge=latest
+Documentation: https://readthedocs.org/projects/db-migrate
 
 ## License
 
