@@ -40,7 +40,10 @@ https://github.com/db-migrate/sqlite
 * Mongodb (https://github.com/mongodb/node-mongodb-native)
 https://github.com/db-migrate/mongodb
 
-## Resources
+## Resources and usage instructions
+
+Please follow the link below, for usage instructions examples and the full
+documentation of db-migrate.
 
 Documentation: https://readthedocs.org/projects/db-migrate
 
