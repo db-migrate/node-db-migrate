@@ -26,7 +26,7 @@ vows.describe('api').addBatch({
           config = { cwd: process.cwd() + '/test/integration' };
 
       var api = DBMigrate.getInstance(true, config);
-      api.create( 'test', function( err ) {
+      api.create( 'test', function() {
         process.argv.push('up');
 
         process.exit = function(err) {
@@ -48,7 +48,7 @@ vows.describe('api').addBatch({
           var ret = called;
           called = true;
 
-          migrator.driver.close(function(err) {
+          migrator.driver.close(function() {
             delete migrator.driver;
           });
 
