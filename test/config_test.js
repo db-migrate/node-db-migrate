@@ -45,6 +45,34 @@ vows.describe('config').addBatch({
     }
   }
 }).addBatch({
+  'loading from a file with default env option': {
+    topic: function() {
+      var configPath = path.join(__dirname, 'database_with_default_env.json');
+      return config.load(configPath);
+    },
+
+    'should load a value from the default env': function (config) {
+      var current = config.getCurrent();
+      assert.equal(current.env, 'local');
+      assert.equal(current.settings.driver, 'sqlite3');
+      assert.equal(current.settings.filename, ':memory:');
+    },
+  }
+}).addBatch({
+  'loading from a file with default env option in ENV variable': {
+    topic: function() {
+      process.env['NODE_ENV'] = 'local';
+      var configPath = path.join(__dirname, 'database_with_default_env_from_env.json');
+      return config.load(configPath);
+    },
+
+    'should load a value from the env set in NODE_ENV': function (config) {
+      var current = config.getCurrent();
+      assert.equal(current.settings.driver, 'sqlite3');
+      assert.equal(current.settings.filename, ':memory:');
+    },
+  }
+}).addBatch({
   'loading from a file with ENV vars': {
     topic: function() {
       process.env['DB_MIGRATE_TEST_VAR'] = 'username_from_env';
