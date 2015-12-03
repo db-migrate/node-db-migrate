@@ -7,8 +7,7 @@ var log = require('./lib/log');
 var internals = {};
 
 exports.connect = function(config, passedClass, callback) {
-  var internals = {},
-      _config = config;
+  var internals = {};
 
   if( config.config ) {
     internals = config.internals;
@@ -59,7 +58,8 @@ exports.connect = function(config, passedClass, callback) {
 
           files.push('');
 
-          db.close = function(cb) { migrationFiles(files, callback, _config, passedClass, db, oldClose, cb); };
+          db.close = function(cb) { migrationFiles(files, callback, config,
+            internals, passedClass, db, oldClose, cb); };
 
           db.close();
         });
@@ -83,17 +83,11 @@ exports.driver = function(config, callback) {
   driver.connect(config, internals, callback);
 };
 
-function migrationFiles(files, callback, config, passedClass, db, close, cb) {
+function migrationFiles(files, callback, config, internals,
+    passedClass, db, close, cb) {
   var file,
       switched = false,
       newConf;
-
-  var internals = {};
-  var _config = config;
-  if( config.config ) {
-    internals = config.internals;
-    config = config.config;
-  }
 
   if(files.length === 1)
   {
@@ -102,6 +96,7 @@ function migrationFiles(files, callback, config, passedClass, db, close, cb) {
 
   file = files.pop();
   log.info( 'Enter scope "' + ((file !== '') ? file : '/') + '"' );
+  console.log(internals)
 
   if(file !== '')
   {
