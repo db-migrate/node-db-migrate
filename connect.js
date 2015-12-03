@@ -96,7 +96,6 @@ function migrationFiles(files, callback, config, internals,
 
   file = files.pop();
   log.info( 'Enter scope "' + ((file !== '') ? file : '/') + '"' );
-  console.log(internals)
 
   if(file !== '')
   {
