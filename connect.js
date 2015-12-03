@@ -7,7 +7,9 @@ var log = require('./lib/log');
 var internals = {};
 
 exports.connect = function(config, passedClass, callback) {
-  var internals = {};
+  var internals = {},
+      _config = config;
+
   if( config.config ) {
     internals = config.internals;
     config = config.config;
@@ -57,7 +59,7 @@ exports.connect = function(config, passedClass, callback) {
 
           files.push('');
 
-          db.close = function(cb) { migrationFiles(files, callback, config, passedClass, db, oldClose, cb); };
+          db.close = function(cb) { migrationFiles(files, callback, _config, passedClass, db, oldClose, cb); };
 
           db.close();
         });
@@ -99,6 +101,7 @@ function migrationFiles(files, callback, config, passedClass, db, close, cb) {
   }
 
   file = files.pop();
+  log.info( 'Enter scope "' + ((file !== '') ? file : '/') + '"' );
 
   if(file !== '')
   {
