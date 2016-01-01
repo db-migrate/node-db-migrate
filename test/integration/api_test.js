@@ -77,4 +77,31 @@ vows.describe('api').addBatch({
       assert.isTrue(called);
     }
   }
+}).addBatch({
+  'load config from parameter': {
+    topic: function() {
+      var options = {
+        env: 'dev',
+        cwd: process.cwd() + '/test/integration',
+        config: {
+          dev: {
+            driver: 'sqlite3',
+            filename: ':memory:'
+          },
+          pg: {
+            driver: 'pg',
+            database: 'db_api_test'
+          }
+        }
+      };
+      var api = DBMigrate.getInstance(true, options);
+      return {options: options, api: api};
+    },
+    'should load config from parameter': function(topic) {
+      var actual = topic.api.config;
+      var expected = topic.options.config;
+      expected.getCurrent = actual.getCurrent;
+      assert.deepEqual(actual, expected);
+    }
+  }
 }).export(module);
