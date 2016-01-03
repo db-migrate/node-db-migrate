@@ -45,6 +45,11 @@ function dbmigrate(isModule, options, callback) {
 
     if (typeof(options.config) === 'string')
       internals.configFile = options.string;
+    else if (typeof(options.config) === 'object')
+      internals.configObject = options.config;
+
+    if (typeof(options.env) === 'string')
+      internals.currentEnv = options.env;
 
     if (typeof(options.cwd) === 'string')
       internals.cwd = options.cwd;
@@ -492,11 +497,15 @@ function createMigrationDir(dir, callback) {
 }
 
 function loadConfig( config, internals ) {
-  var out;
+  var out,
+      currentEnv = internals.currentEnv || internals.argv.env;
+
   if (process.env.DATABASE_URL) {
-    out = config.loadUrl(process.env.DATABASE_URL, internals.argv.env);
+    out = config.loadUrl(process.env.DATABASE_URL, currentEnv);
+  } else if (internals.configObject) {
+    out = config.loadObject(internals.configObject, currentEnv);
   } else {
-    out = config.load(internals.argv.config, internals.argv.env);
+    out = config.loadFile(internals.argv.config, currentEnv);
   }
   if (internals.verbose) {
     var current = out.getCurrent();
