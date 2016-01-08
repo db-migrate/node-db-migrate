@@ -44,7 +44,7 @@ function dbmigrate(isModule, options, callback) {
   if (typeof(options) === 'object') {
 
     if (typeof(options.config) === 'string')
-      internals.configFile = options.string;
+      internals.configFile = options.config;
     else if (typeof(options.config) === 'object')
       internals.configObject = options.config;
 
