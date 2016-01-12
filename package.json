@@ -45,16 +45,16 @@
   },
   "dependencies": {
     "async": "^1.0.0",
-    "bluebird": "^2.9.12",
+    "bluebird": "^3.1.1",
     "dotenv": "~1.2.0",
     "final-fs": "^1.6.0",
     "mkdirp": "~0.5.0",
-    "moment": "~2.10.2",
+    "moment": "~2.11.1",
     "optimist": "~0.6.1",
     "parse-database-url": "~0.3.0",
     "pkginfo": "~0.3.0",
     "resolve": "^1.1.6",
-    "semver": "~5.0.1",
+    "semver": "~5.1.0",
     "tunnel-ssh": "^2.0.0"
   },
   "devDependencies": {
@@ -70,7 +70,7 @@
     "mysql": "^2.9.0",
     "pg": "^4.4.1",
     "proxyquire": "^1.4.0",
-    "rimraf": "~2.4.0",
+    "rimraf": "~2.5.0",
     "sinon": "^1.14.1",
     "sqlite3": "^3.1.0",
     "vows": "0.8.0"
