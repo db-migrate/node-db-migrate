@@ -51,7 +51,7 @@
     "mkdirp": "~0.5.0",
     "moment": "~2.11.1",
     "optimist": "~0.6.1",
-    "parse-database-url": "~0.2.2",
+    "parse-database-url": "~0.3.0",
     "pkginfo": "~0.3.0",
     "resolve": "^1.1.6",
     "semver": "~5.1.0",
