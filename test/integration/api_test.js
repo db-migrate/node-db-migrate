@@ -28,8 +28,8 @@ vows.describe('api').addBatch({
       var api = DBMigrate.getInstance(true, config);
       api.create( 'test', function() {
         process.argv.push('up');
-
         process.exit = function(err) {
+
 
           var ret = called;
           called = true;
