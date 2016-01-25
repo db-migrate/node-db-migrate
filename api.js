@@ -521,6 +521,7 @@ function loadConfig( config, internals ) {
 }
 
 function executeCreateMigration(internals, config, callback) {
+
   var migrationsDir = internals.argv['migrations-dir'];
 
   if (internals.migrationMode && internals.migrationMode !== 'all') {
@@ -611,6 +612,7 @@ function shouldCreateCoffeeFile( intenrals, config ) {
 }
 
 function createSqlFiles(internals, config, callback) {
+
   var migrationsDir = internals.argv['migrations-dir'];
 
   if (internals.migrationMode && internals.migrationMode !== 'all') {
@@ -678,10 +680,11 @@ function _assert(err, callback) {
 
 function executeUp(internals, config, callback) {
 
+  var callback = callback || internals.onComplete;
+
   if (!internals.argv.count) {
     internals.argv.count = Number.MAX_VALUE;
   }
-
   index.connect({
     config: config.getCurrent().settings,
     internals: internals
@@ -699,6 +702,7 @@ function executeUp(internals, config, callback) {
     migrator.driver.createMigrationsTable(function(err) {
       assert.ifError(err);
       log.verbose('migration table created');
+
       migrator.up(internals.argv, internals.onComplete.bind(this,
         migrator, callback));
     });
@@ -706,6 +710,8 @@ function executeUp(internals, config, callback) {
 }
 
 function executeDown(internals, config, callback) {
+
+  var callback = callback || internals.onComplete;
 
   if (!internals.argv.count) {
     log.info('Defaulting to running 1 down migration.');
@@ -729,6 +735,8 @@ function executeDown(internals, config, callback) {
 }
 
 function executeDB(internals, config, callback) {
+
+  var callback = callback || internals.onComplete;
 
   if (internals.argv._.length > 0) {
     internals.argv.dbname = internals.argv._.shift().toString();
@@ -779,6 +787,8 @@ function executeDB(internals, config, callback) {
 
 function executeSeed(internals, config, callback) {
 
+  var callback = callback || internals.onComplete;
+
   if (internals.argv._.length > 0) {
     internals.argv.destination = internals.argv._.shift().toString();
   }
@@ -809,6 +819,9 @@ function executeSeed(internals, config, callback) {
 }
 
 function executeUndoSeed(internals, config, callback) {
+
+  var callback = callback || internals.onComplete;
+
   if (!internals.argv.count) {
     log.info('Defaulting to running 1 down seed.');
     internals.argv.count = 1;
