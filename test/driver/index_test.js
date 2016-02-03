@@ -24,9 +24,8 @@ var indexConnectCallback = function(self, tunnelStub, driverSpy) {
       self.callback(err, db, tunnelStub, driverSpy);
       return;
     }
-    db.close(function() {
-      self.callback(err, db, tunnelStub, driverSpy);
-    });
+
+    self.callback(err, db, tunnelStub, driverSpy);
   };
 };
 
@@ -38,7 +37,7 @@ vows.describe('index').addBatch({
       var driver = require('db-migrate-mysql');
 
       // Set up stubs/spies to verify correct flow
-      var driverSpy = sinon.spy(driver, 'connect');
+      var driverSpy = sinon.stub(driver, 'connect').yields(null, {});
       var tunnelStub = sinon.stub().callsArg(1);
 
       var index = proxyquire('../../lib/driver/index', {
@@ -87,7 +86,7 @@ vows.describe('index').addBatch({
 
       // Set up stubs/spies to verify correct flow
       var tunnelStub = sinon.stub().callsArgWith(1, new Error('error'));
-      var driverSpy = sinon.spy(driver, 'connect');
+      var driverSpy = sinon.stub(driver, 'connect').yields(null, {});
 
       var index = proxyquire('../../lib/driver/index', {
         'tunnel-ssh': tunnelStub,
