@@ -321,6 +321,7 @@ function run() {
     case 'up':
     case 'down':
     case 'reset':
+    case 'countToRun':
       loadConfig();
 
       if(action === 'reset')
