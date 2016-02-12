@@ -223,7 +223,7 @@ function executeUp(printToRunOnly) {
     migrator.driver.createMigrationsTable(function(err) {
       assert.ifError(err);
       log.verbose('migration table created');
-      migrator.up(argv, printToRunOnly, onComplete.bind(this, migrator));
+      migrator.up(argv, onComplete.bind(this, migrator), printToRunOnly);
     });
   });
 }
