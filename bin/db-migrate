@@ -298,7 +298,7 @@ function onComplete(migrator, originalErr) {
   migrator.driver.close(function(err) {
     assert.ifError(originalErr);
     assert.ifError(err);
-    log.info('Done');
+    log.debug('Done');
 
     if (argv['force-exit']) {
       log.verbose('Forcing exit');
