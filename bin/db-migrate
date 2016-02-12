@@ -31,7 +31,7 @@ var argv = optimist
       'sql-file': false,
       config: process.cwd() + '/database.json',
       'migrations-dir': process.cwd() + '/migrations' })
-    .usage('Usage: db-migrate [up|down|reset|create|db] [[dbname/]migrationName|all] [options]')
+    .usage('Usage: db-migrate [up|down|reset|create|db|countToRun] [[dbname/]migrationName|all] [options]')
 
     .describe('env', 'The environment to run the migrations under (dev, test, prod).')
     .alias('e', 'env')
@@ -206,7 +206,7 @@ function createSqlFiles() {
   });
 }
 
-function executeUp() {
+function executeUp(countToRunOnly) {
 
   if(!argv.count) {
     argv.count = Number.MAX_VALUE;
@@ -223,7 +223,7 @@ function executeUp() {
     migrator.driver.createMigrationsTable(function(err) {
       assert.ifError(err);
       log.verbose('migration table created');
-      migrator.up(argv, onComplete.bind(this, migrator));
+      migrator.up(argv, countToRunOnly, onComplete.bind(this, migrator));
     });
   });
 }
@@ -342,7 +342,9 @@ function run() {
       }
 
       if(action == 'up') {
-        executeUp();
+        executeUp(false);
+      } else if (action === 'countToRun') {
+        executeUp(true);
       } else {
         executeDown();
       }
