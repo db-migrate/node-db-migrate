@@ -31,7 +31,7 @@ var argv = optimist
       'sql-file': false,
       config: process.cwd() + '/database.json',
       'migrations-dir': process.cwd() + '/migrations' })
-    .usage('Usage: db-migrate [up|down|reset|create|db] [[dbname/]migrationName|all] [options]')
+    .usage('Usage: db-migrate [up|down|reset|create|db|toRun] [[dbname/]migrationName|all] [options]')
 
     .describe('env', 'The environment to run the migrations under (dev, test, prod).')
     .alias('e', 'env')
@@ -206,7 +206,7 @@ function createSqlFiles() {
   });
 }
 
-function executeUp() {
+function executeUp(printToRunOnly) {
 
   if(!argv.count) {
     argv.count = Number.MAX_VALUE;
@@ -223,7 +223,7 @@ function executeUp() {
     migrator.driver.createMigrationsTable(function(err) {
       assert.ifError(err);
       log.verbose('migration table created');
-      migrator.up(argv, onComplete.bind(this, migrator));
+      migrator.up(argv, onComplete.bind(this, migrator), printToRunOnly);
     });
   });
 }
@@ -298,7 +298,7 @@ function onComplete(migrator, originalErr) {
   migrator.driver.close(function(err) {
     assert.ifError(originalErr);
     assert.ifError(err);
-    log.info('Done');
+    log.verbose('Done');
 
     if (argv['force-exit']) {
       log.verbose('Forcing exit');
@@ -321,6 +321,7 @@ function run() {
     case 'up':
     case 'down':
     case 'reset':
+    case 'toRun':
       loadConfig();
 
       if(action === 'reset')
@@ -342,7 +343,9 @@ function run() {
       }
 
       if(action == 'up') {
-        executeUp();
+        executeUp(false);
+      } else if (action === 'toRun') {
+        executeUp(true);
       } else {
         executeDown();
       }
