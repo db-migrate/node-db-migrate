@@ -86,11 +86,7 @@ function createMigrationDir(dir, callback) {
 }
 
 function loadConfig() {
-  if (process.env["DATABASE_URL"]) {
-    config.loadUrl(process.env["DATABASE_URL"], argv.env);
-  } else {
-    config.load(argv.config, argv.env);
-  }
+  config.load(argv.config, argv.env);
   if(verbose) {
     var current = config.getCurrent();
     log.info("Using", current.env, "settings:", current.settings);
