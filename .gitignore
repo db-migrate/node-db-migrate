@@ -10,6 +10,6 @@ database.json
 Seeder
 VCSeeder
 archive
-
+.travis.yml
 # Vim swap files
 .*.sw[a-z]
