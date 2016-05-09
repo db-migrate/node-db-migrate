@@ -45,7 +45,7 @@ https://github.com/db-migrate/mongodb
 Please follow the link below, for usage instructions examples and the full
 documentation of db-migrate.
 
-Documentation: https://readthedocs.org/projects/db-migrate
+Documentation: https://db-migrate.readthedocs.io/en/latest/
 
 ## License
 
