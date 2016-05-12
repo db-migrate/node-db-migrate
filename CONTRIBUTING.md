@@ -4,6 +4,7 @@ If so, here's a quick guide to creating a great pull request for
 this project:
 
 1. Fork the repo.
+  * **NOTE**: Optionally start the databases using `docker-compose up`
 
 2. Copy the test/db.config.example.json to test/db.config.json
 
