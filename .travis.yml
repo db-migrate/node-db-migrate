@@ -3,8 +3,9 @@ language: node_js
 node_js:
   - 0.10
   - 0.12
-  - 4.0
-  - 4.1
+  - 4
+  - 5
+  - 6
   - "iojs-1"
   - "iojs-2"
   - "iojs-3"
@@ -26,6 +27,8 @@ os:
 
 matrix:
   fast_finish: true
+  allow_failures:
+    - node_js: 6
 
 services:
   - mongodb
@@ -38,7 +41,15 @@ cache:
     - node_modules
 
 addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
   mariadb: "10.0"
+
+before_install:
+  - export CXX=g++-4.8; export CC=gcc-4.8;
 
 before_script:
     - until nc -z localhost 27017 ; do echo Waiting for MongoDB; sleep 1; done
