@@ -584,18 +584,16 @@ function executeCreateMigration(internals, config, callback) {
       if (_assert(err, callback)) {
 
         log.info(util.format('Created migration at %s', migration.path));
+        if (shouldCreateSqlFiles(internals, config)) {
+          createSqlFiles(internals, config, callback);
+        } else {
+          if (typeof(callback) === 'function') {
+            callback();
+          }
+        }
       }
     });
   });
-
-  if (shouldCreateSqlFiles(internals, config)) {
-    createSqlFiles(internals, config, callback);
-  } else {
-    if (typeof(callback) === 'function') {
-
-      callback();
-    }
-  }
 }
 
 function shouldCreateSqlFiles( internals, config ) {
