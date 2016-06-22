@@ -2,7 +2,7 @@ var util = require('util');
 var vows = require('vows');
 var assert = require('assert');
 var dbmeta = require('db-meta');
-var dataType = require('../../lib/data_type');
+var dataType = require('db-migrate-shared').dataType;
 var driver = require('../../lib/driver');
 var log = require('db-migrate-shared').log;
 

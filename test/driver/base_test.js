@@ -6,7 +6,7 @@ var internals = {
   migrationTable: 'migrations',
   mod: {
     log: require('db-migrate-shared').log,
-    type: require('../../lib/data_type.js')
+    type: require('db-migrate-shared').dataType
   }
 };
 

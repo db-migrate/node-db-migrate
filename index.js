@@ -1,6 +1,6 @@
 var pkginfo = require('pkginfo')(module, 'version'); // jshint ignore:line
 
-exports.dataType = require('./lib/data_type');
+exports.dataType = require('db-migrate-shared').dataType;
 
 
 /**
