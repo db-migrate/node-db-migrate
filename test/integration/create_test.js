@@ -3,7 +3,7 @@ var assert = require('assert');
 var fs = require('fs');
 var path = require('path');
 var cp = require('child_process');
-var dbmUtil = require('../../lib/util');
+var dbmUtil = require('db-migrate-shared').util;
 
 var rmdir = require('rimraf');
 

@@ -1,6 +1,6 @@
 var vows = require('vows');
 var assert = require('assert');
-var util = require('../lib/util');
+var util = require('db-migrate-shared').util;
 
 vows.describe('util').addBatch({
   'lpad': {
