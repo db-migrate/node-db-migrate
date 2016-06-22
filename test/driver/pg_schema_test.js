@@ -3,7 +3,7 @@ var Promise = require('bluebird');
 var assert = require('assert');
 var dbmeta = require('db-meta');
 var pg = require('pg');
-var dataType = require('../../lib/data_type');
+var dataType = require('db-migrate-shared').dataType;
 var driver = require('../../lib/driver');
 
 var databaseUrl = 'postgres://localhost/db_migrate_test';
