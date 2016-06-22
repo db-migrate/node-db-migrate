@@ -2,7 +2,7 @@ var recursive = require('final-fs').readdirRecursive;
 var fs = require('fs');
 var driver = require('./lib/driver');
 var path = require('path');
-var log = require('./lib/log');
+var log = require('db-migrate-shared').log;
 
 var internals = {};
 

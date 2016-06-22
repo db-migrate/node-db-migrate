@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 var resolve = require( 'resolve' );
-var log = require( '../lib/log.js' );
+var log = require('db-migrate-shared').log;
 
 process.title = 'db-migrate';
 

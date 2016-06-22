@@ -46,6 +46,7 @@
   "dependencies": {
     "async": "^1.0.0",
     "bluebird": "^3.1.1",
+    "db-migrate-shared": "^1.0.2",
     "dotenv": "~1.2.0",
     "final-fs": "^1.6.0",
     "mkdirp": "~0.5.0",

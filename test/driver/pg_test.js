@@ -4,7 +4,7 @@ var assert = require('assert');
 var dbmeta = require('db-meta');
 var dataType = require('../../lib/data_type');
 var driver = require('../../lib/driver');
-var log = require('../..//lib/log.js');
+var log = require('db-migrate-shared').log;
 
 var config = require('../db.config.json').pg;
 

@@ -5,7 +5,7 @@ var Base = require('db-migrate-base');
 var internals = {
   migrationTable: 'migrations',
   mod: {
-    log: require('../../lib/log.js'),
+    log: require('db-migrate-shared').log,
     type: require('../../lib/data_type.js')
   }
 };
