@@ -87,7 +87,7 @@ function registerEvents() {
     process.exit(1);
   });
 
-  process.on('unhandledRejection', function(reason, promise) {
+  process.on('unhandledRejection', function(reason) {
     log.error(reason.stack);
     process.exit(1);
   });
@@ -159,7 +159,7 @@ dbmigrate.prototype = {
    *
    * Defaults to up all migrations if no count is given.
    */
-  up: function(specification, scope, callback) {
+  up: function(specification, opts, callback) {
 
     if (arguments.length > 0) {
       if (typeof(specification) === 'string') {
@@ -169,10 +169,18 @@ dbmigrate.prototype = {
 
         this.internals.argv.count = specification;
       }
+      else if (typeof(specification) === 'function') {
 
-      if (scope) {
+        callback = specification;
+      }
 
-        this.internals.migrationMode = scope;
+      if (typeof(opts) === 'string') {
+
+        this.internals.migrationMode = opts;
+      }
+      else if (typeof(opts) === 'function') {
+
+        callback = opts;
       }
     }
 
@@ -184,17 +192,25 @@ dbmigrate.prototype = {
    *
    * Defaults to up all migrations if no count is given.
    */
-  down: function(specification, scope, callback) {
+  down: function(specification, opts, callback) {
 
     if (arguments.length > 0) {
-      if (typeof(arguments[0]) === 'number') {
+      if (typeof(specification) === 'number') {
 
         this.internals.argv.count = arguments[0];
       }
+      else if (typeof(specification) === 'function') {
 
-      if (scope) {
+        callback = specification;
+      }
 
-        this.internals.migrationMode = scope;
+      if (typeof(opts) === 'string') {
+
+        this.internals.migrationMode = opts;
+      }
+      else if (typeof(opts) === 'function') {
+
+        callback = opts;
       }
     }
 
@@ -206,9 +222,13 @@ dbmigrate.prototype = {
    */
   reset: function(scope, callback) {
 
-    if (scope) {
+    if (typeof(scope) === 'string') {
 
       this.internals.migrationMode = scope;
+    }
+    else if(typeof(scope) === 'function') {
+
+      callback = scope;
     }
 
     this.internals.argv.count = Number.MAX_VALUE;
