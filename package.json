@@ -49,6 +49,7 @@
     "db-migrate-shared": "^1.0.2",
     "dotenv": "~1.2.0",
     "final-fs": "^1.6.0",
+    "inflection": "^1.10.0",
     "mkdirp": "~0.5.0",
     "moment": "~2.11.2",
     "optimist": "~0.6.1",
@@ -73,6 +74,7 @@
     "proxyquire": "^1.4.0",
     "rimraf": "~2.5.0",
     "sinon": "^1.17.3",
+    "sinon-as-promised": "^3.0.1",
     "sqlite3": "^3.1.1",
     "vows": "0.8.0"
   },
