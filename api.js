@@ -13,28 +13,22 @@ var pkginfo = require('pkginfo')(module, 'version'); // jshint ignore:line
 var dotenv = require('dotenv');
 var Promise = require('bluebird');
 
-
-//global declaration for detection like it's done in umigrate //deprecated
-global.dbm = require('./'); //deprecated
-global.async = require('async'); //deprecated
-
-var internals = {};
-
 function dbmigrate(isModule, options, callback) {
 
   this.internals = {
 
-    onComplete: internals.onComplete
+    onComplete: onComplete
   };
-  internals = this.internals;
+  var internals = this.internals;
 
   if (typeof(callback) === 'function')
     this.internals.onComplete = callback;
   else if (typeof(options) === 'function')
     this.internals.onComplete = options;
 
-  this.dataType = dbm.dataType;
-  this.version = dbm.version;
+  this.internals.dbm = require('./');
+  this.dataType = this.internals.dbm.dataType;
+  this.version = this.internals.dbm.version;
   dotenv.load({
     silent: true
   });
@@ -67,8 +61,7 @@ function dbmigrate(isModule, options, callback) {
   this.config = loadConfig( require('./lib/config.js'), this.internals );
 
   index.exportInternals(internals);
-  this.internals.dbm = dbm;
-  global.dbm = dbm; //deprecated
+
   this.internals.migrationOptions = {
     dbmigrate: this.internals.dbm,
     ignoreOnInit: this.internals.argv['ignore-on-init'],
@@ -112,7 +105,7 @@ dbmigrate.prototype = {
     return true;
   },
 
-  _internals: internals,
+  _internals: this.internals,
 
   /**
    * Add a configuration option to dbmigrate.
@@ -512,7 +505,7 @@ function setDefaultArgv(internals, isModule) {
   .argv;
 
   if (internals.argv.version) {
-    console.log(dbm.version);
+    console.log(internals.dbm.version);
     process.exit(0);
   }
 
@@ -661,7 +654,7 @@ function shouldIgnoreOnInitFiles( internals, config ) {
     'ignore-on-init'];
 }
 
-function shouldCreateCoffeeFile( intenrals, config ) {
+function shouldCreateCoffeeFile( internals, config ) {
   return internals.argv['coffee-file'] || config['coffee-file'];
 }
 
@@ -756,7 +749,7 @@ function executeUp(internals, config, callback) {
       log.verbose('migration table created');
 
       migrator.up(internals.argv, internals.onComplete.bind(this,
-        migrator, callback));
+        migrator, internals, callback));
     });
   });
 }
@@ -779,7 +772,7 @@ function executeDown(internals, config, callback) {
     migrator.driver.createMigrationsTable(function(err) {
       assert.ifError(err);
       migrator.down(internals.argv, internals.onComplete.bind(this,
-        migrator, callback));
+        migrator, internals, callback));
     });
   });
 }
@@ -851,13 +844,13 @@ function executeSeed(internals, config, callback) {
     if (internals.mode === 'static') {
 
       seeder.seed(internals.argv, internals.onComplete.bind(this, seeder,
-        callback));
+        internals, callback));
     } else {
       seeder.createSeedsTable(function(err) {
         if (_assert(err, callback)) {
 
           seeder.seed(internals.argv, internals.onComplete.bind(this,
-            seeder, callback));
+            seeder, internals, callback));
         }
       });
     }
@@ -893,16 +886,14 @@ function executeUndoSeed(internals, config, callback) {
         if (_assert(err, callback)) {
 
           seeder.down(internals.argv, internals.onComplete.bind(this,
-            seeder, callback));
+            seeder, internals, callback));
         }
       });
     }
   });
 }
 
-internals.onComplete = onComplete;
-
-function onComplete(migrator, callback, originalErr) {
+function onComplete(migrator, internals, callback, originalErr) {
 
   if (typeof(callback) !== 'function') {
     originalErr = originalErr || callback;
