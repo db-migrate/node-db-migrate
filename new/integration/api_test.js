@@ -11,13 +11,12 @@ lab.experiment('api', function() {
     function(done, onCleanup) {
 
     var process_exit = process.exit,
-        argv = process.argv;
-
-    var called = false,
+        argv = process.argv,
+        called = false,
         config = { cwd: __dirname };
 
+    // register cleanup method and start preparing the test
     onCleanup(teardown);
-
     createMigration(function() {
 
       var dbmigrate = DBMigrate.getInstance(true, config);
@@ -25,9 +24,19 @@ lab.experiment('api', function() {
       dbmigrate.setConfigParam('force-exit', true);
       dbmigrate.silence(true);
 
+      /**
+        * We have set force-exit above, this should end up in db-migrate
+        * executing process.exit on the final callback.
+        * Process.exit has been overwritten and will finally call validate.
+        *
+        * The test validation takes place in validate()
+        */
       dbmigrate.up();
     });
 
+    /**
+      * Final validation after process.exit should have been called.
+      */
     function validate() {
 
       Code.expect(called).to.equal(true);
