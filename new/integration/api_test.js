@@ -8,7 +8,7 @@ var cp = require('child_process');
 lab.experiment('api', function() {
 
   lab.test('force process exit after migrations have been run',
-    function(done, onCleanup) {
+    { parallel : true}, function(done, onCleanup) {
 
     var process_exit = process.exit,
         argv = process.argv,
@@ -79,7 +79,8 @@ lab.experiment('api', function() {
     }
   });
 
-  lab.test('should load config from parameter', function(done) {
+  lab.test('should load config from parameter', { parallel : true},
+    function(done) {
 
     var options = {
       env: 'dev',
