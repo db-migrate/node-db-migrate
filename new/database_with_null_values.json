@@ -1,0 +1,16 @@
+{
+    "dev": {
+        "driver": null,
+        "filename": ":memory:"
+    },
+
+    "test": {
+        "driver": null,
+        "filename": ":memory:"
+    },
+
+    "prod": {
+        "driver": null,
+        "filename": "prod.db"
+    }
+}

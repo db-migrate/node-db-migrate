@@ -6,7 +6,9 @@ var Bluebird = require('bluebird');
 var shadow = require('../../lib/driver/shadow.js');
 require('sinon-as-promised')(Bluebird);
 
-lab.test('shadow function and original function get called in serial',
+lab.experiment('shadow', function() {
+
+  lab.test('shadow function and original function get called in serial',
   function(done) {
 
     var stub = sinon.stub().callsArg(0);
@@ -22,4 +24,5 @@ lab.test('shadow function and original function get called in serial',
       Code.expect(stub.calledOnce).to.equal(true);
       done();
     });
+  });
 });
