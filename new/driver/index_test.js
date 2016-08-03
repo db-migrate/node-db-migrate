@@ -84,10 +84,10 @@ lab.experiment('index', function() {
       Code.expect(db).to.not.be.null();
       Code.expect(
         tunnelStub.withArgs(expectedTunnelConfig).calledOnce
-      ).to.equal(true);
+      ).to.be.true();
       Code.expect(
         driverSpy.withArgs(expectedDbConfig).calledOnce
-      ).to.equal(true);
+      ).to.be.true();
 
       done();
     }
@@ -130,9 +130,9 @@ lab.experiment('index', function() {
         .to.not.exists();
 
       Code.expect(tunnelStub.calledOnce, 'tunnel should be called once')
-        .to.equal(true);
+        .to.be.true();
       Code.expect(driverSpy.notCalled, 'driver.connect should not be called')
-        .to.equal(true);
+        .to.be.true();
 
       done();
     }

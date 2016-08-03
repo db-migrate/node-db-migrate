@@ -20,8 +20,8 @@ lab.experiment('shadow', function() {
     });
 
     infected.test(function() {
-      Code.expect(shadowStub.calledOnce).to.equal(true);
-      Code.expect(stub.calledOnce).to.equal(true);
+      Code.expect(shadowStub.calledOnce).to.be.true();
+      Code.expect(stub.calledOnce).to.be.true();
       done();
     });
   });
