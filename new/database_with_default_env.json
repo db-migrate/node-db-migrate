@@ -1,0 +1,7 @@
+{
+  "defaultEnv": "local",
+  "local": {
+    "driver": "sqlite3",
+    "filename": ":memory:"
+  }
+}
