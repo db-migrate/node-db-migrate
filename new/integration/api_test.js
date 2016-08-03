@@ -39,7 +39,7 @@ lab.experiment('api', function() {
       */
     function validate() {
 
-      Code.expect(called).to.equal(true);
+      Code.expect(called).to.be.true();
       done();
     }
 
@@ -62,7 +62,7 @@ lab.experiment('api', function() {
           if(err)
             process.exit.apply(arguments);
 
-          Code.expect(ret).to.equal(false);
+          Code.expect(ret).to.be.false();
           validate();
         };
 
