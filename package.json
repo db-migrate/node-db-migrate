@@ -76,6 +76,6 @@
     "vows": "0.8.0"
   },
   "scripts": {
-    "test": "lab -t 75 new"
+    "test": "make test-cov"
   }
 }
