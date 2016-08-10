@@ -31,9 +31,6 @@ matrix:
   allow_failures:
     - node_js: 6
 
-services:
-  - mongodb
-
 sudo: false
 
 cache:
@@ -47,13 +44,9 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - g++-4.8
-  mariadb: "10.0"
 
 before_install:
   - export CXX=g++-4.8; export CC=gcc-4.8;
 
 before_script:
-    - until nc -z localhost 27017 ; do echo Waiting for MongoDB; sleep 1; done
-    - mysql -e "create database db_migrate_test;"
-    - createdb db_migrate_test
     - cp test/db.config.ci test/db.config.json

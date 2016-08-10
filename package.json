@@ -44,18 +44,17 @@
     "url": "https://github.com/db-migrate/node-db-migrate.git"
   },
   "dependencies": {
-    "async": "^1.0.0",
     "bluebird": "^3.1.1",
     "db-migrate-shared": "^1.0.2",
     "dotenv": "~1.2.0",
     "final-fs": "^1.6.0",
     "mkdirp": "~0.5.0",
-    "moment": "~2.11.2",
+    "moment": "^2.14.1",
     "optimist": "~0.6.1",
     "parse-database-url": "~0.3.0",
     "pkginfo": "~0.3.0",
     "resolve": "^1.1.6",
-    "semver": "~5.1.0",
+    "semver": "^5.3.0",
     "tunnel-ssh": "^4.0.0"
   },
   "devDependencies": {
@@ -77,6 +76,6 @@
     "vows": "0.8.0"
   },
   "scripts": {
-    "test": "node node_modules/.bin/vows"
+    "test": "lab -t 75 new"
   }
 }
