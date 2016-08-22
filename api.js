@@ -4,22 +4,69 @@ var path = require('path');
 var util = require('util');
 var mkdirp = require('mkdirp');
 var optimist = require('optimist');
-var index = require('./connect');
-var Migration = require('./lib/migration.js');
-var Seeder = require('./lib/seeder.js');
-var Migrator = require('./lib/migrator.js');
 var log = require('db-migrate-shared').log;
 var pkginfo = require('pkginfo')(module, 'version'); // jshint ignore:line
 var dotenv = require('dotenv');
-var Promise = require('bluebird');
+var Promise = Promise;
 
-function dbmigrate(isModule, options, callback) {
+function registerPluginLoader(plugins) {
+
+  return {
+
+    overwrite: function(name) {
+
+      if(plugins[name] && plugins[name].length) {
+
+        var plugin = plugins[name];
+
+        if(plugin.length !== 1) {
+          log.warn(
+            'Attention, multiple overwrites registered for %s, we are ' +
+            'only loading the first plugin %s!',
+            name,
+            plugin.name
+          );
+        }
+
+        plugin = plugin[0];
+        if(typeof(plugin.loadPlugin) === 'function')
+          plugin.loadPlugin();
+
+        return plugin;
+      }
+
+      return false;
+    },
+
+    hook: function(name) {
+
+      if(plugins[name] && plugins[name].length) {
+
+        var plugin = plugins[name];
+
+        plugin.map(function(plugin) {
+
+          if(typeof(plugin.loadPlugin) === 'function')
+            plugin.loadPlugin();
+        });
+
+        return plugin;
+      }
+
+      return false;
+    }
+  };
+}
+
+function dbmigrate(plugins, isModule, options, callback) {
 
   this.internals = {
 
     onComplete: onComplete
   };
   var internals = this.internals;
+
+  this.internals.plugins = registerPluginLoader(plugins);
 
   if (typeof(callback) === 'function')
     this.internals.onComplete = callback;
@@ -60,8 +107,8 @@ function dbmigrate(isModule, options, callback) {
 
   this.config = loadConfig( require('./lib/config.js'), this.internals );
 
-  index.exportInternals(internals);
-
+  //delayed loading of bluebird
+  Promise = require('bluebird');
   this.internals.migrationOptions = {
     dbmigrate: this.internals.dbm,
     ignoreOnInit: this.internals.argv['ignore-on-init'],
@@ -420,7 +467,7 @@ function setDefaultArgv(internals, isModule) {
       'force-exit': false,
       'sql-file': false,
       'non-transactional': false,
-      config: internals.configFile || internals.cwd + '/database.json',
+      config: internals.configFile || 'database.json',
       'migrations-dir': internals.cwd + '/migrations',
       'vcseeder-dir': internals.cwd + '/VCSeeder',
       'staticseeder-dir': internals.cwd + '/Seeder',
@@ -554,7 +601,7 @@ function loadConfig( config, internals ) {
   } else if (internals.configObject) {
     out = config.loadObject(internals.configObject, currentEnv);
   } else {
-    out = config.loadFile(internals.argv.config, currentEnv);
+    out = config.loadFile(internals.argv.config, currentEnv, internals.plugins);
   }
   if (internals.verbose) {
     var current = out.getCurrent();
@@ -588,6 +635,10 @@ function executeCreateMigration(internals, config, callback) {
   }
 
   createMigrationDir(migrationsDir, function(err) {
+
+    var index = require('./connect');
+    var Migration = require('./lib/migration.js');
+
     if (err) {
       log.error('Failed to create migration directory at ', migrationsDir,
         err);
@@ -670,6 +721,10 @@ function createSqlFiles(internals, config, callback) {
 
   var sqlDir = migrationsDir + '/sqls';
   createMigrationDir(sqlDir, function(err) {
+
+    var index = require('./connect');
+    var Migration = require('./lib/migration.js');
+
     if (err) {
       log.error('Failed to create migration directory at ', sqlDir, err);
 
@@ -727,6 +782,9 @@ function _assert(err, callback) {
 
 function executeUp(internals, config, callback) {
 
+  var Migrator = require('./lib/migrator.js');
+  var index = require('./connect');
+
   if (!internals.argv.count) {
     internals.argv.count = Number.MAX_VALUE;
   }
@@ -756,6 +814,9 @@ function executeUp(internals, config, callback) {
 
 function executeDown(internals, config, callback) {
 
+  var Migrator = require('./lib/migrator.js');
+  var index = require('./connect');
+
   if (!internals.argv.count) {
     log.info('Defaulting to running 1 down migration.');
     internals.argv.count = 1;
@@ -778,6 +839,8 @@ function executeDown(internals, config, callback) {
 }
 
 function executeDB(internals, config, callback) {
+
+  var index = require('./connect');
 
   if (internals.argv._.length > 0) {
     internals.argv.dbname = internals.argv._.shift().toString();
@@ -828,6 +891,9 @@ function executeDB(internals, config, callback) {
 
 function executeSeed(internals, config, callback) {
 
+  var index = require('./connect');
+  var Seeder = require('./lib/seeder.js');
+
   if (internals.argv._.length > 0) {
     internals.argv.destination = internals.argv._.shift().toString();
   }
@@ -858,6 +924,9 @@ function executeSeed(internals, config, callback) {
 }
 
 function executeUndoSeed(internals, config, callback) {
+
+  var index = require('./connect');
+  var Seeder = require('./lib/seeder.js');
 
   if (!internals.argv.count) {
     log.info('Defaulting to running 1 down seed.');

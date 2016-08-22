@@ -138,13 +138,3 @@ exports.createMigration = function(migration, callback) {
     callback(null, migration);
   });
 };
-
-exports.exportInternals = function( intern ) {
-
-  internals = intern;
-};
-
-exports.importInternals = function() {
-
-  return internals;
-};
