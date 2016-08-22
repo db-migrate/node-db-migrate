@@ -458,7 +458,7 @@ function setDefaultArgv(internals, isModule) {
       'force-exit': false,
       'sql-file': false,
       'non-transactional': false,
-      config: internals.configFile || 'database.json',
+      config: internals.configFile || internals.cwd + '/database.json',
       'migrations-dir': internals.cwd + '/migrations',
       'vcseeder-dir': internals.cwd + '/VCSeeder',
       'staticseeder-dir': internals.cwd + '/Seeder',
