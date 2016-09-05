@@ -217,6 +217,7 @@ dbmigrate.prototype = {
       if (typeof(opts) === 'string') {
 
         this.internals.migrationMode = opts;
+        this.internals.matching = opts;
       }
       else if (typeof(opts) === 'function') {
 
@@ -250,6 +251,7 @@ dbmigrate.prototype = {
       if (typeof(opts) === 'string') {
 
         this.internals.migrationMode = opts;
+        this.internals.matching = opts;
       }
       else if (typeof(opts) === 'function') {
 
@@ -271,6 +273,7 @@ dbmigrate.prototype = {
     if (typeof(scope) === 'string') {
 
       this.internals.migrationMode = scope;
+      this.internals.matching = scope;
     }
     else if(typeof(scope) === 'function') {
 
@@ -303,6 +306,7 @@ dbmigrate.prototype = {
     } else if (scope) {
 
       this.internals.migrationMode = scope;
+      this.internals.matching = scope;
     }
 
     this.internals.argv._.push(migrationName);
@@ -375,6 +379,7 @@ dbmigrate.prototype = {
     if (scope) {
 
       this.internals.migrationMode = scope;
+      this.internals.matching = scope;
     }
 
     this.internals.mode = mode || 'vc';
@@ -397,10 +402,12 @@ dbmigrate.prototype = {
         if (scope) {
 
           this.internals.migrationMode = scope;
+          this.internals.matching = scope;
         }
       } else if (typeof(specification) === 'string') {
 
         this.internals.migrationMode = scope;
+        this.internals.matching = scope;
       }
     }
 
@@ -423,10 +430,12 @@ dbmigrate.prototype = {
         if (scope) {
 
           this.internals.migrationMode = scope;
+          this.internals.matching = scope;
         }
       } else if (typeof(specification) === 'string') {
 
         this.internals.migrationMode = scope;
+        this.internals.matching = scope;
       }
     }
 
