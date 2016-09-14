@@ -44,6 +44,7 @@
     "url": "https://github.com/db-migrate/node-db-migrate.git"
   },
   "dependencies": {
+    "balanced-match": "^0.4.2",
     "bluebird": "^3.1.1",
     "db-migrate-shared": "^1.0.2",
     "dotenv": "^2.0.0",
@@ -54,6 +55,7 @@
     "optimist": "~0.6.1",
     "parse-database-url": "~0.3.0",
     "pkginfo": "^0.4.0",
+    "prompt": "^1.0.0",
     "resolve": "^1.1.6",
     "semver": "^5.3.0",
     "tunnel-ssh": "^4.0.0"
