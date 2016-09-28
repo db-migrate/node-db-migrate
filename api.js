@@ -62,7 +62,8 @@ function dbmigrate(plugins, isModule, options, callback) {
 
   this.internals = {
 
-    onComplete: onComplete
+    onComplete: onComplete,
+    migrationProtocol: 1
   };
   var internals = this.internals;
 
@@ -296,6 +297,14 @@ dbmigrate.prototype = {
   },
 
   /**
+    * Transition migrations to the latest defined protocol.
+    */
+  transition: function() {
+
+    transition(this.internals);
+  },
+
+  /**
    * Creates a correctly formatted migration
    */
   create: function(migrationName, scope, callback) {
@@ -474,7 +483,7 @@ function setDefaultArgv(internals, isModule) {
       'ignore-completed-migrations': false
     })
     .usage(
-      'Usage: db-migrate [up|down|reset|create|db|seed] [[dbname/]migrationName|all] [options]'
+      'Usage: db-migrate [up|down|reset|create|db|seed|transition] [[dbname/]migrationName|all] [options]'
     )
 
   .describe('env',
@@ -780,61 +789,75 @@ function _assert(err, callback) {
   return true;
 }
 
+function migrationHook(internals) {
+
+  var Migration = require('./lib/migration.js');
+  return Migration.registerHook(internals.plugins, internals);
+}
+
 function executeUp(internals, config, callback) {
 
-  var Migrator = require('./lib/migrator.js');
-  var index = require('./connect');
+  migrationHook(internals)
+  .then(function() {
 
-  if (!internals.argv.count) {
-    internals.argv.count = Number.MAX_VALUE;
-  }
-  index.connect({
-    config: config.getCurrent().settings,
-    internals: internals
-  }, Migrator, function(err, migrator) {
-    assert.ifError(err);
+    var Migrator = require('./lib/migrator.js');
+    var index = require('./connect');
 
-    if (internals.locTitle)
+    if (!internals.argv.count) {
+      internals.argv.count = Number.MAX_VALUE;
+    }
+    index.connect({
+      config: config.getCurrent().settings,
+      internals: internals
+    }, Migrator, function(err, migrator) {
+      assert.ifError(err);
+
+      if (internals.locTitle)
       migrator.migrationsDir = path.resolve(internals.argv['migrations-dir'],
-        internals.locTitle);
-    else
+      internals.locTitle);
+      else
       migrator.migrationsDir = path.resolve(internals.argv['migrations-dir']);
 
-    internals.migrationsDir = migrator.migrationsDir;
+      internals.migrationsDir = migrator.migrationsDir;
 
-    migrator.driver.createMigrationsTable(function(err) {
-      assert.ifError(err);
-      log.verbose('migration table created');
+      migrator.driver.createMigrationsTable(function(err) {
+        assert.ifError(err);
+        log.verbose('migration table created');
 
-      migrator.up(internals.argv, internals.onComplete.bind(this,
-        migrator, internals, callback));
-    });
+        migrator.up(internals.argv, internals.onComplete.bind(this,
+          migrator, internals, callback));
+        });
+      });
   });
 }
 
 function executeDown(internals, config, callback) {
 
-  var Migrator = require('./lib/migrator.js');
-  var index = require('./connect');
+  migrationHook(internals)
+  .then(function() {
 
-  if (!internals.argv.count) {
-    log.info('Defaulting to running 1 down migration.');
-    internals.argv.count = 1;
-  }
+    var Migrator = require('./lib/migrator.js');
+    var index = require('./connect');
 
-  index.connect({
-    config: config.getCurrent().settings,
-    internals: internals
-  }, Migrator, function(err, migrator) {
-    assert.ifError(err);
+    if (!internals.argv.count) {
+      log.info('Defaulting to running 1 down migration.');
+      internals.argv.count = 1;
+    }
 
-    migrator.migrationsDir = path.resolve(internals.argv['migrations-dir']);
-
-    migrator.driver.createMigrationsTable(function(err) {
+    index.connect({
+      config: config.getCurrent().settings,
+      internals: internals
+    }, Migrator, function(err, migrator) {
       assert.ifError(err);
-      migrator.down(internals.argv, internals.onComplete.bind(this,
-        migrator, internals, callback));
-    });
+
+      migrator.migrationsDir = path.resolve(internals.argv['migrations-dir']);
+
+      migrator.driver.createMigrationsTable(function(err) {
+        assert.ifError(err);
+        migrator.down(internals.argv, internals.onComplete.bind(this,
+          migrator, internals, callback));
+        });
+      });
   });
 }
 
@@ -994,6 +1017,11 @@ function onComplete(migrator, internals, callback, originalErr) {
   });
 }
 
+function transition(internals) {
+
+  require('./lib/transitions/transitioner.js')(internals);
+}
+
 function run(internals, config) {
   var action = internals.argv._.shift(),
     folder = action.split(':');
@@ -1001,6 +1029,10 @@ function run(internals, config) {
   action = folder[0];
 
   switch (action) {
+    case 'transition':
+
+      transition(internals);
+      break;
     case 'create':
 
       if (folder[1]) {
