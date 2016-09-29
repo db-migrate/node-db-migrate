@@ -926,6 +926,8 @@ function executeDB(internals, config, callback) {
   }
 
   index.driver(config.getCurrent().settings, function(err, db) {
+    assert.ifError(err);
+
     if (internals.mode === 'create') {
       db.createDatabase(internals.argv.dbname, {
         ifNotExists: true
