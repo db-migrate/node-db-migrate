@@ -33,5 +33,9 @@ resolve( 'db-migrate', {
   }
 
   dbmigrate = DBMigrate.getInstance();
-  dbmigrate.run();
+  dbmigrate.registerAPIHook()
+  .then( function() {
+
+    dbmigrate.run();
+  } );
 } );

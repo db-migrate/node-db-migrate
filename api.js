@@ -58,6 +58,18 @@ function registerPluginLoader(plugins) {
   };
 }
 
+var APIHooks = {
+  'init:api:addfunction:hook': function(name, fn) {
+
+    this[name] = fn;
+    return;
+  },
+  'init:api:accessapi:hook': function(cb) {
+
+    return cb(this);
+  }
+};
+
 function dbmigrate(plugins, isModule, options, callback) {
 
   this.internals = {
@@ -151,6 +163,31 @@ dbmigrate.prototype = {
     }
 
     return true;
+  },
+
+  registerAPIHook: function(callback) {
+
+    var plugins = this.internals.plugins;
+    var self = this;
+
+    return Promise.resolve(Object.keys(APIHooks))
+    .each(function(hook) {
+
+      var plugin = plugins.hook(hook);
+      if(!plugin) return;
+
+      var APIHook = APIHooks[hook].bind(self);
+
+      return Promise.resolve(plugin)
+      .map(function(plugin) {
+
+        return plugin[hook]();
+      })
+      .each(function(args) {
+
+        return APIHook.apply(self, args);
+      });
+    }).asCallback(callback);
   },
 
   _internals: this.internals,
@@ -556,9 +593,24 @@ function setDefaultArgv(internals, isModule) {
     .boolean('ignore-completed-migrations')
 
   .describe('log-level', 'Set the log-level, for example sql|warn')
-    .string('log-level')
+    .string('log-level');
 
-  .argv;
+
+  var plugins = internals.plugins;
+  var plugin = plugins.hook('init:cli:config:hook');
+  if(plugin) {
+
+    plugin.forEach(function(plugin) {
+
+      var configs = plugin['init:cli:config:hook']();
+      if(!configs) return;
+
+      //hook not yet used, we look into migrating away from optimist first
+      return;
+    });
+  }
+
+  internals.argv = internals.argv.argv;
 
   if (internals.argv.version) {
     console.log(internals.dbm.version);
@@ -592,7 +644,7 @@ function setDefaultArgv(internals, isModule) {
 }
 
 function createMigrationDir(dir, callback) {
-  fs.stat(dir, function(err, stat) {
+  fs.stat(dir, function(err) {
     if (err) {
       mkdirp(dir, callback);
     } else {
@@ -1101,9 +1153,21 @@ function run(internals, config) {
       break;
 
     default:
-      log.error('Invalid Action: Must be [up|down|create|reset|seed|db].');
-      optimist.showHelp();
-      process.exit(1);
+      var plugins = internals.plugins;
+      var plugin = plugins.overwrite(
+        'run:default:action:' + action + ':overwrite'
+      );
+      if(plugin) {
+
+        plugin['run:default:action:' + action + ':overwrite']
+          (internals, config);
+      }
+      else {
+
+        log.error('Invalid Action: Must be [up|down|create|reset|seed|db].');
+        optimist.showHelp();
+        process.exit(1);
+      }
       break;
   }
 }
