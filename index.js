@@ -33,7 +33,8 @@ function loadPlugins() {
 
   for(; i < length; ++i) {
 
-    var plugin = require(plugins[i]);
+    var plugin = require(path.join(process.cwd(), 'node_modules', plugins[i]));
+
     if(typeof(plugin.name) !== 'string' || !plugin.hooks || !plugin.loadPlugin)
       continue;
 
