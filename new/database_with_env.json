@@ -1,7 +1,0 @@
-{
-  "prod": {
-    "driver": "sqlite3",
-    "filename": "prod.db",
-    "username": {"ENV": "DB_MIGRATE_TEST_VAR"}
-  }
-}

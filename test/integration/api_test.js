@@ -1,35 +1,58 @@
-var vows = require('vows');
-var assert = require('assert');
-var fs = require('fs');
-var dbmUtil = require('db-migrate-shared').util;
+var Code = require('code');
+var Lab = require('lab');
+var lab = exports.lab = Lab.script();
 var DBMigrate = require('../../');
 var path = require('path');
 var cp = require('child_process');
 
+lab.experiment('api', function() {
 
-var process_exit = process.exit,
-    argv = process.argv;
+  lab.test('force process exit after migrations have been run',
+    { parallel : true}, function(done, onCleanup) {
 
-function restore() {
+    var process_exit = process.exit,
+        argv = process.argv,
+        called = false,
+        config = { cwd: __dirname };
 
-  process.exit = process_exit;
-  process.argv = argv;
-}
+    // register cleanup method and start preparing the test
+    onCleanup(teardown);
+    createMigration(function() {
 
-vows.describe('api').addBatch({
-  'force process exit': {
-    topic: function() {
+      var dbmigrate = DBMigrate.getInstance(true, config);
 
-      process.argv = [ 'node', 'script' ];
-      var called = false,
-          self = this,
-          config = { cwd: process.cwd() + '/test/integration' };
+      dbmigrate.setConfigParam('force-exit', true);
+      dbmigrate.silence(true);
+
+      /**
+        * We have set force-exit above, this should end up in db-migrate
+        * executing process.exit on the final callback.
+        * Process.exit has been overwritten and will finally call validate.
+        *
+        * The test validation takes place in validate()
+        */
+      dbmigrate.up();
+    });
+
+    /**
+      * Final validation after process.exit should have been called.
+      */
+    function validate() {
+
+      Code.expect(called).to.be.true();
+      done();
+    }
+
+    /**
+      * Create a migration with the programatic API and overwrite process.exit.
+      */
+    function createMigration(callback) {
 
       var api = DBMigrate.getInstance(true, config);
-      api.create( 'test', function() {
-        process.argv.push('up');
-        process.exit = function(err) {
+      api.silence(true);
 
+      api.create( 'test', function() {
+        process.exit = function(err) {
 
           var ret = called;
           called = true;
@@ -39,69 +62,49 @@ vows.describe('api').addBatch({
           if(err)
             process.exit.apply(arguments);
 
-          if(!ret)
-            this.callback(false);
-        }.bind(this);
+          Code.expect(ret).to.be.false();
+          validate();
+        };
 
-        var dbmigrate = DBMigrate.getInstance(true, config, function(migrator) {
+        callback();
+      } );
+    }
 
-          var ret = called;
-          called = true;
+    function teardown(next) {
 
-          migrator.driver.close(function() {
-            delete migrator.driver;
-          });
-
-          process.exit = process_exit;
-
-          if(!ret)
-            this.callback(true);
-        }.bind(this));
-
-        dbmigrate.setConfigParam('force-exit', true);
-        dbmigrate.silence(true);
-
-
-        dbmigrate.run();
-      }.bind( this ) );
-    },
-
-    teardown: function() {
-
-      restore();
+      process.exit = process_exit;
+      process.argv = argv;
       cp.exec('rm -r ' + path.join(__dirname, 'migrations'), this.callback);
-    },
-
-    'process exited after migrations have been run': function(called) {
-
-      assert.isTrue(called);
+      return next();
     }
-  }
-}).addBatch({
-  'load config from parameter': {
-    topic: function() {
-      var options = {
-        env: 'dev',
-        cwd: process.cwd() + '/test/integration',
-        config: {
-          dev: {
-            driver: 'sqlite3',
-            filename: ':memory:'
-          },
-          pg: {
-            driver: 'pg',
-            database: 'db_api_test'
-          }
+  });
+
+  lab.test('should load config from parameter', { parallel : true},
+    function(done) {
+
+    var options = {
+      env: 'dev',
+      cwd: process.cwd() + '/test/integration',
+      config: {
+        dev: {
+          driver: 'sqlite3',
+          filename: ':memory:'
+        },
+        pg: {
+          driver: 'pg',
+          database: 'db_api_test'
         }
-      };
-      var api = DBMigrate.getInstance(true, options);
-      return {options: options, api: api};
-    },
-    'should load config from parameter': function(topic) {
-      var actual = topic.api.config;
-      var expected = topic.options.config;
-      expected.getCurrent = actual.getCurrent;
-      assert.deepEqual(actual, expected);
-    }
-  }
-}).export(module);
+      }
+    };
+
+    var api = DBMigrate.getInstance(true, options);
+    var actual = api.config;
+    var expected = options.config;
+
+    delete expected.getCurrent;
+    delete actual.getCurrent;
+
+    Code.expect(actual).to.equal(expected);
+    done();
+  });
+});

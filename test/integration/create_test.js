@@ -1,5 +1,6 @@
-var vows = require('vows');
-var assert = require('assert');
+var Code = require('code');
+var Lab = require('lab');
+var lab = exports.lab = Lab.script();
 var fs = require('fs');
 var path = require('path');
 var cp = require('child_process');
@@ -20,173 +21,320 @@ function dbMigrate() {
   return cp.spawn('node', args, { cwd: __dirname });
 }
 
-vows.describe('create').addBatch({
-  'without a migration directory': {
-    topic: function() {
+lab.experiment('create', function() {
+
+  lab.experiment('without a migration directory', function() {
+
+    var exitCode;
+
+    lab.before(function(done) {
       wipeMigrations(function(err) {
-        assert.isNull(err);
-        dbMigrate('create', 'first migration').on('exit', this.callback);
-      }.bind(this));
-    },
 
-    'does not cause an error': function(code) {
-      assert.isNull(code);
-    },
+        Code.expect(err).to.be.null();
+        dbMigrate('create', 'first migration').on('exit',
+          function(code) {
 
-    'will create a new migration directory': function(code) {
+          exitCode = code;
+          done();
+        });
+      });
+    });
+
+    lab.test('does not cause an error', { parallel: true },
+      function(done) {
+
+      Code.expect(exitCode).to.equal(0);
+      done();
+    });
+
+    lab.test('will create a new migration directory', { parallel: true },
+      function(done) {
+
       var stats = fs.statSync(path.join(__dirname, 'migrations'));
-      assert.isTrue(stats.isDirectory());
-    },
+      Code.expect(stats.isDirectory()).to.be.true();
+      done();
+    });
 
-    'will create a new migration': function(code) {
+    lab.test('will create a new migration', { parallel: true },
+      function(done) {
+
       var files = fs.readdirSync(path.join(__dirname, 'migrations'));
-      assert.equal(files.length, 1);
+      Code.expect(files.length).to.equal(1);
       var file = files[0];
-      assert.match(file, /first-migration\.js$/);
-    }
-  }
-}).addBatch({
-  'with sql-file option set to true from config file' : {
-    topic: function() {
-      var configOption = path.join("--config=", __dirname, 'database_with_sql_file.json');
+      Code.expect(file).to.match(/first-migration\.js$/);
+      done();
+    });
+  });
+
+  lab.experiment('with sql-file option set to true from config file',
+    function() {
+
+    var exitCode;
+
+    lab.before(function(done) {
+
+      var configOption = path.join('--config=', __dirname,
+        'database_with_sql_file.json');
+
       wipeMigrations(function(err) {
-        assert.isNull(err);
-        dbMigrate( 'create', 'second migration', configOption).on('exit', this.callback);
-      }.bind(this));
-    },
-    'does not cause an error': function(code) {
-      assert.isNull(code);
-    },
-    'will create a new migration': function(code) {
+
+        Code.expect(err).to.not.exist();
+        dbMigrate( 'create', 'second migration', configOption).on('exit',
+          function(code) {
+
+          exitCode = code;
+          done();
+        });
+      });
+    });
+
+    lab.test('does not cause an error', { parallel: true }, function(done) {
+
+      Code.expect(exitCode).to.equal(0);
+      done();
+    });
+
+    lab.test('will create a new migration', { parallel: true },
+      function(done) {
+
       var files = fs.readdirSync(path.join(__dirname, 'migrations'));
 
       for (var i = 0; i<files.length; i++) {
         var file = files[i];
         var stats = fs.statSync(path.join(__dirname, 'migrations', file));
-        if (stats.isFile()) assert.match(file, /second-migration\.js$/);
+        if (stats.isFile()) Code.expect(file).to.match(/second-migration\.js$/);
       }
-    },
-    'will create a new migration/sqls directory': function(code) {
+
+      done();
+    });
+
+    lab.test('will create a new migration/sqls directory', { parallel: true },
+      function(done) {
+
       var stats = fs.statSync(path.join(__dirname, 'migrations/sqls'));
-      assert.isTrue(stats.isDirectory());
-    },
-    'will create a new migration sql up file': function(code) {
+      Code.expect(stats.isDirectory()).to.be.true();
+      done();
+    });
+
+    lab.test('will create a new migration sql up file', { parallel: true },
+      function(done) {
+
       var files = fs.readdirSync(path.join(__dirname, 'migrations/sqls'));
-      assert.equal(files.length, 2);
+      Code.expect(files.length).to.equal(2);
       var file = files[1];
-      assert.match(file, /second-migration-up\.sql$/);
-    }
-  }
-}).addBatch({
-  'with sql-file option set to true as a command parameter' : {
-    topic: function() {
-      var configOption = path.join("--sql-file");
+      Code.expect(file).to.match(/second-migration-up\.sql$/);
+      done();
+    });
+  });
+
+  lab.experiment('with sql-file option set to true as a command parameter',
+    function() {
+
+    var exitCode;
+
+    lab.before(function(done) {
+
+      var configOption = path.join('--sql-file');
       wipeMigrations(function(err) {
-        assert.isNull(err);
-        dbMigrate( 'create', 'third migration', configOption).on('exit', this.callback);
-      }.bind(this));
-    },
-    'does not cause an error': function(code) {
-      assert.isNull(code);
-    },
-    'will create a new migration': function(code) {
+
+        Code.expect(err).to.not.exist();
+        dbMigrate( 'create', 'third migration', configOption).on('exit',
+          function(code) {
+
+          exitCode = code;
+          done();
+        });
+      });
+    });
+
+    lab.test('does not cause an error', { parallel: true },
+      function(done) {
+
+      Code.expect(exitCode).to.equal(0);
+      done();
+    });
+
+    lab.test('will create a new migration', { parallel: true },
+      function(done) {
+
       var files = fs.readdirSync(path.join(__dirname, 'migrations'));
 
       for (var i = 0; i<files.length; i++) {
         var file = files[i];
         var stats = fs.statSync(path.join(__dirname, 'migrations', file));
-        if (stats.isFile()) assert.match(file, /third-migration\.js$/);
+        if (stats.isFile()) Code.expect(file).to.match(/third-migration\.js$/);
       }
-    },
-    'will create a new migration/sqls directory': function(code) {
+      done();
+    });
+
+    lab.test('will create a new migration/sqls directory', { parallel: true },
+      function(done) {
+
       var stats = fs.statSync(path.join(__dirname, 'migrations/sqls'));
-      assert.isTrue(stats.isDirectory());
-    },
-    'will create a new migration sql up file': function(code) {
+      Code.expect(stats.isDirectory()).to.be.true();
+      done();
+    });
+
+    lab.test('will create a new migration sql up file', { parallel: true },
+      function(done) {
+
       var files = fs.readdirSync(path.join(__dirname, 'migrations/sqls'));
-      assert.equal(files.length, 2);
+      Code.expect(files.length).to.equal(2);
       var file = files[1];
-      assert.match(file, /third-migration-up\.sql$/);
-    }
-  }
-}).addBatch({
-  'with coffee-file option set to true from config file' : {
-    topic: function() {
-      var configOption = path.join("--config=", __dirname, 'database_with_coffee_file.json');
+      Code.expect(file).to.match(/third-migration-up\.sql$/);
+      done();
+    });
+  });
+
+
+  lab.experiment('with coffee-file option set to true from config file',
+    function() {
+
+    var exitCode;
+
+    lab.before(function(done) {
+
+      var configOption = path.join('--config=', __dirname,
+        'database_with_coffee_file.json');
+
       wipeMigrations(function(err) {
-        assert.isNull(err);
-        dbMigrate( 'create', 'fourth migration', configOption).on('exit', this.callback);
+
+        Code.expect(err).to.not.exist();
+        dbMigrate( 'create', 'fourth migration', configOption).on('exit',
+          function(code) {
+
+          exitCode = code;
+          done();
+        });
       }.bind(this));
-    },
-    'does not cause an error': function(code) {
-      assert.isNull(code);
-    },
-    'will create a new coffeescript migration': function(code) {
+    });
+
+    lab.test('does not cause an error', { parallel: true },
+      function(done) {
+
+      Code.expect(exitCode).to.equal(0);
+      done();
+    });
+
+    lab.test('will create a new coffeescript migration', { parallel: true },
+      function(done) {
+
       var files = fs.readdirSync(path.join(__dirname, 'migrations'));
 
       for (var i = 0; i<files.length; i++) {
         var file = files[i];
         var stats = fs.statSync(path.join(__dirname, 'migrations', file));
-        if (stats.isFile()) assert.match(file, /fourth-migration\.coffee$/);
+        if (stats.isFile())
+          Code.expect(file).to.match(/fourth-migration\.coffee$/);
       }
-    },
-  }
-}).addBatch({
-  'with coffee-file option set to true as a command parameter' : {
-    topic: function() {
-      var configOption = path.join("--coffee-file");
+
+      done();
+    });
+  });
+
+  lab.experiment('with coffee-file option set to true as a command parameter',
+    function() {
+
+    var exitCode;
+
+    lab.before(function(done) {
+
+      var configOption = path.join('--coffee-file');
       wipeMigrations(function(err) {
-        assert.isNull(err);
-        dbMigrate( 'create', 'fifth migration', configOption).on('exit', this.callback);
+
+        Code.expect(err).to.not.exist();
+        dbMigrate( 'create', 'fifth migration', configOption).on('exit',
+          function(code) {
+
+          exitCode = code;
+          done();
+        });
       }.bind(this));
-    },
-    'does not cause an error': function(code) {
-      assert.isNull(code);
-    },
-    'will create a new coffeescript migration': function(code) {
+    });
+
+    lab.test('does not cause an error', { parallel: true },
+      function(done) {
+
+      Code.expect(exitCode).to.equal(0);
+      done();
+    });
+
+    lab.test('will create a new coffeescript migration', { parallel: true },
+      function(done) {
+
       var files = fs.readdirSync(path.join(__dirname, 'migrations'));
 
       for (var i = 0; i<files.length; i++) {
         var file = files[i];
         var stats = fs.statSync(path.join(__dirname, 'migrations', file));
-        if (stats.isFile()) assert.match(file, /fifth-migration\.coffee$/);
+        if (stats.isFile())
+          Code.expect(file).to.match(/fifth-migration\.coffee$/);
       }
-    },
-  }
-}).addBatch({
-  'with sql-file and a bad migration, causes an exit' : {
-    topic: function() {
-      var configOption = path.join("--sql-file");
+      done();
+    });
+  });
+
+  lab.experiment('with sql-file and a bad migration, causes an exit',
+    function() {
+
+    var exitCode;
+
+    lab.before(function(done) {
+
+      var configOption = path.join('--sql-file');
       wipeMigrations(function(err) {
-        assert.isNull(err);
-        dbMigrate('create', 'sixth migration', configOption).on('exit', function() {
+
+        Code.expect(err).to.not.exist();
+        dbMigrate('create', 'sixth migration', configOption).on('exit',
+          function() {
+
           var files = fs.readdirSync(path.join(__dirname, 'migrations'));
 
           for (var i = 0; i<files.length; i++) {
+
             var file = files[i];
             var stats = fs.statSync(path.join(__dirname, 'migrations', file));
+
             if (stats.isFile() && file.match(/sixth-migration\.js$/)) {
-              fs.writeFileSync(path.join(__dirname, 'migrations', file), 'asdfghij;');
-              dbMigrate('up').on('exit', this.callback);
+
+              fs.writeFileSync(
+                path.join(__dirname, 'migrations', file),
+                'asdfghij;'
+              );
+              dbMigrate('up').on('exit', function(code) {
+
+                exitCode = code;
+                done();
+              });
             }
           }
-        }.bind(this));
-      }.bind(this));
-    },
-    'does cause an error': function(error, code) {
-      assert.equal(error, 1);
-    },
-    'did create the new migration': function(error, code) {
+        });
+      });
+    });
+
+    lab.test('does cause an error', { parallel: true }, function(done) {
+
+      Code.expect(exitCode).to.equal(1);
+      done();
+    });
+
+    lab.test('did create the new migration', { parallel: true },
+      function(done) {
+
       var files = fs.readdirSync(path.join(__dirname, 'migrations'));
 
       for (var i = 0; i<files.length; i++) {
         var file = files[i];
         var stats = fs.statSync(path.join(__dirname, 'migrations', file));
-        if (stats.isFile()) assert.match(file, /sixth-migration\.js$/);
+        if (stats.isFile()) Code.expect(file).to.match(/sixth-migration\.js$/);
       }
-    },
-    teardown: function() {
-      cp.exec('rm -r ' + path.join(__dirname, 'migrations'), this.callback);
-    }
-  }
-}).export(module);
+
+      done();
+    });
+
+    lab.after(function(done) {
+
+      cp.exec('rm -r ' + path.join(__dirname, 'migrations'), done);
+    });
+  });
+});

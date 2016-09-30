@@ -1,32 +1,57 @@
-var vows = require('vows');
-var assert = require('assert');
+var Code = require('code');
+var Lab = require('lab');
+var lab = exports.lab = Lab.script();
 var util = require('db-migrate-shared').util;
 
-vows.describe('util').addBatch({
-  'lpad': {
-    'should left pad the number of characters to equal the total length': function() {
-      var actual = util.lpad('prompt', '>', 8);
-      assert.equal(actual, '>>prompt');
-    },
+lab.experiment('util', { parallel: true }, function() {
 
-    'should apply no left padding if already equal to the total length': function() {
-      var actual = util.lpad('>>prompt', '>', 8);
-      assert.equal(actual, '>>prompt');
-    },
+  lab.experiment('lpad', { parallel: true }, lpad);
+});
 
-    'should apply no left padding if already greater than the total length': function() {
-      var actual = util.lpad('>>>prompt', '>', 8);
-      assert.equal(actual, '>>>prompt');
-    },
+function lpad() {
 
-    'should be apple to pad numbers': function() {
-      var actual = util.lpad(12, '>', 4);
-      assert.equal(actual, '>>12');
-    },
+  lab.test('should left pad the number of characters to equal the total length',
+    { parallel: true }, function(done) {
 
-    'should be apple to pad using numbers': function() {
-      var actual = util.lpad(12, 0, 4);
-      assert.equal(actual, '0012');
-    }
-  }
-}).export(module);
+    var actual = util.lpad('prompt', '>', 8);
+    Code.expect(actual).to.equal('>>prompt');
+
+    done();
+  });
+
+  lab.test('should apply no left padding if already equal to the total length',
+    { parallel: true }, function(done) {
+
+    var actual = util.lpad('>>prompt', '>', 8);
+    Code.expect(actual).to.equal('>>prompt');
+
+    done();
+  });
+
+  lab.test('should apply no left padding if already greater than the total ' +
+   'length', { parallel: true }, function(done) {
+
+    var actual = util.lpad('>>>prompt', '>', 8);
+    Code.expect(actual).to.equal('>>>prompt');
+
+    done();
+  });
+
+  lab.test('should be apple to pad numbers',
+    { parallel: true }, function(done) {
+
+    var actual = util.lpad(12, '>', 4);
+    Code.expect(actual).to.equal('>>12');
+
+    done();
+  });
+
+  lab.test('should be apple to pad using numbers',
+    { parallel: true }, function(done) {
+
+    var actual = util.lpad(12, 0, 4);
+    Code.expect(actual).to.equal('0012');
+
+    done();
+  });
+}
