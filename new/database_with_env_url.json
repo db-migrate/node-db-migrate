@@ -1,3 +1,0 @@
-{
-  "prod": {"ENV": "DB_MIGRATE_TEST_VAR"}
-}

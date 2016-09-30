@@ -304,6 +304,36 @@ dbmigrate.prototype = {
   },
 
   /**
+   * Executes up a given number of migrations or a specific one.
+   *
+   * Defaults to up all migrations if no count is given.
+   */
+  sync: function(specification, opts, callback) {
+
+    if (arguments.length > 0) {
+      if (typeof(specification) === 'string') {
+
+        this.internals.argv.destination = specification;
+      }
+
+      if (typeof(opts) === 'string') {
+
+        this.internals.migrationMode = opts;
+        this.internals.matching = opts;
+      }
+      else if (typeof(opts) === 'function') {
+
+        callback = opts;
+      }
+    }
+
+    return Promise.fromCallback(function(callback) {
+
+      executeSync(this.internals, this.config, callback);
+    }.bind(this)).asCallback(callback);
+  },
+
+  /**
    * Executes down for all currently migrated migrations.
    */
   reset: function(scope, callback) {
@@ -520,7 +550,8 @@ function setDefaultArgv(internals, isModule) {
       'ignore-completed-migrations': false
     })
     .usage(
-      'Usage: db-migrate [up|down|reset|create|db|seed|transition] [[dbname/]migrationName|all] [options]'
+      'Usage: db-migrate [up|down|reset|sync|create|db|seed|transition] ' +
+        '[[dbname/]migrationName|all] [options]'
     )
 
   .describe('env',
@@ -558,14 +589,16 @@ function setDefaultArgv(internals, isModule) {
     .string('config')
 
   .describe('sql-file',
-      'Automatically create two sql files for up and down statements in /sqls and generate the javascript code that loads them.'
+      'Automatically create two sql files for up and down statements in ' +
+        '/sqls and generate the javascript code that loads them.'
     )
     .boolean('sql-file')
 
   .describe('coffee-file', 'Create a coffeescript migration file')
     .boolean('coffee-file')
     .describe('ignore-on-init',
-      'Create files that will run only if ignore-on-init in the env is set to false (currently works onlt with SQL)'
+      'Create files that will run only if ignore-on-init in the env is set ' +
+        'to false (currently works onlt with SQL)'
     ).boolean('ignore-on-init')
 
   .describe('migration-table',
@@ -883,6 +916,42 @@ function executeUp(internals, config, callback) {
   });
 }
 
+function executeSync(internals, config, callback) {
+
+  migrationHook(internals)
+  .then(function() {
+
+    var Migrator = require('./lib/migrator.js');
+    var index = require('./connect');
+
+    if (!internals.argv.count) {
+      internals.argv.count = Number.MAX_VALUE;
+    }
+    index.connect({
+      config: config.getCurrent().settings,
+      internals: internals
+    }, Migrator, function(err, migrator) {
+      assert.ifError(err);
+
+      if (internals.locTitle)
+      migrator.migrationsDir = path.resolve(internals.argv['migrations-dir'],
+      internals.locTitle);
+      else
+      migrator.migrationsDir = path.resolve(internals.argv['migrations-dir']);
+
+      internals.migrationsDir = migrator.migrationsDir;
+
+      migrator.driver.createMigrationsTable(function(err) {
+        assert.ifError(err);
+        log.verbose('migration table created');
+
+        migrator.sync(internals.argv, internals.onComplete.bind(this,
+          migrator, internals, callback));
+        });
+      });
+  });
+}
+
 function executeDown(internals, config, callback) {
 
   migrationHook(internals)
@@ -926,6 +995,8 @@ function executeDB(internals, config, callback) {
   }
 
   index.driver(config.getCurrent().settings, function(err, db) {
+    assert.ifError(err);
+
     if (internals.mode === 'create') {
       db.createDatabase(internals.argv.dbname, {
         ifNotExists: true
@@ -1093,6 +1164,24 @@ function run(internals, config) {
       }
       executeCreateMigration(internals, config);
       break;
+    case 'sync':
+
+      if (internals.argv._.length === 0) {
+
+        log.error('Missing sync destination!');
+        process.exit(1);
+      }
+
+      internals.argv.count = Number.MAX_VALUE;
+      internals.argv.destination = internals.argv._.shift().toString();
+
+      if (folder[1]) {
+        internals.matching = folder[1];
+        internals.migrationMode = folder[1];
+      }
+
+      executeSync(internals, config);
+      break;
     case 'up':
     case 'down':
     case 'reset':
@@ -1102,10 +1191,9 @@ function run(internals, config) {
 
       if (internals.argv._.length > 0) {
         if (action === 'down') {
-          log.info(
-            'Ignoring migration name for down migrations.  Use --count to control how many down migrations are run.'
-          );
-          internals.argv.destination = null;
+
+          internals.argv.count = internals.argv.count || Number.MAX_VALUE;
+          internals.argv.destination = internals.argv._.shift().toString();
         } else {
           internals.argv.destination = internals.argv._.shift().toString();
         }
@@ -1164,7 +1252,8 @@ function run(internals, config) {
       }
       else {
 
-        log.error('Invalid Action: Must be [up|down|create|reset|seed|db].');
+        log.error('Invalid Action: Must be [up|down|create|reset|sync|seed|' +
+          'db|transition].');
         optimist.showHelp();
         process.exit(1);
       }

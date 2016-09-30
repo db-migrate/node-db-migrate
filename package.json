@@ -46,7 +46,7 @@
   "dependencies": {
     "balanced-match": "^0.4.2",
     "bluebird": "^3.1.1",
-    "db-migrate-shared": "^1.0.2",
+    "db-migrate-shared": "^1.1.2",
     "dotenv": "^2.0.0",
     "final-fs": "^1.6.0",
     "inflection": "^1.10.0",
@@ -61,22 +61,15 @@
     "tunnel-ssh": "^4.0.0"
   },
   "devDependencies": {
-    "code": "^3.0.1",
-    "db-meta": "~0.4.1",
+    "code": "^4.0.0",
     "db-migrate-base": "^1.2.5",
-    "db-migrate-mongodb": "^1.1.4",
     "db-migrate-mysql": "^1.1.7",
-    "db-migrate-pg": "^0.1.10",
-    "db-migrate-sqlite3": "^0.1.6",
-    "lab": "^10.9.0",
-    "mysql": "^2.10.2",
-    "pg": "^6.1.0",
+    "db-migrate-sqlite3": "^0.1.9",
+    "lab": "^11.1.0",
     "proxyquire": "^1.4.0",
     "rimraf": "~2.5.0",
     "sinon": "^1.17.3",
-    "sinon-as-promised": "^4.0.2",
-    "sqlite3": "^3.1.1",
-    "vows": "0.8.0"
+    "sinon-as-promised": "^4.0.2"
   },
   "scripts": {
     "test": "make test-cov"

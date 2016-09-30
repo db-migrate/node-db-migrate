@@ -1,150 +1,177 @@
-var vows = require('vows');
-var assert = require('assert');
+var Code = require('code');
+var Lab = require('lab');
+var lab = exports.lab = Lab.script();
 var config = require('../lib/config');
 var path = require('path');
 
 var _configLoad = config.load;
 var _configLoadUrl = config.loadUrl;
 
-vows.describe('config').addBatch({
-  'loading from a file': {
-    topic: function() {
-      var configPath = path.join(__dirname, 'database.json');
-      return config.load(configPath, 'dev');
-    },
+lab.experiment('config', function() {
 
-    'should export all environment settings': function (config) {
-      assert.isDefined(config.dev);
-      assert.isDefined(config.test);
-      assert.isDefined(config.prod);
-    },
+  lab.experiment('loading from a file', { parallel: true },
+    function() {
 
-    'should export a getCurrent function with all current environment settings': function (config) {
-      assert.isDefined(config.getCurrent);
-      var current = config.getCurrent();
-      assert.equal(current.env, 'dev');
-      assert.equal(current.settings.driver, 'sqlite3');
-      assert.equal(current.settings.filename, ':memory:');
-    }
-  },
-}).addBatch({
-  'loading from a broken config file': {
-    topic: function() {
-      var configPath = path.join(__dirname, 'database_with_syntax_error.json');
-      try {
-        config.load(configPath, 'dev');
-      } catch (e) {
-        return e;
-      }
-      return;
-    },
+    var configPath = path.join(__dirname, 'database.json');
+    var _config = config.load(configPath, 'dev');
 
-    'should throw a syntax error': function (error) {
-      assert.isDefined(error);
-      assert.ok(error instanceof SyntaxError, "Expected broken file to produce syntax error");
-    }
-  }
-}).addBatch({
-  'loading from a file with default env option': {
-    topic: function() {
-      var configPath = path.join(__dirname, 'database_with_default_env.json');
-      return config.load(configPath);
-    },
+    lab.test('should export all environment settings', { parallel: true },
+      function (done) {
 
-    'should load a value from the default env': function (config) {
-      var current = config.getCurrent();
-      assert.equal(current.env, 'local');
-      assert.equal(current.settings.driver, 'sqlite3');
-      assert.equal(current.settings.filename, ':memory:');
-    },
-  }
-}).addBatch({
-  'loading from a file with default env option in ENV variable': {
-    topic: function() {
-      process.env['NODE_ENV'] = 'local';
-      var configPath = path.join(__dirname, 'database_with_default_env_from_env.json');
-      return config.load(configPath);
-    },
+      Code.expect(_config.dev).to.exists();
+      Code.expect(_config.test).to.exists();
+      Code.expect(_config.prod).to.exists();
+      done();
+    });
 
-    'should load a value from the env set in NODE_ENV': function (config) {
-      var current = config.getCurrent();
-      assert.equal(current.settings.driver, 'sqlite3');
-      assert.equal(current.settings.filename, ':memory:');
-    },
-  }
-}).addBatch({
-  'loading from a file with ENV vars': {
-    topic: function() {
-      process.env['DB_MIGRATE_TEST_VAR'] = 'username_from_env';
-      var configPath = path.join(__dirname, 'database_with_env.json');
-      return config.load(configPath, 'prod');
-    },
+    lab.test('should export a getCurrent function with all current ' +
+      'environment settings', { parallel: true }, function (done) {
 
-    'should load a value from the environments': function (config) {
-      assert.equal(config.prod.username, 'username_from_env');
-    },
-}
+      var current;
+      Code.expect(_config.getCurrent).to.exists();
+      current = _config.getCurrent();
+      Code.expect(current.env).to.equal('dev');
+      Code.expect(current.settings.driver).to.equal('sqlite3');
+      Code.expect(current.settings.filename).to.equal(':memory:');
+      done();
+    });
+  });
 
-}).addBatch({
-  'loading from a file with ENV URL': {
-    topic: function() {
-      process.env['DB_MIGRATE_TEST_VAR'] = 'postgres://uname:pw@server.com/dbname';
-      var configPath = path.join(__dirname, 'database_with_env_url.json');
-      return config.load(configPath, 'prod');
-    },
+  lab.experiment('loading from a broken config file', { parallel: true },
+    function() {
 
-    'should load a value from the environments': function (config) {
-      var current = config.getCurrent();
-      assert.equal(current.settings.driver, 'postgres');
-      assert.equal(current.settings.user, 'uname');
-      assert.equal(current.settings.password, 'pw');
-      assert.equal(current.settings.host, 'server.com');
-      assert.equal(current.settings.database, 'dbname');
-    },
-}
+    var configPath = path.join(__dirname, 'database_with_syntax_error.json');
 
-}).addBatch({
-  'loading from an URL': {
-    topic: function() {
-      var databaseUrl = 'postgres://uname:pw@server.com/dbname';
-      return config.loadUrl(databaseUrl, 'dev');
-    },
+    lab.test('should throw a syntax error', { parallel: true },
+      function (done) {
 
-    'should export the settings as the current environment': function (config) {
-      assert.isDefined(config.dev);
-    },
+      Code.expect(
+        config.load.bind(this, configPath, 'dev'),
+        'Expected broken file to produce syntax error'
+      ).to.throw(SyntaxError);
+      done();
+    });
+  });
 
-    'should export a getCurrent function with all current environment settings': function (config) {
-      assert.isDefined(config.getCurrent);
-      var current = config.getCurrent();
-      assert.equal(current.env, 'dev');
-      assert.equal(current.settings.driver, 'postgres');
-      assert.equal(current.settings.user, 'uname');
-      assert.equal(current.settings.password, 'pw');
-      assert.equal(current.settings.host, 'server.com');
-      assert.equal(current.settings.database, 'dbname');
-    }
-  }
-}).addBatch({
-  'loading a config with null values': {
-    topic: function() {
-        var configPath = path.join(__dirname, 'database_with_null_values.json');
-        config.load = _configLoad;
-        config.loadUrl = _configLoadUrl;
-        try {
-            config.load(configPath, 'dev');
-        }catch(e) {
-            return e;
-        }
-        return null;
-    },
+  lab.experiment('loading from a file with default env option',
+    { parallel: true }, function() {
 
-    'should something': function(err) {
-        assert.isNull(err);
-    },
+    var configPath = path.join(__dirname, 'database_with_default_env.json');
+    var _config = config.load(configPath);
 
-    teardown: function() {
-      delete require.cache[require.resolve('../lib/config')];
-    }
-  }
-}).export(module);
+    lab.test('should load a value from the default env', { parallel: true },
+      function (done) {
+
+      var current = _config.getCurrent();
+      Code.expect(current.env).to.equal('local');
+      Code.expect(current.settings.driver).to.equal('sqlite3');
+      Code.expect(current.settings.filename).to.equal(':memory:');
+      done();
+    });
+  });
+
+  lab.experiment('loading from a file with default env option in ENV variable',
+    { parallel: true }, function() {
+
+    process.env.NODE_ENV = 'local';
+    var configPath = path.join(
+      __dirname,
+      'database_with_default_env_from_env.json'
+    );
+    var _config = config.load(configPath);
+
+    lab.test('should load a value from the env set in NODE_ENV',
+      { parallel: true }, function (done) {
+
+      var current = _config.getCurrent();
+      Code.expect(current.settings.driver).to.equal('sqlite3');
+      Code.expect(current.settings.filename).to.equal(':memory:');
+      done();
+    });
+  });
+
+  lab.experiment('loading from a file with ENV vars', { parallel: true },
+    function() {
+
+    process.env.DB_MIGRATE_TEST_VAR = 'username_from_env';
+    var configPath = path.join(__dirname, 'database_with_env.json');
+    var _config = config.load(configPath, 'prod');
+
+    lab.test('should load a value from the environments', { parallel: true },
+      function (done) {
+
+      Code.expect(_config.prod.username).to.equal('username_from_env');
+      done();
+    });
+  });
+
+  lab.experiment('loading from a file with ENV URL', { parallel: true },
+    function() {
+
+    process.env.DB_MIGRATE_TEST_VAR = 'postgres://uname:pw@server.com/dbname';
+    var configPath = path.join(__dirname, 'database_with_env_url.json');
+    var _config = config.load(configPath, 'prod');
+
+    lab.test('should load a value from the environments', { parallel: true },
+      function (done) {
+
+      var current = _config.getCurrent();
+      Code.expect(current.settings.driver).to.equal('postgres');
+      Code.expect(current.settings.user).to.equal('uname');
+      Code.expect(current.settings.password).to.equal('pw');
+      Code.expect(current.settings.host, ').to.equal(rver.com');
+      Code.expect(current.settings.database).to.equal('dbname');
+      done();
+    });
+  });
+
+  lab.experiment('loading from an URL', { parallel: true },
+    function() {
+
+    var databaseUrl = 'postgres://uname:pw@server.com/dbname';
+    var _config = config.loadUrl(databaseUrl, 'dev');
+
+    lab.test('should export the settings as the current environment',
+      { parallel: true }, function (done) {
+
+      Code.expect(_config.dev).to.exists();
+      done();
+    });
+
+    lab.test('should export a getCurrent function with all current ' +
+      'environment settings', { parallel: true }, function (done) {
+
+      var current;
+      Code.expect(_config.getCurrent).to.exists();
+      current = _config.getCurrent();
+      Code.expect(current.env).to.equal('dev');
+      Code.expect(current.settings.driver).to.equal('postgres');
+      Code.expect(current.settings.user).to.equal('uname');
+      Code.expect(current.settings.password).to.equal('pw');
+      Code.expect(current.settings.host).to.equal('server.com');
+      Code.expect(current.settings.database).to.equal('dbname');
+      done();
+    });
+  });
+
+  lab.experiment('loading a config with null values', function() {
+
+    var configPath = path.join(__dirname, 'database_with_null_values.json');
+    config.load = _configLoad;
+    config.loadUrl = _configLoadUrl;
+
+    lab.test('should something', function(done, cleanup) {
+
+        cleanup(function(next) {
+
+          delete require.cache[require.resolve('../lib/config')];
+          next();
+        });
+
+        Code.expect(
+          config.load.bind(this, configPath, 'dev')
+        ).to.not.throw;
+        done();
+    });
+  });
+});

@@ -1,7 +1,0 @@
-{
-  "dev": {
-    "driver": "sqlite3",
-    "filename": "memory"
-  },
-  "coffee-file": true
-}

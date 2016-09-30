@@ -1,5 +1,6 @@
-var vows = require('vows');
-var assert = require('assert');
+var Code = require('code');
+var Lab = require('lab');
+var lab = exports.lab = Lab.script();
 var Migration = require('../lib/migration.js');
 
 var date = createDateForTest();
@@ -12,141 +13,232 @@ var templateType = Migration.TemplateType.SQL_FILE_LOADER;
 var internals = {};
 internals.migrationTable = 'migrations';
 
-vows.describe('migration').addBatch({
-  'when creating a new migration object': {
-    'with 2 parameters as the complete filepath': {
-      topic: function() {
-        var migration = new Migration(dirName + dateString+'-'+fileName, internals);
-        return migration;
-      },
-      'should have title set without file extension': function(migration) {
-        assert.equal(migration.title, fileNameNoExtension);
-      },
-      'should have date set': function(migration) {
-        migration.date.setMilliseconds(0);
-        date.setMilliseconds(0);
-        assert.equal(migration.date.getTime(), date.getTime());
-      },
-      'should have name set without file extension': function(migration) {
-        assert.equal(migration.name, dateString+'-'+fileNameNoExtension);
-      },
-      'should have path set': function(migration) {
-        assert.equal(migration.path, dirName+dateString+'-'+fileName);
-      },
-      'should have templateType not set': function(migration) {
-        assert.equal(migration.templateType, undefined);
-      }
-    },
-    'with 3 parameters': {
-      topic: function() {
-        var migration = new Migration(fileName, dirName, date);
-        return migration;
-      },
-      'should have title set': function(migration) {
-        assert.equal(migration.title, fileName);
-      },
-      'should have date set with month': function(migration) {
-        assert.equal(migration.date, date);
-      },
-      'should have name set': function(migration) {
-        assert.equal(migration.name, dateString+'-'+fileName);
-      },
-      'should have path set': function(migration) {
-        assert.equal(migration.path, dirName+dateString+'-'+fileName);
-      },
-      'should have templateType not set': function(migration) {
-        assert.equal(migration.templateType, undefined);
-      }
-    },
-    'with 5 parameters': {
-      topic: function() {
-        var migration = new Migration(fileName, dirName, date, templateType, internals);
-        return migration;
-      },
-      'should have title set': function(migration) {
-        assert.equal(migration.title, fileName);
-      },
-      'should have date set': function(migration) {
-        assert.equal(migration.date, date);
-      },
-      'should have name set': function(migration) {
-        assert.equal(migration.name, dateString+'-'+fileName);
-      },
-      'should have path set': function(migration) {
-        assert.equal(migration.path, dirName+dateString+'-'+fileName);
-      },
-      'should have templateType set': function(migration) {
-        assert.equal(migration.templateType, templateType);
-      }
-    }
-  }
-}).addBatch({
-  'get template' : {
-    'when template type is not set': {
-      topic: function() {
-          var migration = new Migration(fileName, dirName, date, internals);
-          return migration;
-        },
-      'should return default javascript template': function(migration) {
-        var actual = migration.getTemplate();
-        assert.equal(actual, migration.defaultJsTemplate());
-      }
-    },
-    'when template type is set': {
-      'as sql file loader' : {
-        topic: function() {
-            var migration = new Migration(fileName, dirName, date, Migration.TemplateType.SQL_FILE_LOADER, internals);
-            return migration;
-          },
-        'should return sql file loader template': function(migration) {
-          var actual = migration.getTemplate();
-          assert.equal(actual, migration.sqlFileLoaderTemplate());
-        }
-      },
-      'as default sql' : {
-        topic: function() {
-            var migration = new Migration(fileName, dirName, date, Migration.TemplateType.DEFAULT_SQL, internals);
-            return migration;
-          },
-        'should return default sql template': function(migration) {
-          var actual = migration.getTemplate();
-          assert.equal(actual, migration.defaultSqlTemplate());
-        }
-      },
-      'as default coffee' : {
-        topic: function() {
-            var migration = new Migration(fileName, dirName, date, Migration.TemplateType.DEFAULT_COFFEE, internals);
-            return migration;
-          },
-        'should return default coffee template': function(migration) {
-          var actual = migration.getTemplate();
-          assert.equal(actual, migration.defaultCoffeeTemplate());
-        }
-      },
-      'as coffee sql loader' : {
-        topic: function() {
-            var migration = new Migration(fileName, dirName, date, Migration.TemplateType.COFFEE_SQL_FILE_LOADER, internals);
-            return migration;
-          },
-        'should return default coffee template': function(migration) {
-          var actual = migration.getTemplate();
-          assert.equal(actual, migration.coffeeSqlFileLoaderTemplate());
-        }
-      },
-      'as default javascript' : {
-        topic: function() {
-            var migration = new Migration(fileName, dirName, date, Migration.TemplateType.DEFAULT_JS, internals);
-            return migration;
-          },
-        'should return default sql template': function(migration) {
-          var actual = migration.getTemplate();
-          assert.equal(actual, migration.defaultJsTemplate());
-        }
-      }
-    }
-  }
-}).export(module);
+lab.experiment('migration', { parallel: true }, function() {
 
+  lab.experiment('when creating a new migration object', { parallel: true },
+    newMigrationObject);
+
+  lab.experiment('get template', { parallel: true },
+    getTemplate);
+});
+
+function newMigrationObject() {
+
+  lab.experiment('with 2 parameters as the complete filepath',
+    { parallel: true }, function() {
+
+    var migration = new Migration(dirName + dateString+'-'+fileName, internals);
+
+    lab.test('should have title set without file extension', { parallel: true },
+      function(done) {
+
+      Code.expect(migration.title).to.equal(fileNameNoExtension);
+      done();
+    });
+
+    lab.test('should have date set', { parallel: true },
+      function(done) {
+
+      migration.date.setMilliseconds(0);
+      date.setMilliseconds(0);
+      Code.expect(migration.date.getTime()).to.equal(date.getTime());
+      done();
+    });
+
+    lab.test('should have name set without file extension', { parallel: true },
+      function(done) {
+
+      Code.expect(migration.name).to.equal(dateString+'-'+fileNameNoExtension);
+      done();
+    });
+
+    lab.test('should have path set', { parallel: true },
+      function(done) {
+
+      Code.expect(migration.path).to.equal(dirName+dateString+'-'+fileName);
+      done();
+    });
+
+    lab.test('should have templateType not set', { parallel: true },
+      function(done) {
+
+      Code.expect(migration.templateType).to.be.undefined();
+      done();
+    });
+  });
+
+  lab.experiment('with 3 parameters', { parallel: true }, function() {
+
+    var migration = new Migration(fileName, dirName, date);
+
+    lab.test('should have title set', { parallel: true },
+      function(done) {
+
+      Code.expect(migration.title).to.equal(fileName);
+      done();
+    });
+
+    lab.test('should have date set with month', { parallel: true },
+      function(done) {
+
+      Code.expect(migration.date).to.equal(date);
+      done();
+    });
+
+    lab.test('should have name set', { parallel: true },
+      function(done) {
+
+      Code.expect(migration.name).to.equal(dateString+'-'+fileName);
+      done();
+    });
+
+    lab.test('should have path set', { parallel: true },
+      function(done) {
+
+      Code.expect(migration.path).to.equal(dirName+dateString+'-'+fileName);
+      done();
+    });
+
+    lab.test('should have templateType not set', { parallel: true },
+      function(done) {
+
+      Code.expect(migration.templateType).to.be.undefined();
+      done();
+    });
+  });
+
+  lab.experiment('with 5 parameters', { parallel: true }, function() {
+
+    var migration = new Migration(fileName, dirName, date, templateType,
+      internals);
+
+    lab.test('should have title set', { parallel: true },
+      function(done) {
+
+      Code.expect(migration.title).to.equal(fileName);
+      done();
+    });
+
+    lab.test('should have date set', { parallel: true },
+      function(done) {
+
+      Code.expect(migration.date).to.equal(date);
+      done();
+    });
+
+    lab.test('should have name set', { parallel: true },
+      function(done) {
+
+      Code.expect(migration.name).to.equal(dateString+'-'+fileName);
+      done();
+    });
+
+    lab.test('should have path set', { parallel: true },
+      function(done) {
+
+      Code.expect(migration.path).to.equal(dirName+dateString+'-'+fileName);
+      done();
+    });
+
+    lab.test('should have templateType set', { parallel: true },
+      function(done) {
+
+      Code.expect(migration.templateType).to.equal(templateType);
+      done();
+    });
+  });
+}
+
+function getTemplate() {
+
+  lab.experiment('when template type is not set', { parallel: true },
+    function() {
+
+    var migration = new Migration(fileName, dirName, date, internals);
+
+    lab.test('should return default javascript template', { parallel: true },
+      function(done) {
+
+      var actual = migration.getTemplate();
+      Code.expect(actual).to.equal(migration.defaultJsTemplate());
+      done();
+    });
+  });
+
+  lab.experiment('when template type is set', { parallel: true },
+    function() {
+
+    lab.experiment('as sql file loader', { parallel: true }, function() {
+
+      var migration = new Migration(fileName, dirName, date,
+        Migration.TemplateType.SQL_FILE_LOADER, internals);
+
+      lab.test('should return sql file loader template', { parallel: true },
+        function(done) {
+
+        var actual = migration.getTemplate();
+        Code.expect(actual).to.equal(migration.sqlFileLoaderTemplate());
+        done();
+      });
+    });
+
+    lab.experiment('as default sql', { parallel: true }, function() {
+
+      var migration = new Migration(fileName, dirName, date,
+        Migration.TemplateType.DEFAULT_SQL, internals);
+
+      lab.test('should return default sql template', { parallel: true },
+        function(done) {
+
+        var actual = migration.getTemplate();
+        Code.expect(actual).to.equal(migration.defaultSqlTemplate());
+        done();
+      });
+    });
+
+    lab.experiment('as default coffee', { parallel: true }, function() {
+
+      var migration = new Migration(fileName, dirName, date,
+        Migration.TemplateType.DEFAULT_COFFEE, internals);
+
+      lab.test('should return default coffee template', { parallel: true },
+        function(done) {
+
+        var actual = migration.getTemplate();
+        Code.expect(actual).to.equal(migration.defaultCoffeeTemplate());
+        done();
+      });
+    });
+
+    lab.experiment('as coffee sql loader', { parallel: true }, function() {
+
+      var migration = new Migration(fileName, dirName, date,
+        Migration.TemplateType.COFFEE_SQL_FILE_LOADER, internals);
+
+      lab.test('should return default coffee template', { parallel: true },
+        function(done) {
+
+        var actual = migration.getTemplate();
+        Code.expect(actual).to.equal(migration.coffeeSqlFileLoaderTemplate());
+        done();
+      });
+    });
+
+    lab.experiment('as default javascript', { parallel: true }, function() {
+
+      var migration = new Migration(fileName, dirName, date,
+        Migration.TemplateType.DEFAULT_JS, internals);
+
+      lab.test('should return default sql template', { parallel: true },
+        function(done) {
+
+        var actual = migration.getTemplate();
+        Code.expect(actual).to.equal(migration.defaultJsTemplate());
+        done();
+      });
+    });
+  });
+}
 
 function createDateForTest() {
   var date = new Date();
