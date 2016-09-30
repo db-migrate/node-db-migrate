@@ -1,8 +1,8 @@
 test:
-	@node node_modules/lab/bin/lab -I verbose,dryRun --coverage-exclude lib/transitions
+	@node node_modules/lab/bin/lab -I verbose,dryRun --coverage-exclude lib/interface --coverage-exclude lib/transitions
 test-cov:
-	@node node_modules/lab/bin/lab -t 75 -I verbose,dryRun --coverage-exclude lib/transitions
+	@node node_modules/lab/bin/lab -t 70 -I verbose,dryRun --coverage-exclude lib/interface --coverage-exclude lib/transitions
 test-cov-html:
-	@node node_modules/lab/bin/lab -r html -o coverage.html -I verbose,dryRun --coverage-exclude lib/transitions
+	@node node_modules/lab/bin/lab -r html -o coverage.html -I verbose,dryRun --coverage-exclude lib/interface --coverage-exclude lib/transitions
 
 .PHONY: test test-cov test-cov-html
