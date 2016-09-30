@@ -1,0 +1,21 @@
+{
+  "mysql": {
+    "database": "db_migrate_test",
+    "user": "root",
+    "driver": "mysql"
+  },
+  "pg": {
+    "driver": "pg",
+    "database": "db_migrate_test",
+    "username": "postgres"
+  },
+  "sqlite3": {
+    "driver": "sqlite3",
+    "filename": "test.db"
+  },
+  "mongodb": {
+    "driver": "mongodb",
+    "host": "localhost",
+    "database": "db_migrate_test"
+  }
+}
