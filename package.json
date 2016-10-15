@@ -28,13 +28,8 @@
     "dotenv": "~0.5.1",
     "final-fs": "^1.6.0",
     "mkdirp": "~0.5.0",
-<<<<<<< HEAD
-    "moment": "~2.9.0",
+    "moment": "~2.15.1",
     "mongodb": "^1.4.35",
-=======
-    "moment": "^2.15.1",
-    "mongodb": "^1.4.30",
->>>>>>> origin/v0.9.x
     "mysql": "~2.5.4",
     "optimist": "~0.6.1",
     "parse-database-url": "~0.2.2",
