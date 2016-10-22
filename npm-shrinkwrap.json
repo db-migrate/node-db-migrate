@@ -48,8 +48,8 @@
     },
     "mongodb": {
       "version": "1.4.40",
-      "from": "mongodb@>=1.4.40 <1.5.0",
-      "resolved": "https://registry.npmjs.org/mongodb/-/mongodb-1.4.40.tgz",
+      "from": "git+ssh://git@github.com/blendlabs/node-mongodb-native.git#V1.4.40-authSession",
+      "resolved": "git+ssh://git@github.com/blendlabs/node-mongodb-native.git#c4384c3b1cb0bca9f0c7b8eec5330944c0a00bd5",
       "dependencies": {
         "bson": {
           "version": "0.2.22",
@@ -151,7 +151,7 @@
             },
             "inherits": {
               "version": "2.0.3",
-              "from": "inherits@>=2.0.0 <3.0.0",
+              "from": "inherits@>=2.0.1 <2.1.0",
               "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
             }
           }
