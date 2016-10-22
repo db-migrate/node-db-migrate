@@ -47,37 +47,47 @@
       "resolved": "https://registry.npmjs.org/moment/-/moment-2.15.1.tgz"
     },
     "mongodb": {
-      "version": "1.4.40",
-      "from": "git+ssh://git@github.com/blendlabs/node-mongodb-native.git#V1.4.40-authSession",
-      "resolved": "git+ssh://git@github.com/blendlabs/node-mongodb-native.git#c4384c3b1cb0bca9f0c7b8eec5330944c0a00bd5",
+      "version": "2.2.11",
+      "from": "mongodb@>=2.0.23 <3.0.0",
+      "resolved": "https://registry.npmjs.org/mongodb/-/mongodb-2.2.11.tgz",
       "dependencies": {
-        "bson": {
-          "version": "0.2.22",
-          "from": "bson@>=0.2.0 <0.3.0",
-          "resolved": "https://registry.npmjs.org/bson/-/bson-0.2.22.tgz",
-          "dependencies": {
-            "nan": {
-              "version": "1.8.4",
-              "from": "nan@>=1.8.0 <1.9.0",
-              "resolved": "https://registry.npmjs.org/nan/-/nan-1.8.4.tgz"
-            }
-          }
+        "es6-promise": {
+          "version": "3.2.1",
+          "from": "es6-promise@3.2.1",
+          "resolved": "https://registry.npmjs.org/es6-promise/-/es6-promise-3.2.1.tgz"
         },
-        "kerberos": {
-          "version": "0.0.11",
-          "from": "kerberos@0.0.11",
-          "resolved": "https://registry.npmjs.org/kerberos/-/kerberos-0.0.11.tgz",
+        "mongodb-core": {
+          "version": "2.0.13",
+          "from": "mongodb-core@2.0.13",
+          "resolved": "https://registry.npmjs.org/mongodb-core/-/mongodb-core-2.0.13.tgz",
           "dependencies": {
-            "nan": {
-              "version": "1.8.4",
-              "from": "nan@>=1.8.0 <1.9.0",
-              "resolved": "https://registry.npmjs.org/nan/-/nan-1.8.4.tgz"
+            "bson": {
+              "version": "0.5.6",
+              "from": "bson@>=0.5.6 <0.6.0",
+              "resolved": "https://registry.npmjs.org/bson/-/bson-0.5.6.tgz"
+            },
+            "require_optional": {
+              "version": "1.0.0",
+              "from": "require_optional@>=1.0.0 <1.1.0",
+              "resolved": "https://registry.npmjs.org/require_optional/-/require_optional-1.0.0.tgz",
+              "dependencies": {
+                "semver": {
+                  "version": "5.3.0",
+                  "from": "semver@>=5.1.0 <6.0.0",
+                  "resolved": "https://registry.npmjs.org/semver/-/semver-5.3.0.tgz"
+                },
+                "resolve-from": {
+                  "version": "2.0.0",
+                  "from": "resolve-from@>=2.0.0 <3.0.0",
+                  "resolved": "https://registry.npmjs.org/resolve-from/-/resolve-from-2.0.0.tgz"
+                }
+              }
             }
           }
         },
         "readable-stream": {
           "version": "2.1.5",
-          "from": "readable-stream@latest",
+          "from": "readable-stream@2.1.5",
           "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.1.5.tgz",
           "dependencies": {
             "buffer-shims": {
