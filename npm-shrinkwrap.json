@@ -48,7 +48,7 @@
     },
     "mongodb": {
       "version": "2.2.11",
-      "from": "mongodb@>=2.0.23 <3.0.0",
+      "from": "mongodb@>=2.0.55 <3.0.0",
       "resolved": "https://registry.npmjs.org/mongodb/-/mongodb-2.2.11.tgz",
       "dependencies": {
         "es6-promise": {
