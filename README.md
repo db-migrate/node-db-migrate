@@ -49,6 +49,7 @@ Options:
   --config                    Location of the database.json file.             [default: "./database.json"]
   --force-exit                Call system.exit() after migration run          [default: false]
   --sql-file                  Create sql files for up and down.               [default: false]
+  --transactionless           Creates a non-trasactional migration.           [default: false]
   --coffee-file               Create a coffeescript migration file            [default: false]
   --migration-table           Set the name of the migration table.
   --table, --migration-table                                                  [default: "migrations"]
