@@ -8,6 +8,7 @@ var dirName = '/directory/name/';
 var fileNameNoExtension = 'filename';
 var fileName = 'filename.js';
 var templateType = Migration.TemplateType.SQL_FILE_LOADER;
+var transactionless = true;
 
 vows.describe('migration').addBatch({
   'when creating a new migration object': {
@@ -32,6 +33,35 @@ vows.describe('migration').addBatch({
       },
       'should have templateType not set': function(migration) {
         assert.equal(migration.templateType, undefined);
+      },
+      'should be executed in transaction': function(migration) {
+        assert.equal(migration.transactionless, true);
+      }
+    },
+    'with 1 parameter as the complete filepath and transactionless': {
+      topic: function() {
+        var migration = new Migration(dirName + dateString+'-NO-TRANS-'+fileName);
+        return migration;
+      },
+      'should have title set without file extension': function(migration) {
+        assert.equal(migration.title, fileNameNoExtension);
+      },
+      'should have date set': function(migration) {
+        migration.date.setMilliseconds(0);
+        date.setMilliseconds(0);
+        assert.equal(migration.date.getTime(), date.getTime());
+      },
+      'should have name set without file extension': function(migration) {
+        assert.equal(migration.name, dateString+'-NO-TRANS-'+fileNameNoExtension);
+      },
+      'should have path set': function(migration) {
+        assert.equal(migration.path, dirName+dateString+'-NO-TRANS-'+fileName);
+      },
+      'should have templateType not set': function(migration) {
+        assert.equal(migration.templateType, undefined);
+      },
+      'should be transactionless': function(migration) {
+        assert.equal(migration.transactionless, false);
       }
     },
     'with 3 parameters': {
@@ -74,6 +104,33 @@ vows.describe('migration').addBatch({
       },
       'should have templateType set': function(migration) {
         assert.equal(migration.templateType, templateType);
+      },
+      'should be transactionless': function(migration) {
+        assert.equal(migration.transactionless, false);
+      }
+    },
+    'with 5 parameters': {
+      topic: function() {
+        var migration = new Migration(fileName, dirName, date, templateType, transactionless);
+        return migration;
+      },
+      'should have title set': function(migration) {
+        assert.equal(migration.title, fileName);
+      },
+      'should have date set': function(migration) {
+        assert.equal(migration.date, date);
+      },
+      'should have name set': function(migration) {
+        assert.equal(migration.name, dateString+'-NO-TRANS-'+fileName);
+      },
+      'should have path set': function(migration) {
+        assert.equal(migration.path, dirName+dateString+'-NO-TRANS-'+fileName);
+      },
+      'should have templateType set': function(migration) {
+        assert.equal(migration.templateType, templateType);
+      },
+      'should be transactionless': function(migration) {
+        assert.equal(migration.transactionless, true);
       }
     }
   }
