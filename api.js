@@ -136,7 +136,7 @@ function dbmigrate(plugins, isModule, options, callback) {
 function registerEvents() {
 
   process.on('uncaughtException', function(err) {
-    log.error(err.stack);
+    log.error(err.stack || err);
     process.exit(1);
   });
 
