@@ -165,6 +165,11 @@ dbmigrate.prototype = {
     return true;
   },
 
+  /**
+    * Registers and initializes hooks.
+    *
+    * @returns Promise
+    */
   registerAPIHook: function(callback) {
 
     var plugins = this.internals.plugins;
@@ -550,7 +555,7 @@ function setDefaultArgv(internals, isModule) {
       'ignore-completed-migrations': false
     })
     .usage(
-      'Usage: db-migrate [up|down|reset|sync|create|db|seed|transition] ' +
+      'Usage: db-migrate [up|down|reset|sync|create|db|transition] ' +
         '[[dbname/]migrationName|all] [options]'
     )
 
