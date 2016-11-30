@@ -1,9 +1,8 @@
 var Code = require('code');
 var Lab = require('lab');
 var lab = exports.lab = Lab.script();
-var DBMigrate = require('../../');
-var path = require('path');
-var cp = require('child_process');
+var sinon = require('sinon');
+var proxyquire = require('proxyquire').noPreserveCache();
 
 lab.experiment('api', function() {
 
@@ -17,22 +16,23 @@ lab.experiment('api', function() {
 
     // register cleanup method and start preparing the test
     onCleanup(teardown);
-    createMigration(function() {
+    overwriteExit();
 
-      var dbmigrate = DBMigrate.getInstance(true, config);
+    var dbmigrate = stubApiInstance(true, {
+      './lib/commands/up.js': upStub
+    }, config);
 
-      dbmigrate.setConfigParam('force-exit', true);
-      dbmigrate.silence(true);
+    dbmigrate.setConfigParam('force-exit', true);
+    dbmigrate.silence(true);
 
-      /**
-        * We have set force-exit above, this should end up in db-migrate
-        * executing process.exit on the final callback.
-        * Process.exit has been overwritten and will finally call validate.
-        *
-        * The test validation takes place in validate()
-        */
-      dbmigrate.up();
-    });
+    /**
+      * We have set force-exit above, this should end up in db-migrate
+      * executing process.exit on the final callback.
+      * Process.exit has been overwritten and will finally call validate.
+      *
+      * The test validation takes place in validate()
+      */
+    dbmigrate.up();
 
     /**
       * Final validation after process.exit should have been called.
@@ -43,38 +43,39 @@ lab.experiment('api', function() {
       done();
     }
 
+    function upStub(internals) {
+
+      internals.onComplete({
+        driver: {
+          close: sinon.stub().callsArg(0)
+        }
+      }, internals);
+    }
+
     /**
       * Create a migration with the programatic API and overwrite process.exit.
       */
-    function createMigration(callback) {
+    function overwriteExit() {
 
-      var api = DBMigrate.getInstance(true, config);
-      api.silence(true);
+      process.exit = function(err) {
 
-      api.create( 'test', function() {
-        process.exit = function(err) {
+        var ret = called;
+        called = true;
 
-          var ret = called;
-          called = true;
+        process.exit = process_exit;
 
-          process.exit = process_exit;
+        if(err)
+          process.exit.apply(arguments);
 
-          if(err)
-            process.exit.apply(arguments);
-
-          Code.expect(ret).to.be.false();
-          validate();
-        };
-
-        callback();
-      } );
+        Code.expect(ret).to.be.false();
+        validate();
+      };
     }
 
     function teardown(next) {
 
       process.exit = process_exit;
       process.argv = argv;
-      cp.exec('rm -r ' + path.join(__dirname, 'migrations'), this.callback);
       return next();
     }
   });
@@ -97,7 +98,7 @@ lab.experiment('api', function() {
       }
     };
 
-    var api = DBMigrate.getInstance(true, options);
+    var api = stubApiInstance(true, {}, options);
     var actual = api.config;
     var expected = options.config;
 
@@ -108,3 +109,13 @@ lab.experiment('api', function() {
     done();
   });
 });
+
+function stubApiInstance(isModule, stubs, options, callback) {
+
+  delete require.cache[require.resolve('../../api.js')];
+  delete require.cache[require.resolve('optimist')];
+  var mod = proxyquire('../../api.js', stubs),
+  plugins = {};
+
+  return new mod(plugins, isModule, options, callback);
+};
