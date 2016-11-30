@@ -995,7 +995,7 @@ function run(internals, config) {
       }
       else {
 
-        log.error('Invalid Action: Must be [up|down|create|reset|sync|seed|' +
+        log.error('Invalid Action: Must be [up|down|create|reset|sync|' +
           'db|transition].');
         optimist.showHelp();
         process.exit(1);
