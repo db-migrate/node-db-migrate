@@ -540,6 +540,9 @@ dbmigrate.prototype = {
 
 function setDefaultArgv(internals, isModule) {
 
+  var rc = require('rc');
+  var deepExtend = require('deep-extend');
+
   internals.argv = optimist
     .default({
       verbose: false,
@@ -558,7 +561,6 @@ function setDefaultArgv(internals, isModule) {
       'Usage: db-migrate [up|down|reset|sync|create|db|transition] ' +
         '[[dbname/]migrationName|all] [options]'
     )
-
   .describe('env',
       'The environment to run the migrations under (dev, test, prod).')
     .alias('e', 'env')
@@ -636,6 +638,8 @@ function setDefaultArgv(internals, isModule) {
 
   var plugins = internals.plugins;
   var plugin = plugins.hook('init:cli:config:hook');
+  var _config = internals.argv.argv.config;
+
   if(plugin) {
 
     plugin.forEach(function(plugin) {
@@ -648,7 +652,9 @@ function setDefaultArgv(internals, isModule) {
     });
   }
 
-  internals.argv = internals.argv.argv;
+  internals.argv = deepExtend(internals.argv.argv, rc('db-migrate', {}));
+  internals.argv.rcconfig = internals.argv.config;
+  internals.argv.config = _config;
 
   if (internals.argv.version) {
     console.log(internals.dbm.version);

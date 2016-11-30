@@ -8,3 +8,4 @@ database.json
 *.sublime-project
 *.sublime-workspace
 archive
+.db-migraterc
