@@ -322,6 +322,8 @@ dbmigrate.prototype = {
    */
   sync: function(specification, opts, callback) {
 
+    var executeSync = require('./lib/commands/sync.js');
+
     if (arguments.length > 0) {
       if (typeof(specification) === 'string') {
 
@@ -749,42 +751,6 @@ function migrationHook(internals) {
   return Migration.registerHook(internals.plugins, internals);
 }
 
-function executeSync(internals, config, callback) {
-
-  migrationHook(internals)
-  .then(function() {
-
-    var Migrator = require('./lib/migrator.js');
-    var index = require('./connect');
-
-    if (!internals.argv.count) {
-      internals.argv.count = Number.MAX_VALUE;
-    }
-    index.connect({
-      config: config.getCurrent().settings,
-      internals: internals
-    }, Migrator, function(err, migrator) {
-      assert.ifError(err);
-
-      if (internals.locTitle)
-      migrator.migrationsDir = path.resolve(internals.argv['migrations-dir'],
-      internals.locTitle);
-      else
-      migrator.migrationsDir = path.resolve(internals.argv['migrations-dir']);
-
-      internals.migrationsDir = migrator.migrationsDir;
-
-      migrator.driver.createMigrationsTable(function(err) {
-        assert.ifError(err);
-        log.verbose('migration table created');
-
-        migrator.sync(internals.argv, internals.onComplete.bind(this,
-          migrator, internals, callback));
-        });
-      });
-  });
-}
-
 function executeDB(internals, config, callback) {
 
   var index = require('./connect');
@@ -936,6 +902,8 @@ function run(internals, config) {
       executeCreateMigration(internals, config);
       break;
     case 'sync':
+
+      var executeSync = require('./lib/commands/sync.js');
 
       if (internals.argv._.length === 0) {
 
