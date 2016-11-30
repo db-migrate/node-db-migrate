@@ -3,6 +3,7 @@ var Lab = require('lab');
 var lab = exports.lab = Lab.script();
 var sinon = require('sinon');
 var proxyquire = require('proxyquire').noPreserveCache();
+var Promise = require('bluebird');
 
 lab.experiment('api', { parallel: true }, function() {
 
@@ -109,48 +110,112 @@ lab.experiment('api', { parallel: true }, function() {
     done();
   });
 
-  lab.test.skip('should do something', { parallel: true }, function(done) {
+  lab.test('should handle all up parameter variations properly',
+    { parallel: true }, function(done) {
 
-    var api = stubApiInstance(true, {
-      './lib/commands/up.js': upStub
-    });
-
-    api.up();
-
-    function upStub() {
-
-      done();
-    }
+    Promise.resolve([
+      [], // promise
+      [sinon.spy()],
+      ['nameatargetmigration', sinon.spy()], // targeted migration
+      ['nameatargetmigration'], // promise targeted migration
+      [1, sinon.spy()], // targeted migration
+      [1], // promise targeted migration
+      ['nameatargetmigration', 'testscope', sinon.spy()], // scoped target
+      ['nameatargetmigration', 'testscope'], // promise scope target
+      [1, 'testscope', sinon.spy()], // scoped target
+      [1, 'testscope'] // promise scope target
+    ])
+    .each(defaultExecParams('up'))
+    .each(spyCallback)
+    .asCallback(done);
   });
 
-  lab.test.skip('should do something', { parallel: true }, function(done) {
+  lab.test('should handle all down parameter variations properly',
+    { parallel: true }, function(done) {
 
-    var api = stubApiInstance(true, {
-      './lib/commands/down.js': downStub
-    });
-
-    api.down();
-
-    function downStub() {
-
-      done();
-    }
+      Promise.resolve([
+        [], // promise
+        [sinon.spy()],
+        [1, sinon.spy()], // targeted migration
+        [1], // promise targeted migration
+        [1, 'testscope', sinon.spy()], // scoped target
+        [1, 'testscope'] // promise scope target
+      ])
+      .each(defaultExecParams('down'))
+      .each(spyCallback)
+      .asCallback(done);
   });
 
-  lab.test.skip('should do something', { parallel: true }, function(done) {
+  lab.test('should handle all reset parameter variations properly',
+    { parallel: true }, function(done) {
 
-    var api = stubApiInstance(true, {
-      './lib/commands/sync.js': syncStub
-    });
+      Promise.resolve([
+        [], // promise
+        [sinon.spy()],
+        ['testscope', sinon.spy()], // scoped target
+        ['testscope'] // promise scope target
+      ])
+      .each(defaultExecParams('reset'))
+      .each(spyCallback)
+      .asCallback(done);
+  });
 
-    api.sync();
+  lab.test('should handle all sync parameter variations properly',
+    { parallel: true }, function(done) {
 
-    function syncStub() {
-
-      done();
-    }
+    Promise.resolve([
+      [],
+      ['nameatargetmigration', sinon.spy()], // targeted migration
+      ['nameatargetmigration'], // promise targeted migration
+      ['nameatargetmigration', 'testscope', sinon.spy()], // scoped target
+      ['nameatargetmigration', 'testscope'], // promise scope target
+    ])
+    .each(defaultExecParams('sync'))
+    .each(spyCallback)
+    .asCallback(done);
   });
 });
+
+function defaultExecParams(method) {
+
+  return function(args, index) {
+
+    var stubs = {};
+    stubs['./lib/commands/' + method + '.js'] = stub;
+
+    var api = stubApiInstance(true, stubs);
+
+    return [ api[method].apply(api, args), args ];
+
+    function stub(internals, config, callback) {
+
+      if(typeof(args[0]) === 'string') {
+
+        Code.expect(internals.argv.destination).to.equal(args[0]);
+      } else if(typeof(args[0]) === 'number') {
+
+        Code.expect(internals.argv.count).to.equal(args[0]);
+      }
+
+      if(typeof(args[1]) === 'string') {
+
+        Code.expect(internals.migrationMode).to.equal(args[1]);
+        Code.expect(internals.matching).to.equal(args[1]);
+      }
+
+      callback();
+    }
+  };
+}
+
+function spyCallback(api, args) {
+
+  if(typeof(args[args.length - 1]) === 'function') {
+
+    var spy = args[args.length - 1];
+    Code.expect(spy.called).to.be.true();
+  }
+}
 
 function stubApiInstance(isModule, stubs, options, callback) {
 
@@ -158,6 +223,11 @@ function stubApiInstance(isModule, stubs, options, callback) {
   delete require.cache[require.resolve('optimist')];
   var mod = proxyquire('../../api.js', stubs),
   plugins = {};
+  options = options || {};
+
+  options = Object.assign(options, {
+    throwUncatched: true
+  });
 
   return new mod(plugins, isModule, options, callback);
-};
+}

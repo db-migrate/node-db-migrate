@@ -95,8 +95,11 @@ function dbmigrate(plugins, isModule, options, callback) {
   dotenv.load({
     silent: true
   });
-  registerEvents();
 
+  /* $lab:coverage:off$ */
+  if(options && !options.throwUncatched)
+    registerEvents();
+  /* $lab:coverage:on$ */
 
   if (typeof(options) === 'object') {
 
@@ -351,6 +354,8 @@ dbmigrate.prototype = {
    * Executes down for all currently migrated migrations.
    */
   reset: function(scope, callback) {
+
+    var executeDown = require('./lib/commands/down.js');
 
     if (typeof(scope) === 'string') {
 
