@@ -111,9 +111,9 @@ lab.experiment('api', { parallel: true }, function() {
   });
 
   lab.test('should handle all up parameter variations properly',
-    { parallel: true }, function(done) {
+    { parallel: true }, function() {
 
-    Promise.resolve([
+    return Promise.resolve([
       [], // promise
       [sinon.spy()],
       ['nameatargetmigration', sinon.spy()], // targeted migration
@@ -126,14 +126,13 @@ lab.experiment('api', { parallel: true }, function() {
       [1, 'testscope'] // promise scope target
     ])
     .each(defaultExecParams('up'))
-    .each(spyCallback)
-    .asCallback(done);
+    .each(spyCallback);
   });
 
   lab.test('should handle all down parameter variations properly',
-    { parallel: true }, function(done) {
+    { parallel: true }, function() {
 
-      Promise.resolve([
+      return Promise.resolve([
         [], // promise
         [sinon.spy()],
         [1, sinon.spy()], // targeted migration
@@ -142,28 +141,26 @@ lab.experiment('api', { parallel: true }, function() {
         [1, 'testscope'] // promise scope target
       ])
       .each(defaultExecParams('down'))
-      .each(spyCallback)
-      .asCallback(done);
+      .each(spyCallback);
   });
 
   lab.test('should handle all reset parameter variations properly',
-    { parallel: true }, function(done) {
+    { parallel: true }, function() {
 
-      Promise.resolve([
+      return Promise.resolve([
         [], // promise
         [sinon.spy()],
         ['testscope', sinon.spy()], // scoped target
         ['testscope'] // promise scope target
       ])
       .each(defaultExecParams('reset'))
-      .each(spyCallback)
-      .asCallback(done);
+      .each(spyCallback);
   });
 
   lab.test('should handle all sync parameter variations properly',
-    { parallel: true }, function(done) {
+    { parallel: true }, function() {
 
-    Promise.resolve([
+    return Promise.resolve([
       [],
       ['nameatargetmigration', sinon.spy()], // targeted migration
       ['nameatargetmigration'], // promise targeted migration
@@ -171,8 +168,7 @@ lab.experiment('api', { parallel: true }, function() {
       ['nameatargetmigration', 'testscope'], // promise scope target
     ])
     .each(defaultExecParams('sync'))
-    .each(spyCallback)
-    .asCallback(done);
+    .each(spyCallback);
   });
 });
 
