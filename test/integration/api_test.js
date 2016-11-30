@@ -4,7 +4,7 @@ var lab = exports.lab = Lab.script();
 var sinon = require('sinon');
 var proxyquire = require('proxyquire').noPreserveCache();
 
-lab.experiment('api', function() {
+lab.experiment('api', { parallel: true }, function() {
 
   lab.test('force process exit after migrations have been run',
     { parallel : true}, function(done, onCleanup) {
@@ -107,6 +107,48 @@ lab.experiment('api', function() {
 
     Code.expect(actual).to.equal(expected);
     done();
+  });
+
+  lab.test.skip('should do something', { parallel: true }, function(done) {
+
+    var api = stubApiInstance(true, {
+      './lib/commands/up.js': upStub
+    });
+
+    api.up();
+
+    function upStub() {
+
+      done();
+    }
+  });
+
+  lab.test.skip('should do something', { parallel: true }, function(done) {
+
+    var api = stubApiInstance(true, {
+      './lib/commands/down.js': downStub
+    });
+
+    api.down();
+
+    function downStub() {
+
+      done();
+    }
+  });
+
+  lab.test.skip('should do something', { parallel: true }, function(done) {
+
+    var api = stubApiInstance(true, {
+      './lib/commands/sync.js': syncStub
+    });
+
+    api.sync();
+
+    function syncStub() {
+
+      done();
+    }
   });
 });
 
