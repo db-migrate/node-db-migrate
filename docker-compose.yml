@@ -1,0 +1,23 @@
+version: '2'
+services:
+  pg:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: db-migrate
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: db_migrate_test
+    ports:
+      - 5432:5432
+  mongo:
+    image: mongo:latest
+    ports:
+      - 27017:27017
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_USER: db-migrate
+      MYSQL_PASSWORD: pass
+      MYSQL_DATABASE: db_migrate_test
+    ports:
+      - 3306:3306
