@@ -3,32 +3,56 @@ language: node_js
 node_js:
   - 0.10
   - 0.12
-  - io.js
+  - 4
+  - 5
+  - 6
+  - "iojs-1"
+  - "iojs-2"
+  - "iojs-3"
+  - "iojs"
 
 notifications:
   email:
     recipients:
       - magic@wizardtales.com
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/509c88551a18006fe93f
+    on_success: change
+    on_failure: always
+    on_start: false
+
+os:
+  - linux
+
+matrix:
+  fast_finish: true
+  allow_failures:
+    - node_js: 6
 
 services:
   - mongodb
 
-env:
-    - DB=mysql
-    - DB=mariadb
-    - DB=postgres92
-    - DB=postgres93
+sudo: false
+
+cache:
+  npm: true
+  directories:
+    - node_modules
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
+  mariadb: "10.0"
+
+before_install:
+  - export CXX=g++-4.8; export CC=gcc-4.8;
 
 before_script:
     - until nc -z localhost 27017 ; do echo Waiting for MongoDB; sleep 1; done
-    - sh -c "if [ '$DB' = 'mariadb' ]; then sudo apt-get install python-software-properties; fi"
-    - sh -c "if [ '$DB' = 'mariadb' ]; then sudo apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xcbcb082a1bb943db; fi"
-    - sh -c "if [ '$DB' = 'mariadb' ]; then sudo add-apt-repository 'deb http://ftp.osuosl.org/pub/mariadb/repo/10.0/ubuntu precise main'; fi"
-    - sh -c "if [ '$DB' = 'mariadb' ]; then sudo apt-get update; fi"
-    - sh -c "if [ '$DB' = 'mariadb' ]; then sudo apt-get purge mysql*; fi"
-    - sh -c "if [ '$DB' = 'mariadb' ]; then sudo apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install mariadb-server-10.0 -y; fi"
-    - sh -c "if [ '$DB' = 'postgres92' ]; then sudo /etc/init.d/postgresql stop && sudo /etc/init.d/postgresql start 9.2; fi"
-    - sh -c "if [ '$DB' = 'postgres93' ]; then sudo /etc/init.d/postgresql stop && sudo /etc/init.d/postgresql start 9.3; fi"
     - mysql -e "create database db_migrate_test;"
     - createdb db_migrate_test
     - cp test/db.config.ci test/db.config.json

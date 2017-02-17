@@ -11,7 +11,7 @@
     "sqlite",
     "mysql"
   ],
-  "version": "0.9.11",
+  "version": "0.9.26",
   "engines": {
     "node": ">=0.6.0"
   },
@@ -31,11 +31,13 @@
     "moment": "~2.15.1",
     "mongodb": "^2.0.55",
     "mysql": "~2.5.4",
+    "mysql": "^2.10.2",
     "optimist": "~0.6.1",
     "parse-database-url": "~0.2.2",
-    "pg": "~4.2.0",
+    "pg": "^4.5.5",
     "pkginfo": "~0.3.0",
-    "semver": "~4.3.0"
+    "semver": "~4.3.3",
+    "sqlite3": "^3.1.4"
   },
   "devDependencies": {
     "code": "^1.3.0",

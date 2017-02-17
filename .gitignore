@@ -9,3 +9,7 @@ database.json
 *.sublime-workspace
 Seeder
 VCSeeder
+archive
+
+# Vim swap files
+.*.sw[a-z]
