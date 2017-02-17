@@ -18,9 +18,14 @@
       "resolved": "https://registry.npmjs.org/bignumber.js/-/bignumber.js-2.0.0.tgz"
     },
     "bson": {
-      "version": "0.4.23",
-      "from": "bson@>=0.4.20 <0.5.0",
-      "resolved": "https://registry.npmjs.org/bson/-/bson-0.4.23.tgz"
+      "version": "0.5.7",
+      "from": "bson@>=0.5.6 <0.6.0",
+      "resolved": "https://registry.npmjs.org/bson/-/bson-0.5.7.tgz"
+    },
+    "buffer-shims": {
+      "version": "1.0.0",
+      "from": "buffer-shims@>=1.0.0 <2.0.0",
+      "resolved": "https://registry.npmjs.org/buffer-shims/-/buffer-shims-1.0.0.tgz"
     },
     "buffer-writer": {
       "version": "1.0.1",
@@ -38,9 +43,9 @@
       "resolved": "https://registry.npmjs.org/dotenv/-/dotenv-0.5.1.tgz"
     },
     "es6-promise": {
-      "version": "2.1.1",
-      "from": "es6-promise@2.1.1",
-      "resolved": "https://registry.npmjs.org/es6-promise/-/es6-promise-2.1.1.tgz"
+      "version": "3.2.1",
+      "from": "es6-promise@3.2.1",
+      "resolved": "https://registry.npmjs.org/es6-promise/-/es6-promise-3.2.1.tgz"
     },
     "final-fs": {
       "version": "1.6.1",
@@ -62,11 +67,6 @@
       "from": "isarray@0.0.1",
       "resolved": "https://registry.npmjs.org/isarray/-/isarray-0.0.1.tgz"
     },
-    "kerberos": {
-      "version": "0.0.22",
-      "from": "kerberos@>=0.0.0 <0.1.0",
-      "resolved": "https://registry.npmjs.org/kerberos/-/kerberos-0.0.22.tgz"
-    },
     "minimist": {
       "version": "0.0.8",
       "from": "minimist@0.0.8",
@@ -83,14 +83,26 @@
       "resolved": "https://registry.npmjs.org/moment/-/moment-2.15.2.tgz"
     },
     "mongodb": {
-      "version": "2.0.55",
-      "from": "mongodb@>=2.0.55 <2.1.0",
-      "resolved": "https://registry.npmjs.org/mongodb/-/mongodb-2.0.55.tgz"
+      "version": "2.2.11",
+      "from": "mongodb@2.2.11",
+      "resolved": "https://registry.npmjs.org/mongodb/-/mongodb-2.2.11.tgz",
+      "dependencies": {
+        "isarray": {
+          "version": "1.0.0",
+          "from": "isarray@>=1.0.0 <1.1.0",
+          "resolved": "https://registry.npmjs.org/isarray/-/isarray-1.0.0.tgz"
+        },
+        "readable-stream": {
+          "version": "2.1.5",
+          "from": "readable-stream@2.1.5",
+          "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.1.5.tgz"
+        }
+      }
     },
     "mongodb-core": {
-      "version": "1.2.31",
-      "from": "mongodb-core@1.2.31",
-      "resolved": "https://registry.npmjs.org/mongodb-core/-/mongodb-core-1.2.31.tgz"
+      "version": "2.0.13",
+      "from": "mongodb-core@2.0.13",
+      "resolved": "https://registry.npmjs.org/mongodb-core/-/mongodb-core-2.0.13.tgz"
     },
     "mysql": {
       "version": "2.5.5",
@@ -174,15 +186,32 @@
       "from": "postgres-interval@>=1.0.0 <1.1.0",
       "resolved": "https://registry.npmjs.org/postgres-interval/-/postgres-interval-1.0.2.tgz"
     },
-    "readable-stream": {
-      "version": "1.0.31",
-      "from": "readable-stream@1.0.31",
-      "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-1.0.31.tgz"
+    "process-nextick-args": {
+      "version": "1.0.7",
+      "from": "process-nextick-args@>=1.0.6 <1.1.0",
+      "resolved": "https://registry.npmjs.org/process-nextick-args/-/process-nextick-args-1.0.7.tgz"
+    },
+    "require_optional": {
+      "version": "1.0.0",
+      "from": "require_optional@>=1.0.0 <1.1.0",
+      "resolved": "https://registry.npmjs.org/require_optional/-/require_optional-1.0.0.tgz",
+      "dependencies": {
+        "semver": {
+          "version": "5.3.0",
+          "from": "semver@>=5.1.0 <6.0.0",
+          "resolved": "https://registry.npmjs.org/semver/-/semver-5.3.0.tgz"
+        }
+      }
     },
     "require-all": {
       "version": "1.0.0",
       "from": "require-all@>=1.0.0 <1.1.0",
       "resolved": "https://registry.npmjs.org/require-all/-/require-all-1.0.0.tgz"
+    },
+    "resolve-from": {
+      "version": "2.0.0",
+      "from": "resolve-from@>=2.0.0 <3.0.0",
+      "resolved": "https://registry.npmjs.org/resolve-from/-/resolve-from-2.0.0.tgz"
     },
     "semver": {
       "version": "4.3.6",
@@ -1009,6 +1038,11 @@
       "version": "2.3.8",
       "from": "through@>=2.0.0 <3.0.0",
       "resolved": "https://registry.npmjs.org/through/-/through-2.3.8.tgz"
+    },
+    "util-deprecate": {
+      "version": "1.0.2",
+      "from": "util-deprecate@>=1.0.1 <1.1.0",
+      "resolved": "https://registry.npmjs.org/util-deprecate/-/util-deprecate-1.0.2.tgz"
     },
     "when": {
       "version": "2.0.1",
