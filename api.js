@@ -648,7 +648,7 @@ function executeCreateMigration(internals, config, callback) {
       templateType = Migration.TemplateType.DEFAULT_COFFEE;
     }
     var migration = new Migration(internals.argv.title + (
-        shouldCreateCoffeeFile( internals, config ) ? '.coffee' : '.js'), path, new Date(),
+        shouldCreateCoffeeFile( internals, config ) ? '.coffee' : '.js'), path, internals.runTimestamp,
       templateType);
     index.createMigration(migration, function(err, migration) {
       if (_assert(err, callback)) {
@@ -709,7 +709,7 @@ function createSqlFiles(internals, config, callback) {
 
     var templateTypeDefaultSQL = Migration.TemplateType.DEFAULT_SQL;
     var migrationUpSQL = new Migration(internals.argv.title + '-up.sql',
-      sqlDir, new Date(), templateTypeDefaultSQL);
+      sqlDir, internals.runTimestamp, templateTypeDefaultSQL);
     index.createMigration(migrationUpSQL, function(err, migration) {
       if (_assert(err, callback)) {
 
@@ -717,7 +717,7 @@ function createSqlFiles(internals, config, callback) {
           migration.path));
 
         var migrationDownSQL = new Migration(internals.argv.title +
-          '-down.sql', sqlDir, new Date(), templateTypeDefaultSQL);
+          '-down.sql', sqlDir, internals.runTimestamp, templateTypeDefaultSQL);
         index.createMigration(migrationDownSQL, function(err, migration) {
           if (_assert(err, callback)) {
 
@@ -890,6 +890,8 @@ function transition(internals) {
 function run(internals, config) {
   var action = internals.argv._.shift(),
     folder = action.split(':');
+
+    internals.runTimestamp = new Date();
 
   action = folder[0];
 
