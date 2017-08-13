@@ -3,6 +3,7 @@ var Lab = require('lab');
 var lab = exports.lab = Lab.script();
 var config = require('../lib/config');
 var path = require('path');
+var sinon = require('sinon');
 
 var _configLoad = config.load;
 var _configLoadUrl = config.loadUrl;
@@ -160,18 +161,184 @@ lab.experiment('config', function() {
     config.load = _configLoad;
     config.loadUrl = _configLoadUrl;
 
-    lab.test('should something', function(done, cleanup) {
-
-        cleanup(function(next) {
-
-          delete require.cache[require.resolve('../lib/config')];
-          next();
-        });
+    lab.test('should something', function(done) {
 
         Code.expect(
           config.load.bind(this, configPath, 'dev')
         ).to.not.throw;
         done();
+    });
+  });
+
+  lab.experiment('loading a url from url property', function() {
+
+
+    lab.test('should export a valid config',
+      function(done) {
+
+      var databaseUrl = {
+        'dev': {
+          'url': 'postgres://uname:pw@server.com/dbname'
+        }
+      };
+      var cfg = config.loadObject(databaseUrl, 'dev');
+
+      Code.expect(cfg.getCurrent).to.exists();
+      var current = cfg.getCurrent();
+      Code.expect(current.env).to.equal('dev');
+      Code.expect(current.settings.url).to.not.exists();
+      Code.expect(current.settings.driver).to.equal('postgres');
+      Code.expect(current.settings.user).to.equal('uname');
+      Code.expect(current.settings.password).to.equal('pw');
+      Code.expect(current.settings.host).to.equal('server.com');
+      Code.expect(current.settings.database).to.equal('dbname');
+
+      done();
+    });
+
+    lab.test('should export the value if specified in suboject',
+      function(done) {
+
+      var databaseUrl = {
+        'dev': {
+          'url': {
+            'value': 'http://example.com'
+          }
+        }
+      };
+      var cfg = config.loadObject(databaseUrl, 'dev');
+
+      Code.expect(cfg.getCurrent).to.exists();
+      var current = cfg.getCurrent();
+      Code.expect(current.env).to.equal('dev');
+      Code.expect(current.settings.url).to.equal('http://example.com');
+
+      done();
+    });
+  });
+
+  lab.experiment('loading from an URL and overwriting it', function() {
+
+    var databaseUrl = {
+          'dev': {
+            'url': 'postgres://uname:pw@server.com/dbname',
+            'overwrite': {
+              'ssl': true
+            }
+          }
+      };
+
+    var cfg = config.loadObject(databaseUrl, 'dev');
+
+    lab.test('should export the settings as the current environment', function(done) {
+
+      Code.expect(cfg.dev).to.exists();
+      done();
+    });
+
+    lab.test('should export a getCurrent function with all current environment settings',
+      function(done) {
+
+      Code.expect(cfg.getCurrent).to.exists();
+      var current = cfg.getCurrent();
+      Code.expect(current.env).to.equal('dev');
+      Code.expect(current.settings.url).to.not.exists();
+      Code.expect(current.settings.overwrite).to.not.exists();
+      Code.expect(current.settings.driver).to.equal('postgres');
+      Code.expect(current.settings.user).to.equal('uname');
+      Code.expect(current.settings.password).to.equal('pw');
+      Code.expect(current.settings.host).to.equal('server.com');
+      Code.expect(current.settings.database).to.equal('dbname');
+      Code.expect(current.settings.ssl).to.equal(true);
+
+      done();
+    });
+  });
+
+  lab.experiment('loading from an ENV URL within the object and overwriting it',
+    function() {
+
+    lab.test('should export a getCurrent function with all current environment settings',
+      function(done, cleanup) {
+
+      process.env.DATABASE_URL = 'postgres://uname:pw@server.com/dbname';
+      var databaseUrl = {
+          'dev': {
+            'url': { 'ENV': 'DATABASE_URL' },
+            'overwrite': {
+              'ssl': true
+            }
+          }
+      };
+      var cfg = config.loadObject(databaseUrl, 'dev');
+
+      cleanup(function(next) {
+        delete process.env.DATABASE_URL;
+        next();
+      });
+
+      Code.expect(cfg.getCurrent).to.exists();
+      var current = cfg.getCurrent();
+      Code.expect(current.env).to.equal('dev');
+      Code.expect(current.settings.url).to.not.exists();
+      Code.expect(current.settings.overwrite).to.not.exists();
+      Code.expect(current.settings.driver).to.equal('postgres');
+      Code.expect(current.settings.user).to.equal('uname');
+      Code.expect(current.settings.password).to.equal('pw');
+      Code.expect(current.settings.host).to.equal('server.com');
+      Code.expect(current.settings.database).to.equal('dbname');
+      Code.expect(current.settings.ssl).to.equal(true);
+
+      done();
+    });
+  });
+
+  lab.experiment('loading from an ENV URL within the object and extending it from the ENV',
+    function() {
+
+    lab.test('', function(done, cleanup) {
+
+      process.env.DATABASE_URL = 'postgres://uname:pw@server.com/dbname?ssl=false&testing=false';
+      var databaseUrl = {
+        'dev': {
+          'url': {
+            'ENV': 'DATABASE_URL',
+          },
+          'overwrite': {
+            'ssl': true,
+            'cache': false
+          },
+          'addIfNotExists': {
+            'native': true, // this on is new
+            'cache': true, // overwrite should have higher priority
+            'testing': true // already in config do not overwrite
+          }
+        }
+      };
+      var cfg = config.loadObject(databaseUrl, 'dev');
+
+      cleanup(function(next) {
+        delete process.env.DATABASE_URL;
+        next();
+      });
+
+      Code.expect(cfg.getCurrent).to.exists();
+      var current = cfg.getCurrent();
+      Code.expect(current.env).to.equal('dev');
+      Code.expect(current.settings.url).to.not.exists();
+      Code.expect(current.settings.overwrite).to.not.exists();
+      Code.expect(current.settings.addIfNotExists).to.not.exists();
+      Code.expect(current.settings.driver).to.equal('postgres');
+      Code.expect(current.settings.user).to.equal('uname');
+      Code.expect(current.settings.password).to.equal('pw');
+      Code.expect(current.settings.host).to.equal('server.com');
+      Code.expect(current.settings.database).to.equal('dbname');
+      Code.expect(current.settings.native).to.equal(true);
+      Code.expect(current.settings.testing).to.equal('false');
+      Code.expect(current.settings.cache).to.equal(false);
+      Code.expect(current.settings.ssl).to.equal(true);
+
+      done();
     });
   });
 });
