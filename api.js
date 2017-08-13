@@ -566,9 +566,7 @@ function loadConfig( config, internals ) {
   var out,
       currentEnv = internals.currentEnv || internals.argv.env;
 
-  if (process.env.DATABASE_URL) {
-    out = config.loadUrl(process.env.DATABASE_URL, currentEnv);
-  } else if (internals.configObject) {
+  if (internals.configObject) {
     out = config.loadObject(internals.configObject, currentEnv);
   } else {
     out = config.loadFile(internals.argv.config, currentEnv, internals.plugins);
