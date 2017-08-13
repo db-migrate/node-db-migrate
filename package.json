@@ -47,6 +47,7 @@
     "balanced-match": "^0.4.2",
     "bluebird": "^3.1.1",
     "db-migrate-shared": "^1.1.2",
+    "deep-extend": "^0.4.1",
     "dotenv": "^2.0.0",
     "final-fs": "^1.6.0",
     "inflection": "^1.10.0",
@@ -56,6 +57,7 @@
     "parse-database-url": "~0.3.0",
     "pkginfo": "^0.4.0",
     "prompt": "^1.0.0",
+    "rc": "^1.1.6",
     "resolve": "^1.1.6",
     "semver": "^5.3.0",
     "tunnel-ssh": "^4.0.0"

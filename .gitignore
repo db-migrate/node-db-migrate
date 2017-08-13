@@ -10,6 +10,7 @@ database.json
 *.sublime-project
 *.sublime-workspace
 archive
+.db-migraterc
 
 # Vim swap files
 .*.sw[a-z]
