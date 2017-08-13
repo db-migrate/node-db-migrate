@@ -13,7 +13,7 @@ lab.experiment('api', { parallel: true }, function() {
     var process_exit = process.exit,
         argv = process.argv,
         called = false,
-        config = { cwd: __dirname };
+        config = {};
 
     // register cleanup method and start preparing the test
     onCleanup(teardown);
@@ -222,7 +222,8 @@ function stubApiInstance(isModule, stubs, options, callback) {
   options = options || {};
 
   options = Object.assign(options, {
-    throwUncatched: true
+    throwUncatched: true,
+    cwd: __dirname
   });
 
   return new mod(plugins, isModule, options, callback);
