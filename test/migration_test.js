@@ -2,6 +2,7 @@ var Code = require('code');
 var Lab = require('lab');
 var lab = exports.lab = Lab.script();
 var Migration = require('../lib/migration.js');
+var DBMigrate = require('../index');
 
 var date = createDateForTest();
 var dateString = '20140220143050';
@@ -20,7 +21,20 @@ lab.experiment('migration', { parallel: true }, function() {
 
   lab.experiment('get template', { parallel: true },
     getTemplate);
+
+  lab.experiment('when using db-migrate as module', { parallel: true },
+    asModule);
 });
+
+function asModule() {
+  lab.test('should create migration', function (done) {
+
+    var dbmigrate = DBMigrate.getInstance(true);
+    dbmigrate.setConfigParam('_',[]);
+    
+    dbmigrate.create('migrationName').then(done);
+  });
+}
 
 function newMigrationObject() {
 
