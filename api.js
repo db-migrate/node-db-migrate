@@ -588,6 +588,8 @@ function executeCreateMigration(internals, config, callback) {
 
   var migrationsDir = internals.argv['migrations-dir'];
 
+  internals.runTimestamp = new Date();
+
   if (internals.migrationMode && internals.migrationMode !== 'all') {
 
     migrationsDir = internals.argv['migrations-dir'] + '/' +
@@ -888,8 +890,6 @@ function transition(internals) {
 function run(internals, config) {
   var action = internals.argv._.shift(),
     folder = action.split(':');
-
-    internals.runTimestamp = new Date();
 
   action = folder[0];
 
