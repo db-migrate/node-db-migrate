@@ -1,8 +1,8 @@
 var Code = require('code');
 var Lab = require('lab');
+var proxyquire = require('proxyquire').noPreserveCache();
 var lab = exports.lab = Lab.script();
 var Migration = require('../lib/migration.js');
-var DBMigrate = require('../index');
 
 var date = createDateForTest();
 var dateString = '20140220143050';
@@ -29,7 +29,7 @@ lab.experiment('migration', { parallel: true }, function() {
 function asModule() {
   lab.test('should create migration', function (done) {
 
-    var dbmigrate = DBMigrate.getInstance(true);
+    var dbmigrate = stubApiInstance(true, {}, {});
     dbmigrate.setConfigParam('_',[]);
     
     dbmigrate.create('migrationName').then(done);
@@ -252,6 +252,22 @@ function getTemplate() {
       });
     });
   });
+}
+
+function stubApiInstance(isModule, stubs, options, callback) {
+
+  delete require.cache[require.resolve('../api.js')];
+  delete require.cache[require.resolve('optimist')];
+  var mod = proxyquire('../api.js', stubs),
+    plugins = {};
+  options = options || {};
+
+  options = Object.assign(options, {
+    throwUncatched: true,
+    cwd: __dirname
+  });
+
+  return new mod(plugins, isModule, options, callback);
 }
 
 function createDateForTest() {
