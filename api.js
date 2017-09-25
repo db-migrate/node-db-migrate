@@ -759,16 +759,16 @@ function migrationHook(internals) {
 function executeDB(internals, config, callback) {
 
   var index = require('./connect');
+  var settings = config.getCurrent().settings;
+  internals.argv.dbname = settings.database;
+  delete settings.database;
 
-  if (internals.argv._.length > 0) {
-    internals.argv.dbname = internals.argv._.shift().toString();
-  } else {
-
-    log.info('Error: You must enter a database name!');
+  if (internals.argv.dbname === undefined) {
+    log.info('Error: You must set a database name!');
     return;
   }
 
-  index.driver(config.getCurrent().settings, function(err, db) {
+  index.driver(settings, function(err, db) {
     assert.ifError(err);
 
     if (internals.mode === 'create') {
