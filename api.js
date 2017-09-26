@@ -568,9 +568,12 @@ function loadConfig( config, internals ) {
 
   if (internals.configObject) {
     out = config.loadObject(internals.configObject, currentEnv);
-  } else {
+  } else if (internals.argv.config) {
     out = config.loadFile(internals.argv.config, currentEnv, internals.plugins);
+  } else if (process.env.DATABASE_URL) {
+    out = config.loadUrl(process.env.DATABASE_URL, currentEnv);
   }
+ 
   if (internals.verbose) {
     var current = out.getCurrent();
     var s = JSON.parse(JSON.stringify(current.settings));
