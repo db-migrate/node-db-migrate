@@ -1,0 +1,7 @@
+{
+  "dev": {
+    "driver": "sqlite3",
+    "filename": "memory"
+  },
+  "ts-file": true
+}

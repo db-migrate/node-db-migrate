@@ -14,6 +14,12 @@ function wipeMigrations(callback) {
   rmdir(dir, callback);
 }
 
+function createMigrationDirs(callback) {
+  return fs.mkdir(path.join(__dirname, 'migrations'), function () {
+    fs.mkdir(path.join(__dirname, 'migrations', 'sqls'), callback);
+  });
+}
+
 function dbMigrate() {
   var args = dbmUtil.toArray(arguments);
   var dbm = path.join(__dirname, '..', '..', 'bin', 'db-migrate');
@@ -79,22 +85,24 @@ lab.experiment('create', function() {
       wipeMigrations(function(err) {
 
         Code.expect(err).to.not.exist();
-        dbMigrate( 'create', 'second migration', configOption).on('exit',
-          function(code) {
+        createMigrationDirs(function () {
+          dbMigrate('create', 'second migration', configOption).on('exit',
+            function (code) {
 
-          exitCode = code;
-          done();
+              exitCode = code;
+              done();
+            });
         });
       });
     });
 
-    lab.test('does not cause an error', { parallel: true }, function(done) {
+    lab.test('does not cause an error', { parallel: false }, function(done) {
 
       Code.expect(exitCode).to.equal(0);
       done();
     });
 
-    lab.test('will create a new migration', { parallel: true },
+    lab.test('will create a new migration', { parallel: false },
       function(done) {
 
       var files = fs.readdirSync(path.join(__dirname, 'migrations'));
@@ -108,7 +116,7 @@ lab.experiment('create', function() {
       done();
     });
 
-    lab.test('will create a new migration/sqls directory', { parallel: true },
+    lab.test('will create a new migration/sqls directory', { parallel: false },
       function(done) {
 
       var stats = fs.statSync(path.join(__dirname, 'migrations/sqls'));
@@ -116,10 +124,10 @@ lab.experiment('create', function() {
       done();
     });
 
-    lab.test('will create a new migration sql up file', { parallel: true },
+    lab.test('will create a new migration sql up file', { parallel: false },
       function(done) {
 
-      var files = fs.readdirSync(path.join(__dirname, 'migrations/sqls'));
+      var files = fs.readdirSync(path.join(__dirname, 'migrations', 'sqls'));
       Code.expect(files.length).to.equal(2);
       var file = files[1];
       Code.expect(file).to.match(/second-migration-up\.sql$/);
@@ -138,11 +146,14 @@ lab.experiment('create', function() {
       wipeMigrations(function(err) {
 
         Code.expect(err).to.not.exist();
-        dbMigrate( 'create', 'third migration', configOption).on('exit',
-          function(code) {
 
-          exitCode = code;
-          done();
+        createMigrationDirs(function () {
+          dbMigrate('create', 'third migration', configOption).on('exit',
+            function (code) {
+
+              exitCode = code;
+              done();
+            });
         });
       });
     });
@@ -200,11 +211,14 @@ lab.experiment('create', function() {
       wipeMigrations(function(err) {
 
         Code.expect(err).to.not.exist();
-        dbMigrate( 'create', 'fourth migration', configOption).on('exit',
-          function(code) {
 
-          exitCode = code;
-          done();
+        createMigrationDirs(function () {
+          dbMigrate('create', 'fourth migration', configOption).on('exit',
+            function (code) {
+
+              exitCode = code;
+              done();
+            });
         });
       }.bind(this));
     });
@@ -243,11 +257,14 @@ lab.experiment('create', function() {
       wipeMigrations(function(err) {
 
         Code.expect(err).to.not.exist();
-        dbMigrate( 'create', 'fifth migration', configOption).on('exit',
-          function(code) {
 
-          exitCode = code;
-          done();
+        createMigrationDirs(function () {
+          dbMigrate('create', 'fifth migration', configOption).on('exit',
+            function (code) {
+
+              exitCode = code;
+              done();
+            });
         });
       }.bind(this));
     });
@@ -274,6 +291,99 @@ lab.experiment('create', function() {
     });
   });
 
+  lab.experiment('with ts-file option set to true from config file',
+    function() {
+
+    var exitCode;
+
+    lab.before(function(done) {
+
+      var configOption = path.join('--config=', __dirname,
+        'database_with_ts_file.json');
+
+      wipeMigrations(function(err) {
+
+        Code.expect(err).to.not.exist();
+
+        createMigrationDirs(function () {
+          dbMigrate('create', 'seventh migration', configOption).on('exit',
+            function (code) {
+
+              exitCode = code;
+              done();
+            });
+        });
+      }.bind(this));
+    });
+
+    lab.test('does not cause an error', { parallel: false },
+      function(done) {
+
+      Code.expect(exitCode).to.equal(0);
+      done();
+    });
+
+    lab.test('will create a new typescript migration', { parallel: false },
+      function(done) {
+
+      var files = fs.readdirSync(path.join(__dirname, 'migrations'));
+
+      for (var i = 0; i<files.length; i++) {
+        var file = files[i];
+        var stats = fs.statSync(path.join(__dirname, 'migrations', file));
+        if (stats.isFile())
+          Code.expect(file).to.match(/seventh-migration\.ts/);
+      }
+
+      done();
+    });
+  });
+
+  lab.experiment('with ts-file option set to true as a command parameter',
+    function() {
+
+    var exitCode;
+
+    lab.before(function(done) {
+
+      var configOption = path.join('--ts-file');
+      wipeMigrations(function(err) {
+
+        Code.expect(err).to.not.exist();
+
+        createMigrationDirs(function () {
+          dbMigrate('create', 'eighth migration', configOption).on('exit',
+            function (code) {
+
+              exitCode = code;
+              done();
+            });
+        });
+      }.bind(this));
+    });
+
+    lab.test('does not cause an error', { parallel: true },
+      function(done) {
+
+      Code.expect(exitCode).to.equal(0);
+      done();
+    });
+
+    lab.test('will create a new typescript migration', { parallel: true },
+      function(done) {
+
+      var files = fs.readdirSync(path.join(__dirname, 'migrations'));
+
+      for (var i = 0; i<files.length; i++) {
+        var file = files[i];
+        var stats = fs.statSync(path.join(__dirname, 'migrations', file));
+        if (stats.isFile())
+          Code.expect(file).to.match(/eighth-migration\.ts/);
+      }
+      done();
+    });
+  });
+
   lab.experiment('with sql-file and a bad migration, causes an exit',
     function() {
 
@@ -285,29 +395,32 @@ lab.experiment('create', function() {
       wipeMigrations(function(err) {
 
         Code.expect(err).to.not.exist();
-        dbMigrate('create', 'sixth migration', configOption).on('exit',
-          function() {
 
-          var files = fs.readdirSync(path.join(__dirname, 'migrations'));
+        createMigrationDirs(function () {
+          dbMigrate('create', 'sixth migration', configOption).on('exit',
+            function () {
 
-          for (var i = 0; i<files.length; i++) {
+              var files = fs.readdirSync(path.join(__dirname, 'migrations'));
 
-            var file = files[i];
-            var stats = fs.statSync(path.join(__dirname, 'migrations', file));
+              for (var i = 0; i < files.length; i++) {
 
-            if (stats.isFile() && file.match(/sixth-migration\.js$/)) {
+                var file = files[i];
+                var stats = fs.statSync(path.join(__dirname, 'migrations', file));
 
-              fs.writeFileSync(
-                path.join(__dirname, 'migrations', file),
-                'asdfghij;'
-              );
-              dbMigrate('up').on('exit', function(code) {
+                if (stats.isFile() && file.match(/sixth-migration\.js$/)) {
 
-                exitCode = code;
-                done();
-              });
-            }
-          }
+                  fs.writeFileSync(
+                    path.join(__dirname, 'migrations', file),
+                    'asdfghij;'
+                  );
+                  dbMigrate('up').on('exit', function (code) {
+
+                    exitCode = code;
+                    done();
+                  });
+                }
+              }
+            });
         });
       });
     });
@@ -332,9 +445,6 @@ lab.experiment('create', function() {
       done();
     });
 
-    lab.after(function(done) {
-
-      cp.exec('rm -r ' + path.join(__dirname, 'migrations'), done);
-    });
+    lab.after(wipeMigrations);
   });
 });
