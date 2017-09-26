@@ -147,7 +147,7 @@ function registerEvents() {
   });
 
   process.on('unhandledRejection', function(reason) {
-    log.error(reason.stack);
+    log.error(reason.stack || reason);
     process.exit(1);
   });
 }
