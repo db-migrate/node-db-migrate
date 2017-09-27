@@ -646,10 +646,15 @@ function executeCreateMigration(internals, config, callback) {
     } else if (shouldCreateCoffeeFile( internals, config )) {
 
       templateType = Migration.TemplateType.DEFAULT_COFFEE;
+    } else if (shouldCreateTypeScriptFile( internals, config )) {
+
+      templateType = Migration.TemplateType.DEFAULT_TYPE_SCRIPT;
     }
-    var migration = new Migration(internals.argv.title + (
-        shouldCreateCoffeeFile( internals, config ) ? '.coffee' : '.js'), path, internals.runTimestamp,
-      templateType);
+
+    var fileType = shouldCreateCoffeeFile( internals, config ) ? '.coffee' :
+      shouldCreateTypeScriptFile( internals, config ) ? '.ts' : '.js';
+
+    var migration = new Migration(internals.argv.title + fileType, path, internals.runTimestamp, templateType);
     index.createMigration(migration, function(err, migration) {
       if (_assert(err, callback)) {
 
@@ -677,6 +682,10 @@ function shouldIgnoreOnInitFiles( internals, config ) {
 
 function shouldCreateCoffeeFile( internals, config ) {
   return internals.argv['coffee-file'] || config['coffee-file'];
+}
+
+function shouldCreateTypeScriptFile( internals, config ) {
+  return internals.argv['ts-file'] || config['ts-file'];
 }
 
 function createSqlFiles(internals, config, callback) {

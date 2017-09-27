@@ -1,12 +1,13 @@
 var Code = require('code');
 var Lab = require('lab');
+var path = require('path');
 var proxyquire = require('proxyquire').noPreserveCache();
 var lab = exports.lab = Lab.script();
 var Migration = require('../lib/migration.js');
 
 var date = createDateForTest();
 var dateString = '20140220143050';
-var dirName = '/directory/name/';
+var dirName = path.join('directory', 'name');
 var fileNameNoExtension = 'filename';
 var fileName = 'filename.js';
 var templateType = Migration.TemplateType.SQL_FILE_LOADER;
@@ -41,7 +42,7 @@ function newMigrationObject() {
   lab.experiment('with 2 parameters as the complete filepath',
     { parallel: true }, function() {
 
-    var migration = new Migration(dirName + dateString+'-'+fileName, internals);
+    var migration = new Migration(path.join(dirName, dateString+'-'+fileName), internals);
 
     lab.test('should have title set without file extension', { parallel: true },
       function(done) {
@@ -69,7 +70,7 @@ function newMigrationObject() {
     lab.test('should have path set', { parallel: true },
       function(done) {
 
-      Code.expect(migration.path).to.equal(dirName+dateString+'-'+fileName);
+      Code.expect(migration.path).to.equal(path.join(dirName, dateString+'-'+fileName));
       done();
     });
 
@@ -109,7 +110,7 @@ function newMigrationObject() {
     lab.test('should have path set', { parallel: true },
       function(done) {
 
-      Code.expect(migration.path).to.equal(dirName+dateString+'-'+fileName);
+      Code.expect(migration.path).to.equal(path.join(dirName, dateString+'-'+fileName));
       done();
     });
 
@@ -150,7 +151,7 @@ function newMigrationObject() {
     lab.test('should have path set', { parallel: true },
       function(done) {
 
-      Code.expect(migration.path).to.equal(dirName+dateString+'-'+fileName);
+      Code.expect(migration.path).to.equal(path.join(dirName, dateString+'-'+fileName));
       done();
     });
 
