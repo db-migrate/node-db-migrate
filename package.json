@@ -74,6 +74,6 @@
     "sinon-as-promised": "^4.0.2"
   },
   "scripts": {
-    "test": "make test-cov"
+    "test": "make test-cov --"
   }
 }
