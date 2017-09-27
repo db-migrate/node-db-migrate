@@ -79,8 +79,7 @@ lab.experiment('create', function() {
 
     lab.before(function(done) {
 
-      var configOption = path.join('--config=', __dirname,
-        'database_with_sql_file.json');
+      var configOption = '--config=' + path.join(__dirname, 'database_with_sql_file.json');
 
       wipeMigrations(function(err) {
 
@@ -96,13 +95,13 @@ lab.experiment('create', function() {
       });
     });
 
-    lab.test('does not cause an error', { parallel: false }, function(done) {
+    lab.test('does not cause an error', { parallel: true}, function(done) {
 
       Code.expect(exitCode).to.equal(0);
       done();
     });
 
-    lab.test('will create a new migration', { parallel: false },
+    lab.test('will create a new migration', { parallel: true},
       function(done) {
 
       var files = fs.readdirSync(path.join(__dirname, 'migrations'));
@@ -116,7 +115,7 @@ lab.experiment('create', function() {
       done();
     });
 
-    lab.test('will create a new migration/sqls directory', { parallel: false },
+    lab.test('will create a new migration/sqls directory', { parallel: true},
       function(done) {
 
       var stats = fs.statSync(path.join(__dirname, 'migrations/sqls'));
@@ -124,7 +123,7 @@ lab.experiment('create', function() {
       done();
     });
 
-    lab.test('will create a new migration sql up file', { parallel: false },
+    lab.test('will create a new migration sql up file', { parallel: true},
       function(done) {
 
       var files = fs.readdirSync(path.join(__dirname, 'migrations', 'sqls'));
@@ -205,7 +204,7 @@ lab.experiment('create', function() {
 
     lab.before(function(done) {
 
-      var configOption = path.join('--config=', __dirname,
+      var configOption = '--config=' + path.join(__dirname,
         'database_with_coffee_file.json');
 
       wipeMigrations(function(err) {
@@ -298,8 +297,7 @@ lab.experiment('create', function() {
 
     lab.before(function(done) {
 
-      var configOption = path.join('--config=', __dirname,
-        'database_with_ts_file.json');
+      var configOption = '--config=' + path.join(__dirname, 'database_with_ts_file.json');
 
       wipeMigrations(function(err) {
 
@@ -316,14 +314,14 @@ lab.experiment('create', function() {
       }.bind(this));
     });
 
-    lab.test('does not cause an error', { parallel: false },
+    lab.test('does not cause an error', { parallel: true},
       function(done) {
 
       Code.expect(exitCode).to.equal(0);
       done();
     });
 
-    lab.test('will create a new typescript migration', { parallel: false },
+    lab.test('will create a new typescript migration', { parallel: true},
       function(done) {
 
       var files = fs.readdirSync(path.join(__dirname, 'migrations'));

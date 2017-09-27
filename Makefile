@@ -1,5 +1,7 @@
+TIMEOUT ?= 2000
+
 test:
-	@node node_modules/lab/bin/lab -m 5000 -I verbose,dryRun --coverage-exclude lib/interface --coverage-exclude lib/transitions
+	@node node_modules/lab/bin/lab -m ${TIMEOUT} -I verbose,dryRun --coverage-exclude lib/interface --coverage-exclude lib/transitions
 test-cov:
 	@node node_modules/lab/bin/lab -t 66 -I verbose,dryRun --coverage-exclude lib/interface --coverage-exclude lib/transitions
 test-cov-html:
