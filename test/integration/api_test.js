@@ -185,7 +185,7 @@ lab.experiment('api', { parallel: true }, function() {
 function defaultExecParams(method) {
   return function(args, index) {
     var stubs = {};
-    stubs['./lib/commands/' + method + '.js'] = stub;
+    stubs[method] = stub;
 
     var api = stubApiInstance(true, stubs);
 
