@@ -437,8 +437,4 @@ dbmigrate.prototype = {
   }
 };
 
-function transition(internals) {
-  require('./lib/transitions/transitioner.js')(internals);
-}
-
 module.exports = dbmigrate;

@@ -1,89 +1,91 @@
 var Code = require('code');
 var Lab = require('lab');
-var lab = exports.lab = Lab.script();
+var lab = (exports.lab = Lab.script());
 var sinon = require('sinon');
 var proxyquire = require('proxyquire').noPreserveCache();
 var Promise = require('bluebird');
 
 lab.experiment('api', { parallel: true }, function() {
-
-  lab.test('force process exit after migrations have been run',
-    { parallel : true}, function(done, onCleanup) {
-
-    var process_exit = process.exit,
+  lab.test(
+    'force process exit after migrations have been run',
+    { parallel: true },
+    function(done, onCleanup) {
+      var process_exit = process.exit,
         argv = process.argv,
         called = false,
         config = {};
 
-    // register cleanup method and start preparing the test
-    onCleanup(teardown);
-    overwriteExit();
+      // register cleanup method and start preparing the test
+      onCleanup(teardown);
+      overwriteExit();
 
-    var dbmigrate = stubApiInstance(true, {
-      './lib/commands/up.js': upStub
-    }, config);
+      var dbmigrate = stubApiInstance(
+        true,
+        {
+          up: upStub
+        },
+        config
+      );
 
-    dbmigrate.setConfigParam('force-exit', true);
-    dbmigrate.silence(true);
+      dbmigrate.setConfigParam('force-exit', true);
+      dbmigrate.silence(true);
 
-    /**
+      /**
       * We have set force-exit above, this should end up in db-migrate
       * executing process.exit on the final callback.
       * Process.exit has been overwritten and will finally call validate.
       *
       * The test validation takes place in validate()
       */
-    dbmigrate.up();
+      dbmigrate.up();
 
-    /**
+      /**
       * Final validation after process.exit should have been called.
       */
-    function validate() {
+      function validate() {
+        Code.expect(called).to.be.true();
+        done();
+      }
 
-      Code.expect(called).to.be.true();
-      done();
-    }
+      function upStub(internals) {
+        internals.onComplete(
+          {
+            driver: {
+              close: sinon.stub().callsArg(0)
+            }
+          },
+          internals
+        );
+      }
 
-    function upStub(internals) {
-
-      internals.onComplete({
-        driver: {
-          close: sinon.stub().callsArg(0)
-        }
-      }, internals);
-    }
-
-    /**
+      /**
       * Create a migration with the programatic API and overwrite process.exit.
       */
-    function overwriteExit() {
+      function overwriteExit() {
+        process.exit = function(err) {
+          var ret = called;
+          called = true;
 
-      process.exit = function(err) {
+          process.exit = process_exit;
 
-        var ret = called;
-        called = true;
+          if (err) process.exit.apply(arguments);
 
+          Code.expect(ret).to.be.false();
+          validate();
+        };
+      }
+
+      function teardown(next) {
         process.exit = process_exit;
-
-        if(err)
-          process.exit.apply(arguments);
-
-        Code.expect(ret).to.be.false();
-        validate();
-      };
+        process.argv = argv;
+        return next();
+      }
     }
+  );
 
-    function teardown(next) {
-
-      process.exit = process_exit;
-      process.argv = argv;
-      return next();
-    }
-  });
-
-  lab.test('should load config from parameter', { parallel : true},
-    function(done) {
-
+  lab.test('should load config from parameter', { parallel: true }, function(
+    done
+  ) {
     var options = {
       env: 'dev',
       cwd: process.cwd() + '/test/integration',
@@ -110,28 +112,31 @@ lab.experiment('api', { parallel: true }, function() {
     done();
   });
 
-  lab.test('should handle all up parameter variations properly',
-    { parallel: true }, function() {
+  lab.test(
+    'should handle all up parameter variations properly',
+    { parallel: true },
+    function() {
+      return Promise.resolve([
+        [], // promise
+        [sinon.spy()],
+        ['nameatargetmigration', sinon.spy()], // targeted migration
+        ['nameatargetmigration'], // promise targeted migration
+        [1, sinon.spy()], // targeted migration
+        [1], // promise targeted migration
+        ['nameatargetmigration', 'testscope', sinon.spy()], // scoped target
+        ['nameatargetmigration', 'testscope'], // promise scope target
+        [1, 'testscope', sinon.spy()], // scoped target
+        [1, 'testscope'] // promise scope target
+      ])
+        .each(defaultExecParams('up'))
+        .each(spyCallback);
+    }
+  );
 
-    return Promise.resolve([
-      [], // promise
-      [sinon.spy()],
-      ['nameatargetmigration', sinon.spy()], // targeted migration
-      ['nameatargetmigration'], // promise targeted migration
-      [1, sinon.spy()], // targeted migration
-      [1], // promise targeted migration
-      ['nameatargetmigration', 'testscope', sinon.spy()], // scoped target
-      ['nameatargetmigration', 'testscope'], // promise scope target
-      [1, 'testscope', sinon.spy()], // scoped target
-      [1, 'testscope'] // promise scope target
-    ])
-    .each(defaultExecParams('up'))
-    .each(spyCallback);
-  });
-
-  lab.test('should handle all down parameter variations properly',
-    { parallel: true }, function() {
-
+  lab.test(
+    'should handle all down parameter variations properly',
+    { parallel: true },
+    function() {
       return Promise.resolve([
         [], // promise
         [sinon.spy()],
@@ -140,61 +145,60 @@ lab.experiment('api', { parallel: true }, function() {
         [1, 'testscope', sinon.spy()], // scoped target
         [1, 'testscope'] // promise scope target
       ])
-      .each(defaultExecParams('down'))
-      .each(spyCallback);
-  });
+        .each(defaultExecParams('down'))
+        .each(spyCallback);
+    }
+  );
 
-  lab.test('should handle all reset parameter variations properly',
-    { parallel: true }, function() {
-
+  lab.test(
+    'should handle all reset parameter variations properly',
+    { parallel: true },
+    function() {
       return Promise.resolve([
         [], // promise
         [sinon.spy()],
         ['testscope', sinon.spy()], // scoped target
         ['testscope'] // promise scope target
       ])
-      .each(defaultExecParams('reset'))
-      .each(spyCallback);
-  });
+        .each(defaultExecParams('reset'))
+        .each(spyCallback);
+    }
+  );
 
-  lab.test('should handle all sync parameter variations properly',
-    { parallel: true }, function() {
-
-    return Promise.resolve([
-      [],
-      ['nameatargetmigration', sinon.spy()], // targeted migration
-      ['nameatargetmigration'], // promise targeted migration
-      ['nameatargetmigration', 'testscope', sinon.spy()], // scoped target
-      ['nameatargetmigration', 'testscope'], // promise scope target
-    ])
-    .each(defaultExecParams('sync'))
-    .each(spyCallback);
-  });
+  lab.test(
+    'should handle all sync parameter variations properly',
+    { parallel: true },
+    function() {
+      return Promise.resolve([
+        [],
+        ['nameatargetmigration', sinon.spy()], // targeted migration
+        ['nameatargetmigration'], // promise targeted migration
+        ['nameatargetmigration', 'testscope', sinon.spy()], // scoped target
+        ['nameatargetmigration', 'testscope'] // promise scope target
+      ])
+        .each(defaultExecParams('sync'))
+        .each(spyCallback);
+    }
+  );
 });
 
 function defaultExecParams(method) {
-
   return function(args, index) {
-
     var stubs = {};
     stubs['./lib/commands/' + method + '.js'] = stub;
 
     var api = stubApiInstance(true, stubs);
 
-    return [ api[method].apply(api, args), args ];
+    return [api[method].apply(api, args), args];
 
     function stub(internals, config, callback) {
-
-      if(typeof(args[0]) === 'string') {
-
+      if (typeof args[0] === 'string') {
         Code.expect(internals.argv.destination).to.equal(args[0]);
-      } else if(typeof(args[0]) === 'number') {
-
+      } else if (typeof args[0] === 'number') {
         Code.expect(internals.argv.count).to.equal(args[0]);
       }
 
-      if(typeof(args[1]) === 'string') {
-
+      if (typeof args[1] === 'string') {
         Code.expect(internals.migrationMode).to.equal(args[1]);
         Code.expect(internals.matching).to.equal(args[1]);
       }
@@ -205,20 +209,31 @@ function defaultExecParams(method) {
 }
 
 function spyCallback(api, args) {
-
-  if(typeof(args[args.length - 1]) === 'function') {
-
+  if (typeof args[args.length - 1] === 'function') {
     var spy = args[args.length - 1];
     Code.expect(spy.called).to.be.true();
   }
 }
 
-function stubApiInstance(isModule, stubs, options, callback) {
+function loader(stubs) {
+  var load = require('../../lib/commands');
+  var keys = Object.keys(stubs);
+  return function(module) {
+    var index = keys.indexOf(module);
+    if (index !== -1) {
+      return stubs[keys[index]];
+    }
+    return load(module);
+  };
+}
 
+function stubApiInstance(isModule, stubs, options, callback) {
   delete require.cache[require.resolve('../../api.js')];
   delete require.cache[require.resolve('optimist')];
-  var mod = proxyquire('../../api.js', stubs),
-  plugins = {};
+  var mod = proxyquire('../../api.js', {
+      './lib/commands': loader(stubs)
+    }),
+    plugins = {};
   options = options || {};
 
   options = Object.assign(options, {
