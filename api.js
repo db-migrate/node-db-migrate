@@ -2,8 +2,8 @@
 
 var load = require('./lib/commands');
 var log = require('db-migrate-shared').log;
-var pkginfo = require('pkginfo')(module, 'version'); // jshint ignore:line
-var Promise = Promise;
+require('pkginfo')(module, 'version'); // jshint ignore:line
+var Promise;
 var onComplete = load('on-complete');
 
 // constant hooks for this file
@@ -12,7 +12,7 @@ var APIHooks = {
     this[name] = fn;
   },
   'init:api:accessapi:hook': function (cb) {
-    return cb(this);
+    return this;
   }
 };
 
@@ -43,7 +43,11 @@ function dbmigrate (plugins, isModule, options, callback) {
   /* $lab:coverage:on$ */
 
   if (typeof options === 'object') {
-    if (typeof options.config === 'string') { internals.configFile = options.config; } else if (typeof options.config === 'object') { internals.configObject = options.config; }
+    if (typeof options.config === 'string') {
+      internals.configFile = options.config;
+    } else if (typeof options.config === 'object') {
+      internals.configObject = options.config;
+    }
 
     if (typeof options.env === 'string') internals.currentEnv = options.env;
 
@@ -278,7 +282,7 @@ dbmigrate.prototype = {
     * Transition migrations to the latest defined protocol.
     */
   transition: function () {
-    transition(this.internals);
+    load('transition')(this.internals);
   },
 
   /**

@@ -1,4 +1,4 @@
-var pkginfo = require('pkginfo')(module, 'version'); // jshint ignore:line
+require('pkginfo')(module, 'version'); // jshint ignore:line
 var fs = require('fs');
 var path = require('path');
 
@@ -6,9 +6,9 @@ exports.dataType = require('db-migrate-shared').dataType;
 
 function loadPluginList () {
   var plugins = JSON.parse(
-      fs.readFileSync(path.join(process.cwd(), 'package.json'), 'utf-8')
-    ),
-    targets = [];
+    fs.readFileSync(path.join(process.cwd(), 'package.json'), 'utf-8')
+  );
+  var targets = [];
 
   plugins = Object.assign(plugins.dependencies, plugins.devDependencies);
 
@@ -20,15 +20,21 @@ function loadPluginList () {
 }
 
 function loadPlugins () {
-  var plugins = loadPluginList(),
-    i = 0,
-    length = plugins.length,
-    hooks = {};
+  var plugins = loadPluginList();
+  var i = 0;
+  var length = plugins.length;
+  var hooks = {};
 
   for (; i < length; ++i) {
     var plugin = require(path.join(process.cwd(), 'node_modules', plugins[i]));
 
-    if (typeof plugin.name !== 'string' || !plugin.hooks || !plugin.loadPlugin) { continue; }
+    if (
+      typeof plugin.name !== 'string' ||
+      !plugin.hooks ||
+      !plugin.loadPlugin
+    ) {
+      continue;
+    }
 
     plugin.hooks.map(function (hook) {
       hooks[hook] = hooks[hook] || [];
@@ -42,8 +48,8 @@ function loadPlugins () {
 module.exports.getInstance = function (isModule, options, callback) {
   delete require.cache[require.resolve('./api.js')];
   delete require.cache[require.resolve('optimist')];
-  var mod = require('./api.js'),
-    plugins = {};
+  var Mod = require('./api.js');
+  var plugins = {};
 
   try {
     if (!options || !options.noPlugins) plugins = loadPlugins();
@@ -53,5 +59,5 @@ module.exports.getInstance = function (isModule, options, callback) {
     plugins = Object.assign(plugins, options.plugins);
   }
 
-  return new mod(plugins, isModule, options, callback);
+  return new Mod(plugins, isModule, options, callback);
 };

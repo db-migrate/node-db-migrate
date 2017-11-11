@@ -10,10 +10,10 @@ lab.experiment('api', { parallel: true }, function () {
     'force process exit after migrations have been run',
     { parallel: true },
     function (done, onCleanup) {
-      var process_exit = process.exit,
-        argv = process.argv,
-        called = false,
-        config = {};
+      var processExit = process.exit;
+      var argv = process.argv;
+      var called = false;
+      var config = {};
 
       // register cleanup method and start preparing the test
       onCleanup(teardown);
@@ -66,7 +66,7 @@ lab.experiment('api', { parallel: true }, function () {
           var ret = called;
           called = true;
 
-          process.exit = process_exit;
+          process.exit = processExit;
 
           if (err) process.exit.apply(arguments);
 
@@ -76,7 +76,7 @@ lab.experiment('api', { parallel: true }, function () {
       }
 
       function teardown (next) {
-        process.exit = process_exit;
+        process.exit = processExit;
         process.argv = argv;
         return next();
       }
@@ -230,10 +230,10 @@ function loader (stubs) {
 function stubApiInstance (isModule, stubs, options, callback) {
   delete require.cache[require.resolve('../../api.js')];
   delete require.cache[require.resolve('optimist')];
-  var mod = proxyquire('../../api.js', {
-      './lib/commands': loader(stubs)
-    }),
-    plugins = {};
+  var Mod = proxyquire('../../api.js', {
+    './lib/commands': loader(stubs)
+  });
+  var plugins = {};
   options = options || {};
 
   options = Object.assign(options, {
@@ -241,5 +241,5 @@ function stubApiInstance (isModule, stubs, options, callback) {
     cwd: __dirname
   });
 
-  return new mod(plugins, isModule, options, callback);
+  return new Mod(plugins, isModule, options, callback);
 }
