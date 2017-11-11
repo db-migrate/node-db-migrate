@@ -4,7 +4,7 @@ var path = require('path');
 
 exports.dataType = require('db-migrate-shared').dataType;
 
-function loadPluginList() {
+function loadPluginList () {
   var plugins = JSON.parse(
       fs.readFileSync(path.join(process.cwd(), 'package.json'), 'utf-8')
     ),
@@ -19,7 +19,7 @@ function loadPluginList() {
   return targets;
 }
 
-function loadPlugins() {
+function loadPlugins () {
   var plugins = loadPluginList(),
     i = 0,
     length = plugins.length,
@@ -28,10 +28,9 @@ function loadPlugins() {
   for (; i < length; ++i) {
     var plugin = require(path.join(process.cwd(), 'node_modules', plugins[i]));
 
-    if (typeof plugin.name !== 'string' || !plugin.hooks || !plugin.loadPlugin)
-      continue;
+    if (typeof plugin.name !== 'string' || !plugin.hooks || !plugin.loadPlugin) { continue; }
 
-    plugin.hooks.map(function(hook) {
+    plugin.hooks.map(function (hook) {
       hooks[hook] = hooks[hook] || [];
       hooks[hook].push(plugin);
     });
@@ -40,7 +39,7 @@ function loadPlugins() {
   return hooks;
 }
 
-module.exports.getInstance = function(isModule, options, callback) {
+module.exports.getInstance = function (isModule, options, callback) {
   delete require.cache[require.resolve('./api.js')];
   delete require.cache[require.resolve('optimist')];
   var mod = require('./api.js'),

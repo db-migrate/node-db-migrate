@@ -8,16 +8,15 @@ var onComplete = load('on-complete');
 
 // constant hooks for this file
 var APIHooks = {
-  'init:api:addfunction:hook': function(name, fn) {
+  'init:api:addfunction:hook': function (name, fn) {
     this[name] = fn;
-    return;
   },
-  'init:api:accessapi:hook': function(cb) {
+  'init:api:accessapi:hook': function (cb) {
     return cb(this);
   }
 };
 
-function dbmigrate(plugins, isModule, options, callback) {
+function dbmigrate (plugins, isModule, options, callback) {
   var dotenv = require('dotenv');
   var setDefaultArgv = load('set-default-argv');
 
@@ -44,10 +43,7 @@ function dbmigrate(plugins, isModule, options, callback) {
   /* $lab:coverage:on$ */
 
   if (typeof options === 'object') {
-    if (typeof options.config === 'string')
-      internals.configFile = options.config;
-    else if (typeof options.config === 'object')
-      internals.configObject = options.config;
+    if (typeof options.config === 'string') { internals.configFile = options.config; } else if (typeof options.config === 'object') { internals.configObject = options.config; }
 
     if (typeof options.env === 'string') internals.currentEnv = options.env;
 
@@ -65,7 +61,7 @@ function dbmigrate(plugins, isModule, options, callback) {
     this.internals
   );
 
-  //delayed loading of bluebird
+  // delayed loading of bluebird
   Promise = require('bluebird');
   this.internals.migrationOptions = {
     dbmigrate: this.internals.dbm,
@@ -85,7 +81,7 @@ dbmigrate.prototype = {
    *
    * @return boolean
    */
-  addGlobal: function(library) {
+  addGlobal: function (library) {
     try {
       require(library);
     } catch (e) {
@@ -100,22 +96,22 @@ dbmigrate.prototype = {
     *
     * @returns Promise
     */
-  registerAPIHook: function(callback) {
+  registerAPIHook: function (callback) {
     var plugins = this.internals.plugins;
     var self = this;
 
     return Promise.resolve(Object.keys(APIHooks))
-      .each(function(hook) {
+      .each(function (hook) {
         var plugin = plugins.hook(hook);
         if (!plugin) return;
 
         var APIHook = APIHooks[hook].bind(self);
 
         return Promise.resolve(plugin)
-          .map(function(plugin) {
+          .map(function (plugin) {
             return plugin[hook]();
           })
-          .each(function(args) {
+          .each(function (args) {
             return APIHook.apply(self, args);
           });
       })
@@ -129,7 +125,7 @@ dbmigrate.prototype = {
    *
    * @return boolean
    */
-  addConfiguration: function(description, args, type) {
+  addConfiguration: function (description, args, type) {
     var name = args.shift();
     this.internals.argv.describe(name, description);
 
@@ -156,7 +152,7 @@ dbmigrate.prototype = {
   /**
    * Resets and sets argv to a specified new argv.
    */
-  resetConfiguration: function(argv) {
+  resetConfiguration: function (argv) {
     this.internals.argv = argv;
   },
 
@@ -165,7 +161,7 @@ dbmigrate.prototype = {
    *
    * Defaults to up all migrations if no count is given.
    */
-  up: function(specification, opts, callback) {
+  up: function (specification, opts, callback) {
     var executeUp = load('up');
 
     if (arguments.length > 0) {
@@ -186,7 +182,7 @@ dbmigrate.prototype = {
     }
 
     return Promise.fromCallback(
-      function(callback) {
+      function (callback) {
         executeUp(this.internals, this.config, callback);
       }.bind(this)
     ).asCallback(callback);
@@ -197,7 +193,7 @@ dbmigrate.prototype = {
    *
    * Defaults to up all migrations if no count is given.
    */
-  down: function(specification, opts, callback) {
+  down: function (specification, opts, callback) {
     var executeDown = load('down');
 
     if (arguments.length > 0) {
@@ -216,7 +212,7 @@ dbmigrate.prototype = {
     }
 
     return Promise.fromCallback(
-      function(callback) {
+      function (callback) {
         executeDown(this.internals, this.config, callback);
       }.bind(this)
     ).asCallback(callback);
@@ -227,7 +223,7 @@ dbmigrate.prototype = {
    *
    * Defaults to up all migrations if no count is given.
    */
-  sync: function(specification, opts, callback) {
+  sync: function (specification, opts, callback) {
     var executeSync = load('sync');
 
     if (arguments.length > 0) {
@@ -244,7 +240,7 @@ dbmigrate.prototype = {
     }
 
     return Promise.fromCallback(
-      function(callback) {
+      function (callback) {
         executeSync(this.internals, this.config, callback);
       }.bind(this)
     ).asCallback(callback);
@@ -253,7 +249,7 @@ dbmigrate.prototype = {
   /**
    * Executes down for all currently migrated migrations.
    */
-  reset: function(scope, callback) {
+  reset: function (scope, callback) {
     var executeDown = load('down');
 
     if (typeof scope === 'string') {
@@ -265,7 +261,7 @@ dbmigrate.prototype = {
 
     this.internals.argv.count = Number.MAX_VALUE;
     return Promise.fromCallback(
-      function(callback) {
+      function (callback) {
         executeDown(this.internals, this.config, callback);
       }.bind(this)
     ).asCallback(callback);
@@ -274,21 +270,21 @@ dbmigrate.prototype = {
   /**
    * Silence the log output completely.
    */
-  silence: function(isSilent) {
+  silence: function (isSilent) {
     return log.silence(isSilent);
   },
 
   /**
     * Transition migrations to the latest defined protocol.
     */
-  transition: function() {
+  transition: function () {
     transition(this.internals);
   },
 
   /**
    * Creates a correctly formatted migration
    */
-  create: function(migrationName, scope, callback) {
+  create: function (migrationName, scope, callback) {
     var executeCreateMigration = load('create-migration');
     if (typeof scope === 'function') {
       callback = scope;
@@ -299,7 +295,7 @@ dbmigrate.prototype = {
 
     this.internals.argv._.push(migrationName);
     return Promise.fromCallback(
-      function(callback) {
+      function (callback) {
         executeCreateMigration(this.internals, this.config, callback);
       }.bind(this)
     ).asCallback(callback);
@@ -308,12 +304,12 @@ dbmigrate.prototype = {
   /**
    * Creates a database of the given dbname.
    */
-  createDatabase: function(dbname, callback) {
+  createDatabase: function (dbname, callback) {
     var executeDB = load('db');
     this.internals.argv._.push(dbname);
     this.internals.mode = 'create';
     return Promise.fromCallback(
-      function(callback) {
+      function (callback) {
         executeDB(this.internals, this.config, callback);
       }.bind(this)
     ).asCallback(callback);
@@ -322,12 +318,12 @@ dbmigrate.prototype = {
   /**
    * Drops a database of the given dbname.
    */
-  dropDatabase: function(dbname, callback) {
+  dropDatabase: function (dbname, callback) {
     var executeDB = load('db');
     this.internals.argv._.push(dbname);
     this.internals.mode = 'drop';
     return Promise.fromCallback(
-      function(callback) {
+      function (callback) {
         executeDB(this.internals, this.config, callback);
       }.bind(this)
     ).asCallback(callback);
@@ -338,14 +334,14 @@ dbmigrate.prototype = {
    *
    * @return value
    */
-  setConfigParam: function(param, value) {
+  setConfigParam: function (param, value) {
     return (this.internals.argv[param] = value);
   },
 
   /**
    * Sets the callback to the default onComplete
    */
-  setDefaultCallback: function() {
+  setDefaultCallback: function () {
     this.internals.onComplete = onComplete;
   },
 
@@ -353,7 +349,7 @@ dbmigrate.prototype = {
    * Let's the user customize the callback, which gets called after all
    * migrations have been done.
    */
-  setCustomCallback: function(callback) {
+  setCustomCallback: function (callback) {
     this.internals.onComplete = callback;
   },
 
@@ -361,7 +357,7 @@ dbmigrate.prototype = {
    * Seeds either the static or version controlled seeders, controlled by
    * the passed mode.
    */
-  seed: function(mode, scope, callback) {
+  seed: function (mode, scope, callback) {
     var executeSeed = load('seed');
     if (scope) {
       this.internals.migrationMode = scope;
@@ -370,7 +366,7 @@ dbmigrate.prototype = {
 
     this.internals.mode = mode || 'vc';
     return Promise.fromCallback(
-      function(callback) {
+      function (callback) {
         executeSeed(this.internals, this.config, callback);
       }.bind(this)
     ).asCallback(callback);
@@ -379,7 +375,7 @@ dbmigrate.prototype = {
   /**
    * Execute the down function of currently executed seeds.
    */
-  undoSeed: function(specification, scope, callback) {
+  undoSeed: function (specification, scope, callback) {
     var executeUndoSeed = load('undo-seed');
     if (arguments.length > 0) {
       if (typeof specification === 'number') {
@@ -396,7 +392,7 @@ dbmigrate.prototype = {
     }
 
     return Promise.fromCallback(
-      function(callback) {
+      function (callback) {
         executeUndoSeed(this.internals, this.config, callback);
       }.bind(this)
     ).asCallback(callback);
@@ -405,7 +401,7 @@ dbmigrate.prototype = {
   /**
    * Execute the reset function of currently executed seeds.
    */
-  resetSeed: function(specification, scope, callback) {
+  resetSeed: function (specification, scope, callback) {
     var executeUndoSeed = load('undo-seed');
     if (arguments.length > 0) {
       if (typeof specification === 'number') {
@@ -423,7 +419,7 @@ dbmigrate.prototype = {
 
     this.internals.argv.count = Number.MAX_VALUE;
     return Promise.fromCallback(
-      function(callback) {
+      function (callback) {
         executeUndoSeed(this.internals, this.config, callback);
       }.bind(this)
     ).asCallback(callback);
@@ -432,7 +428,7 @@ dbmigrate.prototype = {
   /**
    * Executes the default routine.
    */
-  run: function() {
+  run: function () {
     load('run')(this.internals, this.config);
   }
 };

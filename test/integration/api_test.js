@@ -5,11 +5,11 @@ var sinon = require('sinon');
 var proxyquire = require('proxyquire').noPreserveCache();
 var Promise = require('bluebird');
 
-lab.experiment('api', { parallel: true }, function() {
+lab.experiment('api', { parallel: true }, function () {
   lab.test(
     'force process exit after migrations have been run',
     { parallel: true },
-    function(done, onCleanup) {
+    function (done, onCleanup) {
       var process_exit = process.exit,
         argv = process.argv,
         called = false,
@@ -42,12 +42,12 @@ lab.experiment('api', { parallel: true }, function() {
       /**
       * Final validation after process.exit should have been called.
       */
-      function validate() {
+      function validate () {
         Code.expect(called).to.be.true();
         done();
       }
 
-      function upStub(internals) {
+      function upStub (internals) {
         internals.onComplete(
           {
             driver: {
@@ -61,8 +61,8 @@ lab.experiment('api', { parallel: true }, function() {
       /**
       * Create a migration with the programatic API and overwrite process.exit.
       */
-      function overwriteExit() {
-        process.exit = function(err) {
+      function overwriteExit () {
+        process.exit = function (err) {
           var ret = called;
           called = true;
 
@@ -75,7 +75,7 @@ lab.experiment('api', { parallel: true }, function() {
         };
       }
 
-      function teardown(next) {
+      function teardown (next) {
         process.exit = process_exit;
         process.argv = argv;
         return next();
@@ -83,7 +83,7 @@ lab.experiment('api', { parallel: true }, function() {
     }
   );
 
-  lab.test('should load config from parameter', { parallel: true }, function(
+  lab.test('should load config from parameter', { parallel: true }, function (
     done
   ) {
     var options = {
@@ -115,7 +115,7 @@ lab.experiment('api', { parallel: true }, function() {
   lab.test(
     'should handle all up parameter variations properly',
     { parallel: true },
-    function() {
+    function () {
       return Promise.resolve([
         [], // promise
         [sinon.spy()],
@@ -136,7 +136,7 @@ lab.experiment('api', { parallel: true }, function() {
   lab.test(
     'should handle all down parameter variations properly',
     { parallel: true },
-    function() {
+    function () {
       return Promise.resolve([
         [], // promise
         [sinon.spy()],
@@ -153,7 +153,7 @@ lab.experiment('api', { parallel: true }, function() {
   lab.test(
     'should handle all reset parameter variations properly',
     { parallel: true },
-    function() {
+    function () {
       return Promise.resolve([
         [], // promise
         [sinon.spy()],
@@ -168,7 +168,7 @@ lab.experiment('api', { parallel: true }, function() {
   lab.test(
     'should handle all sync parameter variations properly',
     { parallel: true },
-    function() {
+    function () {
       return Promise.resolve([
         [],
         ['nameatargetmigration', sinon.spy()], // targeted migration
@@ -182,8 +182,8 @@ lab.experiment('api', { parallel: true }, function() {
   );
 });
 
-function defaultExecParams(method) {
-  return function(args, index) {
+function defaultExecParams (method) {
+  return function (args, index) {
     var stubs = {};
     stubs[method] = stub;
 
@@ -191,7 +191,7 @@ function defaultExecParams(method) {
 
     return [api[method].apply(api, args), args];
 
-    function stub(internals, config, callback) {
+    function stub (internals, config, callback) {
       if (typeof args[0] === 'string') {
         Code.expect(internals.argv.destination).to.equal(args[0]);
       } else if (typeof args[0] === 'number') {
@@ -208,17 +208,17 @@ function defaultExecParams(method) {
   };
 }
 
-function spyCallback(api, args) {
+function spyCallback (api, args) {
   if (typeof args[args.length - 1] === 'function') {
     var spy = args[args.length - 1];
     Code.expect(spy.called).to.be.true();
   }
 }
 
-function loader(stubs) {
+function loader (stubs) {
   var load = require('../../lib/commands');
   var keys = Object.keys(stubs);
-  return function(module) {
+  return function (module) {
     var index = keys.indexOf(module);
     if (index !== -1) {
       return stubs[keys[index]];
@@ -227,7 +227,7 @@ function loader(stubs) {
   };
 }
 
-function stubApiInstance(isModule, stubs, options, callback) {
+function stubApiInstance (isModule, stubs, options, callback) {
   delete require.cache[require.resolve('../../api.js')];
   delete require.cache[require.resolve('optimist')];
   var mod = proxyquire('../../api.js', {
