@@ -24,6 +24,9 @@ function dbmigrate (plugins, isModule, options, callback) {
     onComplete: onComplete,
     migrationProtocol: 1
   };
+  if (typeof isModule !== 'function') {
+    this.internals.isModule = isModule;
+  }
   var internals = this.internals;
 
   this.internals.plugins = load('fn/plugin')(plugins);
