@@ -1,10 +1,10 @@
 language: node_js
 
 node_js:
-  - 4.0
-  - 4.2
-  - 5
+  - 4
   - 6
+  - 8
+  - latest
 
 notifications:
   email:
@@ -21,6 +21,8 @@ os:
   - linux
 
 matrix:
+  allow_failures:
+    - node_js: latest
   fast_finish: true
 
 sudo: false
@@ -41,4 +43,4 @@ before_install:
   - export CXX=g++-4.8; export CC=gcc-4.8;
 
 before_script:
-    - cp test/db.config.ci test/db.config.json
+  - cp test/db.config.ci test/db.config.json
