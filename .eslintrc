@@ -1,0 +1,8 @@
+{
+  "extends": "standard",
+  "rules": {
+    "semi": ["error", "always"],
+    "no-unused-vars": "warn",
+    "quotes": ["error", "single", { "avoidEscape": true, "allowTemplateLiterals": true }]
+  }
+}

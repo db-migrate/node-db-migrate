@@ -18,8 +18,8 @@ var internals = {
   migrationTable: 'migrations'
 };
 
-var indexConnectCallback = function(tunnelStub, driverSpy, callback) {
-  return function(err, db) {
+var indexConnectCallback = function (tunnelStub, driverSpy, callback) {
+  return function (err, db) {
     if (err) {
       callback(err, db, tunnelStub, driverSpy);
       return;
@@ -29,73 +29,68 @@ var indexConnectCallback = function(tunnelStub, driverSpy, callback) {
   };
 };
 
-lab.experiment('index', function() {
-
+lab.experiment('index', function () {
   lab.test('a successful connection with ssh tunnel with expected parameters',
-    function(done, cleanup) {
-
+    function (done, cleanup) {
     // Ensure that require gets a new copy of the module for each test
-    delete require.cache[require.resolve('db-migrate-mysql')];
-    var driver = require('db-migrate-mysql');
-
-    // Set up stubs/spies to verify correct flow
-    var driverSpy = sinon.stub(driver, 'connect').yields(null, {});
-    var tunnelStub = sinon.stub().callsArg(1);
-
-    var index = proxyquire('../../lib/driver/index', {
-      'tunnel-ssh': tunnelStub,
-      './mysql': driver
-    });
-    //register clean up
-    cleanup(function(next) {
-
-      driverSpy.restore();
-      delete require.cache[require.resolve('tunnel-ssh')];
       delete require.cache[require.resolve('db-migrate-mysql')];
-      next();
-    });
+      var driver = require('db-migrate-mysql');
 
-    index.connect(
-      validDbConfigWithTunnel,
-      {},
-      indexConnectCallback(tunnelStub, driverSpy, validate)
-    );
+      // Set up stubs/spies to verify correct flow
+      var driverSpy = sinon.stub(driver, 'connect').yields(null, {});
+      var tunnelStub = sinon.stub().callsArg(1);
 
-    function validate(err, db, tunnelStub, driverSpy) {
-      var expectedTunnelConfig = {
-        localPort: 'localPort',
-        host: 'sshHost',
-        port: 'sshPort',
-        dstHost: 'dbHost',
-        dstPort: 'dbPort'
-      };
-      var expectedDbConfig = {
-        driver: 'mysql',
-        host: '127.0.0.1',
-        port: 'localPort',
-        tunnel: {
+      var index = proxyquire('../../lib/driver/index', {
+        'tunnel-ssh': tunnelStub,
+        './mysql': driver
+      });
+      // register clean up
+      cleanup(function (next) {
+        driverSpy.restore();
+        delete require.cache[require.resolve('tunnel-ssh')];
+        delete require.cache[require.resolve('db-migrate-mysql')];
+        next();
+      });
+
+      index.connect(
+        validDbConfigWithTunnel,
+        {},
+        indexConnectCallback(tunnelStub, driverSpy, validate)
+      );
+
+      function validate (err, db, tunnelStub, driverSpy) {
+        var expectedTunnelConfig = {
           localPort: 'localPort',
           host: 'sshHost',
-          port: 'sshPort'
-        }
-      };
+          port: 'sshPort',
+          dstHost: 'dbHost',
+          dstPort: 'dbPort'
+        };
+        var expectedDbConfig = {
+          driver: 'mysql',
+          host: '127.0.0.1',
+          port: 'localPort',
+          tunnel: {
+            localPort: 'localPort',
+            host: 'sshHost',
+            port: 'sshPort'
+          }
+        };
 
+        Code.expect(err).to.be.null();
+        Code.expect(db).to.not.be.null();
+        Code.expect(
+          tunnelStub.withArgs(expectedTunnelConfig).calledOnce
+        ).to.be.true();
+        Code.expect(
+          driverSpy.withArgs(expectedDbConfig).calledOnce
+        ).to.be.true();
 
-      Code.expect(err).to.be.null();
-      Code.expect(db).to.not.be.null();
-      Code.expect(
-        tunnelStub.withArgs(expectedTunnelConfig).calledOnce
-      ).to.be.true();
-      Code.expect(
-        driverSpy.withArgs(expectedDbConfig).calledOnce
-      ).to.be.true();
+        done();
+      }
+    });
 
-      done();
-    }
-  });
-
-  lab.test('a failed connection with ssh tunnel', function(done, cleanup) {
-
+  lab.test('a failed connection with ssh tunnel', function (done, cleanup) {
     // Ensure that require gets a new copy of the module for each test
     delete require.cache[require.resolve('db-migrate-mysql')];
     var driver = require('db-migrate-mysql');
@@ -114,17 +109,15 @@ lab.experiment('index', function() {
       indexConnectCallback(tunnelStub, driverSpy, validate)
     );
 
-    //register clean up
-    cleanup(function(next) {
-
+    // register clean up
+    cleanup(function (next) {
       driverSpy.restore();
       delete require.cache[require.resolve('tunnel-ssh')];
       delete require.cache[require.resolve('db-migrate-mysql')];
       next();
     });
 
-    function validate(err, db, tunnelStub, driverSpy) {
-
+    function validate (err, db, tunnelStub, driverSpy) {
       Code.expect(err, 'err should be non-null')
         .to.exists();
       Code.expect(db, 'driver should be null or undefined')
@@ -140,78 +133,75 @@ lab.experiment('index', function() {
   });
 
   lab.test('privateKey gets set as expected',
-    function(done, cleanup) {
-
+    function (done, cleanup) {
     // Ensure that require gets a new copy of the module for each test
-    delete require.cache[require.resolve('db-migrate-mysql')];
-    var driver = require('db-migrate-mysql');
-    var fs = { readFileSync: sinon.stub().returns('sshkey') };
-
-    // Set up stubs/spies to verify correct flow
-    var driverSpy = sinon.stub(driver, 'connect').yields(null, {});
-    var tunnelStub = sinon.stub().callsArg(1);
-
-    var index = proxyquire('../../lib/driver/index', {
-      'tunnel-ssh': tunnelStub,
-      'fs': fs,
-      './mysql': driver,
-    });
-
-    //register clean up
-    cleanup(function(next) {
-
-      driverSpy.restore();
-
-      delete require.cache[require.resolve('tunnel-ssh')];
       delete require.cache[require.resolve('db-migrate-mysql')];
-      next();
-    });
+      var driver = require('db-migrate-mysql');
+      var fs = { readFileSync: sinon.stub().returns('sshkey') };
 
-    validDbConfigWithTunnel.tunnel.privateKeyPath = '/test/key';
+      // Set up stubs/spies to verify correct flow
+      var driverSpy = sinon.stub(driver, 'connect').yields(null, {});
+      var tunnelStub = sinon.stub().callsArg(1);
 
-    index.connect(
-      validDbConfigWithTunnel,
-      {},
-      indexConnectCallback(tunnelStub, driverSpy, validate)
-    );
+      var index = proxyquire('../../lib/driver/index', {
+        'tunnel-ssh': tunnelStub,
+        'fs': fs,
+        './mysql': driver
+      });
 
-    function validate(err, db, tunnelStub, driverSpy) {
-      var expectedTunnelConfig = {
-        localPort: 'localPort',
-        host: 'sshHost',
-        port: 'sshPort',
-        privateKeyPath: '/test/key',
-        dstHost: '127.0.0.1',
-        dstPort: 'localPort',
-        privateKey: 'sshkey'
-      };
-      var expectedDbConfig = {
-        driver: 'mysql',
-        host: '127.0.0.1',
-        port: 'localPort',
-        tunnel: {
+      // register clean up
+      cleanup(function (next) {
+        driverSpy.restore();
+
+        delete require.cache[require.resolve('tunnel-ssh')];
+        delete require.cache[require.resolve('db-migrate-mysql')];
+        next();
+      });
+
+      validDbConfigWithTunnel.tunnel.privateKeyPath = '/test/key';
+
+      index.connect(
+        validDbConfigWithTunnel,
+        {},
+        indexConnectCallback(tunnelStub, driverSpy, validate)
+      );
+
+      function validate (err, db, tunnelStub, driverSpy) {
+        var expectedTunnelConfig = {
           localPort: 'localPort',
           host: 'sshHost',
           port: 'sshPort',
-          privateKeyPath: '/test/key'
-        }
-      };
+          privateKeyPath: '/test/key',
+          dstHost: '127.0.0.1',
+          dstPort: 'localPort',
+          privateKey: 'sshkey'
+        };
+        var expectedDbConfig = {
+          driver: 'mysql',
+          host: '127.0.0.1',
+          port: 'localPort',
+          tunnel: {
+            localPort: 'localPort',
+            host: 'sshHost',
+            port: 'sshPort',
+            privateKeyPath: '/test/key'
+          }
+        };
 
+        Code.expect(err).to.be.null();
+        Code.expect(db).to.not.be.null();
+        Code.expect(
+          fs.readFileSync.withArgs(validDbConfigWithTunnel.tunnel.privateKeyPath)
+            .calledOnce
+        ).to.be.true();
+        Code.expect(
+          tunnelStub.withArgs(expectedTunnelConfig).calledOnce
+        ).to.be.true();
+        Code.expect(
+          driverSpy.withArgs(expectedDbConfig).calledOnce
+        ).to.be.true();
 
-      Code.expect(err).to.be.null();
-      Code.expect(db).to.not.be.null();
-      Code.expect(
-        fs.readFileSync.withArgs(validDbConfigWithTunnel.tunnel.privateKeyPath)
-          .calledOnce
-      ).to.be.true();
-      Code.expect(
-        tunnelStub.withArgs(expectedTunnelConfig).calledOnce
-      ).to.be.true();
-      Code.expect(
-        driverSpy.withArgs(expectedDbConfig).calledOnce
-      ).to.be.true();
-
-      done();
-    }
-  });
+        done();
+      }
+    });
 });

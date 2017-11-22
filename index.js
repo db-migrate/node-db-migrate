@@ -1,45 +1,42 @@
-var pkginfo = require('pkginfo')(module, 'version'); // jshint ignore:line
+require('pkginfo')(module, 'version'); // jshint ignore:line
 var fs = require('fs');
 var path = require('path');
 
 exports.dataType = require('db-migrate-shared').dataType;
 
-function loadPluginList() {
-
-  var plugins = JSON.parse(fs.readFileSync(
-          path.join(process.cwd(), 'package.json'),
-          'utf-8'
-        )
-      ),
-      targets = [];
+function loadPluginList () {
+  var plugins = JSON.parse(
+    fs.readFileSync(path.join(process.cwd(), 'package.json'), 'utf-8')
+  );
+  var targets = [];
 
   plugins = Object.assign(plugins.dependencies, plugins.devDependencies);
 
-  for(var plugin in plugins) {
-
-    if(plugin.startsWith('db-migrate-plugin'))
-      targets.push(plugin);
+  for (var plugin in plugins) {
+    if (plugin.startsWith('db-migrate-plugin')) targets.push(plugin);
   }
 
   return targets;
 }
 
-function loadPlugins() {
+function loadPlugins () {
+  var plugins = loadPluginList();
+  var i = 0;
+  var length = plugins.length;
+  var hooks = {};
 
-  var plugins = loadPluginList(),
-      i = 0,
-      length = plugins.length,
-      hooks = {};
-
-  for(; i < length; ++i) {
-
+  for (; i < length; ++i) {
     var plugin = require(path.join(process.cwd(), 'node_modules', plugins[i]));
 
-    if(typeof(plugin.name) !== 'string' || !plugin.hooks || !plugin.loadPlugin)
+    if (
+      typeof plugin.name !== 'string' ||
+      !plugin.hooks ||
+      !plugin.loadPlugin
+    ) {
       continue;
+    }
 
-    plugin.hooks.map(function(hook) {
-
+    plugin.hooks.map(function (hook) {
       hooks[hook] = hooks[hook] || [];
       hooks[hook].push(plugin);
     });
@@ -48,24 +45,19 @@ function loadPlugins() {
   return hooks;
 }
 
-module.exports.getInstance = function(isModule, options, callback) {
-
+module.exports.getInstance = function (isModule, options, callback) {
   delete require.cache[require.resolve('./api.js')];
   delete require.cache[require.resolve('optimist')];
-  var mod = require('./api.js'),
-      plugins = {};
+  var Mod = require('./api.js');
+  var plugins = {};
 
   try {
+    if (!options || !options.noPlugins) plugins = loadPlugins();
+  } catch (ex) {}
 
-    if(!options || !options.noPlugins)
-      plugins = loadPlugins();
-  }
-  catch(ex) {}
-
-  if(options && options.plugins) {
-
+  if (options && options.plugins) {
     plugins = Object.assign(plugins, options.plugins);
   }
 
-  return new mod(plugins, isModule, options, callback);
+  return new Mod(plugins, isModule, options, callback);
 };
