@@ -79,6 +79,7 @@
     "sinon": "^4.1.2"
   },
   "scripts": {
+    "pretest": "eslint *.js lib/*.js test/*.js bin/*",
     "test": "make test-cov"
   }
 }
