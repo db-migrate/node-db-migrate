@@ -1,3 +1,33 @@
+
+## 0.10.0
+
+Note:
+
+This is a cornerstone release. It provides groundwork for many things to come and has worked
+on stability and flexibility, while mostly retaining backwards compatibility.
+
+This release was a rewrite of nearly the whole module. However backwards compatibility 
+was mostly preeserved. Bug fixes wont be listed for this release, all subsequent releases
+will follow the angular standard to automatically generate changelogs.
+
+New Features:
+ - Sync
+ - Driverless Core
+ - Plugin Hooks and overwrites
+ - Adjusted migration schema, to allow specific setup routines
+ - Version migration schemas itself for future iterations
+ - Promise style migrations
+ - Programmatic API
+ - Restructered major parts of db-migrate
+ - Transactional migrations
+ - New configuration options
+
+Find a full list of features added here:
+
+https://github.com/db-migrate/node-db-migrate/issues?utf8=%E2%9C%93&q=milestone%3Av0.10.0
+
+# Old Changelogs
+
 ## 0.1.0
 
 New Features:
