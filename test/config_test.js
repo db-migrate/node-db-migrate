@@ -137,7 +137,7 @@ lab.experiment('config', function () {
           Code.expect(current.settings.driver).to.equal('postgres');
           Code.expect(current.settings.user).to.equal('uname');
           Code.expect(current.settings.password).to.equal('pw');
-          Code.expect(current.settings.host, ').to.equal(rver.com');
+          Code.expect(current.settings.host ).to.equal('server.com');
           Code.expect(current.settings.database).to.equal('dbname');
           done();
         }

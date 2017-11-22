@@ -4,7 +4,6 @@ var lab = exports.lab = Lab.script();
 var sinon = require('sinon');
 var Bluebird = require('bluebird');
 var shadow = require('../../lib/driver/shadow.js');
-require('sinon-as-promised')(Bluebird);
 
 lab.experiment('shadow', function () {
   lab.test('shadow function and original function get called in serial',
