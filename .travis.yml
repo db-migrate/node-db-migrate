@@ -4,7 +4,7 @@ node_js:
   - 4
   - 6
   - 8
-  - latest
+  - node
 
 notifications:
   email:
@@ -22,7 +22,7 @@ os:
 
 matrix:
   allow_failures:
-    - node_js: latest
+    - node_js: node
   fast_finish: true
 
 sudo: false
