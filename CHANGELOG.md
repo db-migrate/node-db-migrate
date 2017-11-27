@@ -1,3 +1,10 @@
+<a name="0.10.1"></a>
+## [0.10.1](https://github.com/db-migrate/node-db-migrate/compare/v0.10.0...v0.10.1) (2017-11-27)
+
+
+### Bug Fixes
+
+* **db:** wrong reference to connect causes db:create to fail ([56cb75a](https://github.com/db-migrate/node-db-migrate/commit/56cb75a)), closes [#520](https://github.com/db-migrate/node-db-migrate/issues/520)
 
 ## 0.10.0
 
