@@ -1,3 +1,13 @@
+<a name="0.10.2"></a>
+## [0.10.2](https://github.com/db-migrate/node-db-migrate/compare/v0.10.1...v0.10.2) (2017-12-01)
+
+
+### Bug Fixes
+
+* **log:** error ended up in unreadable errors ([97de65d](https://github.com/db-migrate/node-db-migrate/commit/97de65d)), closes [#524](https://github.com/db-migrate/node-db-migrate/issues/524) [#521](https://github.com/db-migrate/node-db-migrate/issues/521)
+
+
+
 <a name="0.10.1"></a>
 ## [0.10.1](https://github.com/db-migrate/node-db-migrate/compare/v0.10.0...v0.10.1) (2017-11-27)
 
