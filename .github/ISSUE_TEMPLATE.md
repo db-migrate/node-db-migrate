@@ -23,6 +23,8 @@
 
 <pre><code>
 db-migrate version: X.Y.Z
+plugins with versions: X.Y.Z
+db-migrate driver with versions: <!-- eg. mongodb vX.Y.Z -->
 
 Additional information:
 - Node version: XX  <!-- run `node --version` -->
