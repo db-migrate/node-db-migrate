@@ -1,3 +1,7 @@
+/**
+ * This file is going to disappear.
+ * Only still here for backwards compatibility.
+ * */
 var recursive = require('final-fs').readdirRecursive;
 var fs = require('fs');
 var driver = require('./lib/driver');
@@ -6,8 +10,10 @@ var log = require('db-migrate-shared').log;
 
 exports.connect = function (config, PassedClass, callback) {
   var internals = {};
-
+  var prefix = 'migration';
+  var migrationsDir;
   if (config.config) {
+    prefix = config.prefix || prefix;
     internals = config.internals;
     config = config.config;
   }
@@ -19,15 +25,16 @@ exports.connect = function (config, PassedClass, callback) {
     }
 
     if (internals.migrationMode) {
-      var dirPath = path.resolve(config['migrations-dir'] || 'migrations');
-
+      var dirPath = path.resolve(
+        internals.argv['migrations-dir'] || 'migrations'
+      );
       if (internals.migrationMode !== 'all') {
         var switched = false;
         var newConf;
 
         try {
           newConf = require(path.resolve(
-            config['migrations-dir'] || 'migrations',
+            internals.argv['migrations-dir'] || 'migrations',
             internals.migrationMode
           ) + '/config.json');
           log.info(
@@ -48,9 +55,10 @@ exports.connect = function (config, PassedClass, callback) {
               null,
               new PassedClass(
                 db,
-                config['migrations-dir'],
+                internals.argv['migrations-dir'],
                 internals.mode !== 'static',
-                internals
+                internals,
+                prefix
               )
             );
           });
@@ -60,9 +68,10 @@ exports.connect = function (config, PassedClass, callback) {
             null,
             new PassedClass(
               db,
-              config['migrations-dir'],
+              internals.argv['migrations-dir'],
               internals.mode !== 'static',
-              internals
+              internals,
+              prefix
             )
           );
         }
@@ -70,7 +79,7 @@ exports.connect = function (config, PassedClass, callback) {
         recursive(
           dirPath,
           false,
-          config['migrations-dir'] || 'migrations'
+          internals.argv['migrations-dir'] || 'migrations'
         ).then(function (files) {
           var oldClose = db.close;
 
@@ -89,6 +98,7 @@ exports.connect = function (config, PassedClass, callback) {
               PassedClass,
               db,
               oldClose,
+              prefix,
               cb
             );
           };
@@ -101,9 +111,10 @@ exports.connect = function (config, PassedClass, callback) {
         null,
         new PassedClass(
           db,
-          config['migrations-dir'],
+          internals.argv['migrations-dir'],
           internals.mode !== 'static',
-          internals
+          internals,
+          prefix
         )
       );
     }
@@ -128,6 +139,7 @@ function migrationFiles (
   PassedClass,
   db,
   close,
+  prefix,
   cb
 ) {
   var file;
@@ -156,8 +168,8 @@ function migrationFiles (
 
   db.switchDatabase(switched ? newConf : config.database, function () {
     internals.matching = file.substr(
-      file.indexOf(config['migrations-dir'] || 'migrations') +
-        (config['migrations-dir'] || 'migrations').length +
+      file.indexOf(internals.argv['migrations-dir'] || 'migrations') +
+        (internals.argv['migrations-dir'] || 'migrations').length +
         1
     );
 
@@ -170,9 +182,10 @@ function migrationFiles (
       null,
       new PassedClass(
         db,
-        config['migrations-dir'],
+        internals.argv['migrations-dir'],
         internals.mode !== 'static',
-        internals
+        internals,
+        prefix
       )
     );
 
