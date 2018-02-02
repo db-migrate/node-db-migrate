@@ -42,7 +42,7 @@ function dbmigrate (plugins, isModule, options, callback) {
   });
 
   /* $lab:coverage:off$ */
-  if (options && !options.throwUncatched) load('helper/register-events')();
+  if (!options || !options.throwUncatched) load('helper/register-events')();
   /* $lab:coverage:on$ */
 
   if (typeof options === 'object') {
