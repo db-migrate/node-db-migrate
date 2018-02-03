@@ -1,17 +1,18 @@
-var Code = require('code');
-var Lab = require('lab');
-var proxyquire = require('proxyquire').noPreserveCache();
-var lab = (exports.lab = Lab.script());
-var Migration = require('../lib/migration.js');
+const Code = require('code');
+const Lab = require('lab');
+const proxyquire = require('proxyquire').noPreserveCache();
+const lab = (exports.lab = Lab.script());
+const Migration = require('../lib/file.js');
+const Template = require('../lib/template.js');
 
-var date = createDateForTest();
-var dateString = '20140220143050';
-var dirName = '/directory/name/';
-var fileNameNoExtension = 'filename';
-var fileName = 'filename.js';
-var templateType = Migration.TemplateType.SQL_FILE_LOADER;
+const date = createDateForTest();
+const dateString = '20140220143050';
+const dirName = '/directory/name/';
+const fileNameNoExtension = 'filename';
+const fileName = 'filename.js';
+const templateType = Template.TemplateType.SQL_FILE_LOADER;
 
-var internals = {};
+let internals = {};
 internals.migrationTable = 'migrations';
 
 lab.experiment('migration', function () {
@@ -32,7 +33,7 @@ lab.experiment('migration', function () {
 
 function asModule () {
   lab.test('should create migration', function (done) {
-    var dbmigrate = stubApiInstance(true, {}, {});
+    const dbmigrate = stubApiInstance(true, {}, {});
     dbmigrate.setConfigParam('_', []);
 
     dbmigrate.create('migrationName').then(done);
@@ -44,7 +45,7 @@ function newMigrationObject () {
     'with 2 parameters as the complete filepath',
 
     function () {
-      var migration = new Migration(
+      const migration = new Migration(
         dirName + dateString + '-' + fileName,
         internals
       );
@@ -91,7 +92,7 @@ function newMigrationObject () {
   );
 
   lab.experiment('with 3 parameters', function () {
-    var migration = new Migration(fileName, dirName, date);
+    const migration = new Migration(fileName, dirName, date);
 
     lab.test('should have title set', function (done) {
       Code.expect(migration.title).to.equal(fileName);
@@ -122,7 +123,7 @@ function newMigrationObject () {
   });
 
   lab.experiment('with 5 parameters', function () {
-    var migration = new Migration(
+    const migration = new Template(
       fileName,
       dirName,
       date,
@@ -131,22 +132,22 @@ function newMigrationObject () {
     );
 
     lab.test('should have title set', function (done) {
-      Code.expect(migration.title).to.equal(fileName);
+      Code.expect(migration.file.title).to.equal(fileName);
       done();
     });
 
     lab.test('should have date set', function (done) {
-      Code.expect(migration.date).to.equal(date);
+      Code.expect(migration.file.date).to.equal(date);
       done();
     });
 
     lab.test('should have name set', function (done) {
-      Code.expect(migration.name).to.equal(dateString + '-' + fileName);
+      Code.expect(migration.file.name).to.equal(dateString + '-' + fileName);
       done();
     });
 
     lab.test('should have path set', function (done) {
-      Code.expect(migration.path).to.equal(
+      Code.expect(migration.file.path).to.equal(
         dirName + dateString + '-' + fileName
       );
       done();
@@ -164,13 +165,13 @@ function getTemplate () {
     'when template type is not set',
 
     function () {
-      var migration = new Migration(fileName, dirName, date, internals);
+      const migration = new Template(fileName, dirName, date, internals);
 
       lab.test(
         'should return default javascript template',
 
         function (done) {
-          var actual = migration.getTemplate();
+          const actual = migration.getTemplate();
           Code.expect(actual).to.equal(migration.defaultJsTemplate());
           done();
         }
@@ -180,11 +181,11 @@ function getTemplate () {
 
   lab.experiment('when template type is set', function () {
     lab.experiment('as sql file loader', function () {
-      var migration = new Migration(
+      const migration = new Template(
         fileName,
         dirName,
         date,
-        Migration.TemplateType.SQL_FILE_LOADER,
+        Template.TemplateType.SQL_FILE_LOADER,
         internals
       );
 
@@ -192,7 +193,7 @@ function getTemplate () {
         'should return sql file loader template',
 
         function (done) {
-          var actual = migration.getTemplate();
+          const actual = migration.getTemplate();
           Code.expect(actual).to.equal(migration.sqlFileLoaderTemplate());
           done();
         }
@@ -200,11 +201,11 @@ function getTemplate () {
     });
 
     lab.experiment('as default sql', function () {
-      var migration = new Migration(
+      const migration = new Template(
         fileName,
         dirName,
         date,
-        Migration.TemplateType.DEFAULT_SQL,
+        Template.TemplateType.DEFAULT_SQL,
         internals
       );
 
@@ -212,7 +213,7 @@ function getTemplate () {
         'should return default sql template',
 
         function (done) {
-          var actual = migration.getTemplate();
+          const actual = migration.getTemplate();
           Code.expect(actual).to.equal(migration.defaultSqlTemplate());
           done();
         }
@@ -220,11 +221,11 @@ function getTemplate () {
     });
 
     lab.experiment('as default coffee', function () {
-      var migration = new Migration(
+      const migration = new Template(
         fileName,
         dirName,
         date,
-        Migration.TemplateType.DEFAULT_COFFEE,
+        Template.TemplateType.DEFAULT_COFFEE,
         internals
       );
 
@@ -232,7 +233,7 @@ function getTemplate () {
         'should return default coffee template',
 
         function (done) {
-          var actual = migration.getTemplate();
+          const actual = migration.getTemplate();
           Code.expect(actual).to.equal(migration.defaultCoffeeTemplate());
           done();
         }
@@ -240,11 +241,11 @@ function getTemplate () {
     });
 
     lab.experiment('as coffee sql loader', function () {
-      var migration = new Migration(
+      const migration = new Template(
         fileName,
         dirName,
         date,
-        Migration.TemplateType.COFFEE_SQL_FILE_LOADER,
+        Template.TemplateType.COFFEE_SQL_FILE_LOADER,
         internals
       );
 
@@ -252,7 +253,7 @@ function getTemplate () {
         'should return default coffee template',
 
         function (done) {
-          var actual = migration.getTemplate();
+          const actual = migration.getTemplate();
           Code.expect(actual).to.equal(migration.coffeeSqlFileLoaderTemplate());
           done();
         }
@@ -260,11 +261,11 @@ function getTemplate () {
     });
 
     lab.experiment('as default javascript', function () {
-      var migration = new Migration(
+      const migration = new Template(
         fileName,
         dirName,
         date,
-        Migration.TemplateType.DEFAULT_JS,
+        Template.TemplateType.DEFAULT_JS,
         internals
       );
 
@@ -272,7 +273,7 @@ function getTemplate () {
         'should return default sql template',
 
         function (done) {
-          var actual = migration.getTemplate();
+          const actual = migration.getTemplate();
           Code.expect(actual).to.equal(migration.defaultJsTemplate());
           done();
         }
@@ -284,8 +285,8 @@ function getTemplate () {
 function stubApiInstance (isModule, stubs, options, callback) {
   delete require.cache[require.resolve('../api.js')];
   delete require.cache[require.resolve('optimist')];
-  var Mod = proxyquire('../api.js', stubs);
-  var plugins = {};
+  const Mod = proxyquire('../api.js', stubs);
+  const plugins = {};
   options = options || {};
 
   options = Object.assign(options, {
@@ -297,7 +298,7 @@ function stubApiInstance (isModule, stubs, options, callback) {
 }
 
 function createDateForTest () {
-  var date = new Date();
+  const date = new Date();
   date.setUTCFullYear(2014);
   date.setUTCDate('20');
   date.setUTCMonth('01');
