@@ -1,3 +1,5 @@
+'use strict';
+
 const Code = require('code');
 const Lab = require('lab');
 const proxyquire = require('proxyquire').noPreserveCache();
