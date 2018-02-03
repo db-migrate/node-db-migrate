@@ -11,7 +11,6 @@ var log = require('db-migrate-shared').log;
 exports.connect = function (config, PassedClass, callback) {
   var internals = {};
   var prefix = 'migration';
-  var migrationsDir;
   if (config.config) {
     prefix = config.prefix || prefix;
     internals = config.internals;
@@ -194,14 +193,3 @@ function migrationFiles (
     }
   });
 }
-
-exports.createMigration = function (migration, callback) {
-  migration.write(function (err) {
-    if (err) {
-      callback(err);
-      return;
-    }
-
-    callback(null, migration);
-  });
-};
