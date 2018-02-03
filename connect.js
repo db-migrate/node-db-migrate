@@ -39,7 +39,10 @@ exports.connect = function (config, PassedClass, callback) {
         } catch (e) {}
 
         if (switched) {
-          db.switchDatabase(newConf, function () {
+          db.switchDatabase(newConf, function (err) {
+            if (err) {
+              return callback(err);
+            }
             internals.locTitle = internals.migrationMode;
             callback(
               null,

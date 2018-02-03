@@ -52,7 +52,6 @@
     "final-fs": "^1.6.0",
     "inflection": "^1.10.0",
     "mkdirp": "~0.5.0",
-    "moment": "^2.14.1",
     "optimist": "~0.6.1",
     "parse-database-url": "~0.3.0",
     "pkginfo": "^0.4.0",
@@ -63,23 +62,23 @@
     "tunnel-ssh": "^4.0.0"
   },
   "devDependencies": {
-    "code": "^4.0.0",
+    "code": "^4.1.0",
     "db-migrate-base": "^1.2.5",
     "db-migrate-mysql": "^1.1.7",
-    "db-migrate-sqlite3": "^0.1.9",
+    "db-migrate-sqlite3": "^0.2.1",
     "eslint": "^4.10.0",
     "eslint-config-standard": "^10.2.1",
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-node": "^5.2.1",
     "eslint-plugin-promise": "^3.6.0",
     "eslint-plugin-standard": "^3.0.1",
-    "lab": "^11.1.0",
+    "lab": "^14.3.1",
     "proxyquire": "^1.4.0",
-    "rimraf": "~2.5.0",
-    "sinon": "^1.17.3",
-    "sinon-as-promised": "^4.0.2"
+    "rimraf": "^2.6.2",
+    "sinon": "^4.1.2"
   },
   "scripts": {
+    "pretest": "eslint *.js lib/*.js test/*.js bin/*",
     "test": "make test-cov"
   }
 }

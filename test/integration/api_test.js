@@ -5,10 +5,10 @@ var sinon = require('sinon');
 var proxyquire = require('proxyquire').noPreserveCache();
 var Promise = require('bluebird');
 
-lab.experiment('api', { parallel: true }, function () {
+lab.experiment('api', function () {
   lab.test(
     'force process exit after migrations have been run',
-    { parallel: true },
+
     function (done, onCleanup) {
       var processExit = process.exit;
       var argv = process.argv;
@@ -83,9 +83,7 @@ lab.experiment('api', { parallel: true }, function () {
     }
   );
 
-  lab.test('should load config from parameter', { parallel: true }, function (
-    done
-  ) {
+  lab.test('should load config from parameter', function (done) {
     var options = {
       env: 'dev',
       cwd: process.cwd() + '/test/integration',
@@ -114,7 +112,7 @@ lab.experiment('api', { parallel: true }, function () {
 
   lab.test(
     'should handle all up parameter variations properly',
-    { parallel: true },
+
     function () {
       return Promise.resolve([
         [], // promise
@@ -135,7 +133,7 @@ lab.experiment('api', { parallel: true }, function () {
 
   lab.test(
     'should handle all down parameter variations properly',
-    { parallel: true },
+
     function () {
       return Promise.resolve([
         [], // promise
@@ -152,7 +150,7 @@ lab.experiment('api', { parallel: true }, function () {
 
   lab.test(
     'should handle all reset parameter variations properly',
-    { parallel: true },
+
     function () {
       return Promise.resolve([
         [], // promise
@@ -167,7 +165,7 @@ lab.experiment('api', { parallel: true }, function () {
 
   lab.test(
     'should handle all sync parameter variations properly',
-    { parallel: true },
+
     function () {
       return Promise.resolve([
         [],
