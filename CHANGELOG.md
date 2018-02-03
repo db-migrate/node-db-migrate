@@ -1,3 +1,22 @@
+<a name="0.10.3"></a>
+## [0.10.3](https://github.com/db-migrate/node-db-migrate/compare/v0.10.2...v0.10.3) (2018-02-03)
+
+
+### Bug Fixes
+
+* **db:** wrong reference to connect causes db:create to fail ([991ee76](https://github.com/db-migrate/node-db-migrate/commit/991ee76)), closes [#520](https://github.com/db-migrate/node-db-migrate/issues/520)
+* **exitCode:** wrong check for existence fixed ([3c6fc33](https://github.com/db-migrate/node-db-migrate/commit/3c6fc33))
+* **exitCode:** wrong exit code on db methods ([486cb78](https://github.com/db-migrate/node-db-migrate/commit/486cb78)), closes [#534](https://github.com/db-migrate/node-db-migrate/issues/534)
+* **log:** error ended up in unreadable errors ([16512f6](https://github.com/db-migrate/node-db-migrate/commit/16512f6)), closes [#524](https://github.com/db-migrate/node-db-migrate/issues/524) [#521](https://github.com/db-migrate/node-db-migrate/issues/521)
+* **switchDatabase:** no error was thrown on scope switch ([392d88c](https://github.com/db-migrate/node-db-migrate/commit/392d88c)), closes [#470](https://github.com/db-migrate/node-db-migrate/issues/470)
+
+
+### Features
+
+* **issuetemplate:** added a github issue template ([3c0fcbf](https://github.com/db-migrate/node-db-migrate/commit/3c0fcbf))
+
+
+
 <a name="0.10.2"></a>
 ## [0.10.2](https://github.com/db-migrate/node-db-migrate/compare/v0.10.1...v0.10.2) (2017-12-01)
 
