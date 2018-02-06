@@ -1,3 +1,13 @@
+<a name="0.10.4"></a>
+## [0.10.4](https://github.com/db-migrate/node-db-migrate/compare/v0.10.3...v0.10.4) (2018-02-06)
+
+
+### Bug Fixes
+
+* **insert:** add missing insert entry to interface ([899b8bc](https://github.com/db-migrate/node-db-migrate/commit/899b8bc)), closes [#542](https://github.com/db-migrate/node-db-migrate/issues/542)
+
+
+
 <a name="0.10.3"></a>
 ## [0.10.3](https://github.com/db-migrate/node-db-migrate/compare/v0.10.2...v0.10.3) (2018-02-03)
 
