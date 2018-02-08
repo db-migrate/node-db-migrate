@@ -3,6 +3,7 @@
 
  - [ ] Bug report  <!-- Please search GitHub for a similar issue or PR before submitting -->
  - [ ] Feature request
+ - [ ] Question
 
 
 ## Current behavior
