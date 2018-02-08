@@ -1,9 +1,9 @@
 ## I'm submitting a...
 <!-- Check one of the following options with "x" -->
-<pre><code>
-[ ] Bug report  <!-- Please search GitHub for a similar issue or PR before submitting -->
-[ ] Feature request
-</code></pre>
+
+ - [ ] Bug report  <!-- Please search GitHub for a similar issue or PR before submitting -->
+ - [ ] Feature request
+
 
 ## Current behavior
 <!-- Describe how the issue manifests. -->
