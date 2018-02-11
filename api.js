@@ -435,8 +435,8 @@ dbmigrate.prototype = {
   /**
    * Executes the default routine.
    */
-  run: function () {
-    load('run')(this.internals, this.config);
+  run: function (callback) {
+    load('run')(this.internals, this.config, callback);
   }
 };
 
