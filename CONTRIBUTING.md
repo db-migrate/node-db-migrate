@@ -1,3 +1,40 @@
+# Contributing by opening an Issue or Discussing
+
+Whenever you find a bug, which you do not have the time to fix, it is still important
+to get your input. Same goes for feature suggestions and everything else that helps
+a project to get better.
+
+Here are a few points to consider before creating an issue or discussing within one:
+
+1. Make sure you have proper description of your problem or what exactly you want:
+
+We have issue templates in place that should help you with this one and this is really
+important, since we may not just agree with you, if we don't understand your use case.
+
+2. Be constructive and before you post think once more if this is going to waste the maintainers
+   time, or if it is going to actually help them.
+
+Since being constructive, is a big vague, here some simple points that should help you:
+
+2.1. Just stating something is wrong, is not constructive.
+
+When you've got the feeling something is wrong, try to understand first if it is really wrong
+and if it is make suggestions on how to improve, or even better open a PR and make the open source
+world once again even better!
+
+2.2. "Does not work", is not a proper problem description
+
+Neither is, "see title". When you follow the issue template and provide all informations asked for
+you should be pretty fine, in providing us exactly the information we need to help you.
+
+2.3. Follow the CoC and contribute, not attack
+
+An example when you're not contributing, but attacking is, should you just impose you're right
+and you should be followed. It is always about the dialogue, that makes the difference. After all
+you should be fine, by just using your common sense.
+
+# Contributing a Pull Request
+
 Without pull requests from generous people like you, this project
 wouldn't be what it is today. You are planning to contribute aren't you?
 If so, here's a quick guide to creating a great pull request for
