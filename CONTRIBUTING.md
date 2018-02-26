@@ -8,16 +8,21 @@ this project:
 2. Copy the test/db.config.example.json to test/db.config.json
 
 3. Run the tests. Pull requests without tests are much less likely to be
-merged, and it's great to know you're starting with a clean slate: `npm test`.
-Be sure to check the README for setting up your test databases first.
+   merged, and it's great to know you're starting with a clean slate: `npm test`.
+   Be sure to check the README for setting up your test databases first.
 
 4. Add a test for your change. Refactoring and documentation changes
-require no new tests. If you are adding functionality or fixing a bug,
-please include a test.
+   require no new tests. If you are adding functionality or fixing a bug,
+   please include a test.
 
 5. Make the test pass.
 
-6. Push to your fork and submit a pull request.
+6. Create a commit that complies with our conventions, which you can view
+   [here](https://github.com/conventional-changelog/conventional-changelog/tree/35e60b5be6027fb2784c5103eee111f6f99b045e/packages/conventional-changelog-angular)
+   and last but not least also comply to the [DCO](https://github.com/probot/dco#how-it-works).
+   Which easiest work with just commiting via `git commit -s -m 'your commit message'`.
+
+7. Push to your fork and submit a pull request.
 
 At this point you're waiting on me. In a perfect world I'd commit to
 responding to your request in some short period of time. Unfortunately,
