@@ -169,6 +169,23 @@ lab.experiment('api', function () {
   );
 
   lab.test(
+    'should handle all check parameter variations properly',
+
+    function () {
+      return Promise.resolve([
+        [], // promise
+        [sinon.spy()],
+        [1, sinon.spy()], // targeted migration
+        [1], // promise targeted migration
+        [1, 'testscope', sinon.spy()], // scoped target
+        [1, 'testscope'] // promise scope target
+      ])
+        .each(defaultExecParams('check'))
+        .each(spyCallback);
+    }
+  );
+
+  lab.test(
     'should handle all reset parameter variations properly',
 
     function () {
