@@ -227,6 +227,31 @@ dbmigrate.prototype = {
     ).asCallback(callback);
   },
 
+  check: function (specification, opts, callback) {
+    var executeCheck = load('check');
+
+    if (arguments.length > 0) {
+      if (typeof specification === 'number') {
+        this.internals.argv.count = arguments[0];
+      } else if (typeof specification === 'function') {
+        callback = specification;
+      }
+
+      if (typeof opts === 'string') {
+        this.internals.migrationMode = opts;
+        this.internals.matching = opts;
+      } else if (typeof opts === 'function') {
+        callback = opts;
+      }
+    }
+
+    return Promise.fromCallback(
+      function (callback) {
+        executeCheck(this.internals, this.config, callback);
+      }.bind(this)
+    ).asCallback(callback);
+  },
+
   /**
    * Executes up a given number of migrations or a specific one.
    *
