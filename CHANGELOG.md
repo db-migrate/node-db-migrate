@@ -1,3 +1,21 @@
+<a name="0.10.6"></a>
+## [0.10.6](https://github.com/db-migrate/node-db-migrate/compare/v0.10.5...v0.10.6) (2018-03-21)
+
+
+### Bug Fixes
+
+* **ci:** add ignores for backported features ([53dedc2](https://github.com/db-migrate/node-db-migrate/commit/53dedc2))
+
+
+### Features
+
+* **contribution:** enrich contribution instructions ([93b5cea](https://github.com/db-migrate/node-db-migrate/commit/93b5cea)), closes [#549](https://github.com/db-migrate/node-db-migrate/issues/549)
+* **contribution:** enrich contribution instructions, issues ([d87a734](https://github.com/db-migrate/node-db-migrate/commit/d87a734))
+* **progamableApi:** CMD options can be passed programatically now ([69d7605](https://github.com/db-migrate/node-db-migrate/commit/69d7605))
+* **progamableApi:** using const now ([a69e221](https://github.com/db-migrate/node-db-migrate/commit/a69e221))
+
+
+
 <a name="0.10.4"></a>
 ## [0.10.4](https://github.com/db-migrate/node-db-migrate/compare/v0.10.3...v0.10.4) (2018-02-06)
 
