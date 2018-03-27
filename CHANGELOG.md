@@ -1,3 +1,13 @@
+<a name="0.10.7"></a>
+## [0.10.7](https://github.com/db-migrate/node-db-migrate/compare/v0.10.6...v0.10.7) (2018-03-27)
+
+
+### Bug Fixes
+
+* **progamableApi:** cmdOptions get passed into setDefaultArgv now ([ebdd75d](https://github.com/db-migrate/node-db-migrate/commit/ebdd75d))
+
+
+
 <a name="0.10.6"></a>
 ## [0.10.6](https://github.com/db-migrate/node-db-migrate/compare/v0.10.5...v0.10.6) (2018-03-21)
 
