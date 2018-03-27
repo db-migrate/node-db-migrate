@@ -31,17 +31,17 @@ lab.experiment('api', function () {
       dbmigrate.silence(true);
 
       /**
-      * We have set force-exit above, this should end up in db-migrate
-      * executing process.exit on the final callback.
-      * Process.exit has been overwritten and will finally call validate.
-      *
-      * The test validation takes place in validate()
-      */
+       * We have set force-exit above, this should end up in db-migrate
+       * executing process.exit on the final callback.
+       * Process.exit has been overwritten and will finally call validate.
+       *
+       * The test validation takes place in validate()
+       */
       dbmigrate.up();
 
       /**
-      * Final validation after process.exit should have been called.
-      */
+       * Final validation after process.exit should have been called.
+       */
       function validate () {
         Code.expect(called).to.be.true();
         done();
@@ -59,8 +59,8 @@ lab.experiment('api', function () {
       }
 
       /**
-      * Create a migration with the programatic API and overwrite process.exit.
-      */
+       * Create a migration with the programatic API and overwrite process.exit.
+       */
       function overwriteExit () {
         process.exit = function (err) {
           var ret = called;
@@ -102,6 +102,26 @@ lab.experiment('api', function () {
     var api = stubApiInstance(true, {}, options);
     var actual = api.config;
     var expected = options.config;
+
+    delete expected.getCurrent;
+    delete actual.getCurrent;
+
+    Code.expect(actual).to.equal(expected);
+    done();
+  });
+
+  lab.test('should load commandline options from options parameter', function (
+    done
+  ) {
+    var options = {
+      cmdOptions: {
+        'migrations-dir': './test'
+      }
+    };
+
+    var api = stubApiInstance(true, {}, options);
+    var actual = api.internals.argv['migrations-dir'];
+    var expected = options.cmdOptions['migrations-dir'];
 
     delete expected.getCurrent;
     delete actual.getCurrent;
