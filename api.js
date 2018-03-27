@@ -56,6 +56,8 @@ function dbmigrate (plugins, isModule, options, callback) {
 
     if (typeof options.cwd === 'string') internals.cwd = options.cwd;
     else internals.cwd = process.cwd();
+
+    if (typeof options.cmdOptions === 'object') internals.cmdOptions = options.cmdOptions;
   } else internals.cwd = process.cwd();
 
   if (typeof isModule === 'function') {
