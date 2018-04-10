@@ -1,3 +1,13 @@
+<a name="0.11.0"></a>
+# [0.11.0](https://github.com/db-migrate/node-db-migrate/compare/v0.10.7...v0.11.0) (2018-04-10)
+
+
+### Features
+
+* **check:** add check functionality to determine migrations to run ([93e9f18](https://github.com/db-migrate/node-db-migrate/commit/93e9f18))
+
+
+
 <a name="0.10.7"></a>
 ## [0.10.7](https://github.com/db-migrate/node-db-migrate/compare/v0.10.6...v0.10.7) (2018-03-27)
 
