@@ -1,24 +1,25 @@
-var Code = require('code');
-var Lab = require('lab');
-var proxyquire = require('proxyquire').noPreserveCache();
-var lab = (exports.lab = Lab.script());
+const Promise = require('bluebird');
+const Code = require('code');
+const Lab = require('lab');
+const proxyquire = require('proxyquire').noPreserveCache();
+const lab = (exports.lab = Lab.script());
 
 lab.experiment('migrators', function () {
   lab.experiment('check', function () {
     lab.test('should return the migrations to be run', function (done) {
-      var completedMigration = {
+      const completedMigration = {
         name: '20180330020329-thisMigrationIsCompleted'
       };
-      var uncompletedMigration = {
+      const uncompletedMigration = {
         name: '20180330020330-thisMigrationIsNotCompleted'
       };
-      var Migrator = proxyquire('../lib/migrator.js', {
-        './migration': {
-          loadFromFilesystem: (migrationsDir, internals, cb) => {
-            return cb(null, [completedMigration, uncompletedMigration]);
+      const Migrator = proxyquire('../lib/walker.js', {
+        './file.js': {
+          loadFromFileystem: (migrationsDir, prefix, internals) => {
+            return Promise.resolve([uncompletedMigration]);
           },
-          loadFromDatabase: (migrationsDir, driver, internals, cb) => {
-            return cb(null, [completedMigration]);
+          loadFromDatabase: (migrationsDir, prefix, driver, internals) => {
+            return Promise.resolve([completedMigration]);
           }
         }
       });
