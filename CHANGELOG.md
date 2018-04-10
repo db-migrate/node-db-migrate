@@ -1,3 +1,13 @@
+<a name="0.11.1"></a>
+## [0.11.1](https://github.com/db-migrate/node-db-migrate/compare/v0.11.0...v0.11.1) (2018-04-10)
+
+
+### Bug Fixes
+
+* **reset:** regression introduced in check functionality ([d8a735d](https://github.com/db-migrate/node-db-migrate/commit/d8a735d)), closes [#552](https://github.com/db-migrate/node-db-migrate/issues/552)
+
+
+
 <a name="0.11.0"></a>
 # [0.11.0](https://github.com/db-migrate/node-db-migrate/compare/v0.10.7...v0.11.0) (2018-04-10)
 
