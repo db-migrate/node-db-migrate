@@ -1,3 +1,13 @@
+<a name="0.11.3"></a>
+## [0.11.3](https://github.com/db-migrate/node-db-migrate/compare/v0.11.2...v0.11.3) (2018-09-08)
+
+
+### Bug Fixes
+
+* **db:** create and drop always result in exit code 1 ([d32644c](https://github.com/db-migrate/node-db-migrate/commit/d32644c)), closes [#550](https://github.com/db-migrate/node-db-migrate/issues/550)
+
+
+
 <a name="0.11.2"></a>
 ## [0.11.2](https://github.com/db-migrate/node-db-migrate/compare/v0.10.0...v0.11.2) (2018-09-05)
 
