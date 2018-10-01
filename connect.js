@@ -12,6 +12,13 @@ exports.connect = function (config, PassedClass, callback) {
     config = config.config;
   }
 
+  if (config.password) {
+    config.password = encodeURIComponent(config.password);
+  }
+  if (config.user) {
+    config.user = encodeURIComponent(config.user);
+  }
+
   driver.connect(config, internals, function (err, db) {
     if (err) {
       callback(err);
