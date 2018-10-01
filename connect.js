@@ -11,7 +11,7 @@ exports.connect = function (config, PassedClass, callback) {
     internals = config.internals;
     config = config.config;
   }
-  
+
   if (config.password) {
     config.password = encodeURIComponent(config.password);
   }
