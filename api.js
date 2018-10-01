@@ -56,6 +56,8 @@ function dbmigrate (plugins, isModule, options, callback) {
 
     if (typeof options.cwd === 'string') internals.cwd = options.cwd;
     else internals.cwd = process.cwd();
+
+    if (typeof options.cmdOptions === 'object') internals.cmdOptions = options.cmdOptions;
   } else internals.cwd = process.cwd();
 
   if (typeof isModule === 'function') {
@@ -221,6 +223,31 @@ dbmigrate.prototype = {
     return Promise.fromCallback(
       function (callback) {
         executeDown(this.internals, this.config, callback);
+      }.bind(this)
+    ).asCallback(callback);
+  },
+
+  check: function (specification, opts, callback) {
+    var executeCheck = load('check');
+
+    if (arguments.length > 0) {
+      if (typeof specification === 'number') {
+        this.internals.argv.count = arguments[0];
+      } else if (typeof specification === 'function') {
+        callback = specification;
+      }
+
+      if (typeof opts === 'string') {
+        this.internals.migrationMode = opts;
+        this.internals.matching = opts;
+      } else if (typeof opts === 'function') {
+        callback = opts;
+      }
+    }
+
+    return Promise.fromCallback(
+      function (callback) {
+        executeCheck(this.internals, this.config, callback);
       }.bind(this)
     ).asCallback(callback);
   },

@@ -31,17 +31,17 @@ lab.experiment('api', function () {
       dbmigrate.silence(true);
 
       /**
-      * We have set force-exit above, this should end up in db-migrate
-      * executing process.exit on the final callback.
-      * Process.exit has been overwritten and will finally call validate.
-      *
-      * The test validation takes place in validate()
-      */
+       * We have set force-exit above, this should end up in db-migrate
+       * executing process.exit on the final callback.
+       * Process.exit has been overwritten and will finally call validate.
+       *
+       * The test validation takes place in validate()
+       */
       dbmigrate.up();
 
       /**
-      * Final validation after process.exit should have been called.
-      */
+       * Final validation after process.exit should have been called.
+       */
       function validate () {
         Code.expect(called).to.be.true();
         done();
@@ -59,8 +59,8 @@ lab.experiment('api', function () {
       }
 
       /**
-      * Create a migration with the programatic API and overwrite process.exit.
-      */
+       * Create a migration with the programatic API and overwrite process.exit.
+       */
       function overwriteExit () {
         process.exit = function (err) {
           var ret = called;
@@ -110,6 +110,26 @@ lab.experiment('api', function () {
     done();
   });
 
+  lab.test('should load commandline options from options parameter', function (
+    done
+  ) {
+    var options = {
+      cmdOptions: {
+        'migrations-dir': './test'
+      }
+    };
+
+    var api = stubApiInstance(true, {}, options);
+    var actual = api.internals.argv['migrations-dir'];
+    var expected = options.cmdOptions['migrations-dir'];
+
+    delete expected.getCurrent;
+    delete actual.getCurrent;
+
+    Code.expect(actual).to.equal(expected);
+    done();
+  });
+
   lab.test(
     'should handle all up parameter variations properly',
 
@@ -144,6 +164,23 @@ lab.experiment('api', function () {
         [1, 'testscope'] // promise scope target
       ])
         .each(defaultExecParams('down'))
+        .each(spyCallback);
+    }
+  );
+
+  lab.test(
+    'should handle all check parameter variations properly',
+
+    function () {
+      return Promise.resolve([
+        [], // promise
+        [sinon.spy()],
+        [1, sinon.spy()], // targeted migration
+        [1], // promise targeted migration
+        [1, 'testscope', sinon.spy()], // scoped target
+        [1, 'testscope'] // promise scope target
+      ])
+        .each(defaultExecParams('check'))
         .each(spyCallback);
     }
   );

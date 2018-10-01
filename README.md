@@ -1,3 +1,4 @@
+[![Backers on Open Collective](https://opencollective.com/node-db-migrate/backers/badge.svg)](#backers) [![Sponsors on Open Collective](https://opencollective.com/node-db-migrate/sponsors/badge.svg)](#sponsors)
 [![Build Status](https://travis-ci.org/db-migrate/node-db-migrate.svg?branch=master)](https://travis-ci.org/db-migrate/node-db-migrate)
 [![Dependency Status](https://david-dm.org/db-migrate/node-db-migrate.svg)](https://david-dm.org/db-migrate/node-db-migrate)
 [![devDependency Status](https://david-dm.org/db-migrate/node-db-migrate/dev-status.svg)](https://david-dm.org/db-migrate/node-db-migrate#info=devDependencies)
@@ -10,6 +11,12 @@
 [![NPM](https://nodei.co/npm/db-migrate.png?downloads=true&downloadRank=true)](https://nodei.co/npm/db-migrate/)
 
 Database migration framework for node.js
+
+# Platinum sponsors
+
+Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/node-db-migrate#sponsor)] or reach out to magic+dbsponsorship@wizardtales.com.
+
+# Usage
 
 ## Installation
 
@@ -31,14 +38,14 @@ DB-Migrate is now available to you via:
 
 ## Officially Supported Databases
 
-* Mysql (https://github.com/felixge/node-mysql)
-https://github.com/db-migrate/mysql
-* PostgreSQL (https://github.com/brianc/node-postgres)
-https://github.com/db-migrate/pg
-* sqlite3 (https://github.com/developmentseed/node-sqlite3)
-https://github.com/db-migrate/sqlite
-* Mongodb (https://github.com/mongodb/node-mongodb-native)
-https://github.com/db-migrate/mongodb
+- Mysql (https://github.com/felixge/node-mysql)
+  https://github.com/db-migrate/mysql
+- PostgreSQL (https://github.com/brianc/node-postgres)
+  https://github.com/db-migrate/pg
+- sqlite3 (https://github.com/developmentseed/node-sqlite3)
+  https://github.com/db-migrate/sqlite
+- Mongodb (https://github.com/mongodb/node-mongodb-native)
+  https://github.com/db-migrate/mongodb
 
 ## Resources and usage instructions
 
@@ -46,6 +53,18 @@ Please follow the link below, for usage instructions examples and the full
 documentation of db-migrate.
 
 Documentation: https://db-migrate.readthedocs.io/en/latest/
+
+# Support db-migrate
+
+## Backers
+
+A big thank you to our backers. You're a tremendous and important help, to keep the project healthy! [[Become a backer](https://opencollective.com/node-db-migrate#backer)]
+
+<a href="https://opencollective.com/node-db-migrate#backers" target="_blank"><img src="https://opencollective.com/node-db-migrate/backers.svg?width=890"></a>
+
+## Sponsors
+
+Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/node-db-migrate#sponsor)] or reach out to magic+dbsponsorship@wizardtales.com.
 
 ## License
 

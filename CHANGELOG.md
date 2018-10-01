@@ -1,3 +1,92 @@
+<a name="0.11.3"></a>
+## [0.11.3](https://github.com/db-migrate/node-db-migrate/compare/v0.11.2...v0.11.3) (2018-09-08)
+
+
+### Bug Fixes
+
+* **db:** create and drop always result in exit code 1 ([d32644c](https://github.com/db-migrate/node-db-migrate/commit/d32644c)), closes [#550](https://github.com/db-migrate/node-db-migrate/issues/550)
+
+
+
+<a name="0.11.2"></a>
+## [0.11.2](https://github.com/db-migrate/node-db-migrate/compare/v0.10.0...v0.11.2) (2018-09-05)
+
+
+### Bug Fixes
+
+* **check:** fix check via API not passing results to the callback ([b743696](https://github.com/db-migrate/node-db-migrate/commit/b743696))
+* **ci:** add ignores for backported features ([21c3eb9](https://github.com/db-migrate/node-db-migrate/commit/21c3eb9))
+* **db:** wrong reference to connect causes db:create to fail ([991ee76](https://github.com/db-migrate/node-db-migrate/commit/991ee76)), closes [#520](https://github.com/db-migrate/node-db-migrate/issues/520)
+* **exitCode:** wrong check for existence fixed ([3c6fc33](https://github.com/db-migrate/node-db-migrate/commit/3c6fc33))
+* **exitCode:** wrong exit code on db methods ([486cb78](https://github.com/db-migrate/node-db-migrate/commit/486cb78)), closes [#534](https://github.com/db-migrate/node-db-migrate/issues/534)
+* **insert:** add missing insert entry to interface ([7ca2f56](https://github.com/db-migrate/node-db-migrate/commit/7ca2f56)), closes [#542](https://github.com/db-migrate/node-db-migrate/issues/542)
+* Update dependency `rc` to latest version ([b343add](https://github.com/db-migrate/node-db-migrate/commit/b343add))
+* **log:** error ended up in unreadable errors ([16512f6](https://github.com/db-migrate/node-db-migrate/commit/16512f6)), closes [#524](https://github.com/db-migrate/node-db-migrate/issues/524) [#521](https://github.com/db-migrate/node-db-migrate/issues/521)
+* **progamableApi:** cmdOptions get passed into setDefaultArgv now ([cb88b58](https://github.com/db-migrate/node-db-migrate/commit/cb88b58))
+* **reset:** regression introduced in check functionality ([b94db96](https://github.com/db-migrate/node-db-migrate/commit/b94db96)), closes [#552](https://github.com/db-migrate/node-db-migrate/issues/552)
+* **switchDatabase:** no error was thrown on scope switch ([392d88c](https://github.com/db-migrate/node-db-migrate/commit/392d88c)), closes [#470](https://github.com/db-migrate/node-db-migrate/issues/470)
+* update vulnerable pack 'deep-extend' and OOD deps ([8e13c7f](https://github.com/db-migrate/node-db-migrate/commit/8e13c7f))
+
+
+### Features
+
+* **check:** add check functionality to determine migrations to run ([56acdb9](https://github.com/db-migrate/node-db-migrate/commit/56acdb9))
+* **contribution:** enrich contribution instructions ([2cd0578](https://github.com/db-migrate/node-db-migrate/commit/2cd0578)), closes [#549](https://github.com/db-migrate/node-db-migrate/issues/549)
+* **contribution:** enrich contribution instructions, issues ([5ee386b](https://github.com/db-migrate/node-db-migrate/commit/5ee386b))
+* **issuetemplate:** added a github issue template ([3c0fcbf](https://github.com/db-migrate/node-db-migrate/commit/3c0fcbf))
+* **progamableApi:** CMD options can be passed programatically now ([fd8562e](https://github.com/db-migrate/node-db-migrate/commit/fd8562e))
+* **progamableApi:** using const now ([d761ebf](https://github.com/db-migrate/node-db-migrate/commit/d761ebf))
+
+
+
+<a name="0.11.1"></a>
+## [0.11.1](https://github.com/db-migrate/node-db-migrate/compare/v0.11.0...v0.11.1) (2018-04-10)
+
+
+### Bug Fixes
+
+* **reset:** regression introduced in check functionality ([d8a735d](https://github.com/db-migrate/node-db-migrate/commit/d8a735d)), closes [#552](https://github.com/db-migrate/node-db-migrate/issues/552)
+
+
+
+<a name="0.11.0"></a>
+# [0.11.0](https://github.com/db-migrate/node-db-migrate/compare/v0.10.7...v0.11.0) (2018-04-10)
+
+
+### Features
+
+* **check:** add check functionality to determine migrations to run ([93e9f18](https://github.com/db-migrate/node-db-migrate/commit/93e9f18))
+
+
+
+<a name="0.10.7"></a>
+## [0.10.7](https://github.com/db-migrate/node-db-migrate/compare/v0.10.6...v0.10.7) (2018-03-27)
+
+
+### Bug Fixes
+
+* **progamableApi:** cmdOptions get passed into setDefaultArgv now ([ebdd75d](https://github.com/db-migrate/node-db-migrate/commit/ebdd75d))
+
+
+
+<a name="0.10.6"></a>
+## [0.10.6](https://github.com/db-migrate/node-db-migrate/compare/v0.10.5...v0.10.6) (2018-03-21)
+
+
+### Bug Fixes
+
+* **ci:** add ignores for backported features ([53dedc2](https://github.com/db-migrate/node-db-migrate/commit/53dedc2))
+
+
+### Features
+
+* **contribution:** enrich contribution instructions ([93b5cea](https://github.com/db-migrate/node-db-migrate/commit/93b5cea)), closes [#549](https://github.com/db-migrate/node-db-migrate/issues/549)
+* **contribution:** enrich contribution instructions, issues ([d87a734](https://github.com/db-migrate/node-db-migrate/commit/d87a734))
+* **progamableApi:** CMD options can be passed programatically now ([69d7605](https://github.com/db-migrate/node-db-migrate/commit/69d7605))
+* **progamableApi:** using const now ([a69e221](https://github.com/db-migrate/node-db-migrate/commit/a69e221))
+
+
+
 <a name="0.10.4"></a>
 ## [0.10.4](https://github.com/db-migrate/node-db-migrate/compare/v0.10.3...v0.10.4) (2018-02-06)
 
