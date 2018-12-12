@@ -48,7 +48,7 @@
     "bluebird": "^3.1.1",
     "db-migrate-shared": "^1.2.0",
     "deep-extend": "^0.5.1",
-    "dotenv": "^5.0.1",
+    "dotenv": "^6.2.0",
     "final-fs": "^1.6.0",
     "inflection": "^1.10.0",
     "mkdirp": "~0.5.0",
