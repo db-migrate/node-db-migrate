@@ -75,7 +75,7 @@
     "lab": "^14.3.1",
     "proxyquire": "^1.4.0",
     "rimraf": "^2.6.2",
-    "sinon": "^4.1.2"
+    "sinon": "^7.2.2"
   },
   "scripts": {
     "pretest": "eslint *.js lib/*.js test/*.js bin/*",
