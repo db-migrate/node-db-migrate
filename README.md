@@ -16,7 +16,7 @@ Database migration framework for node.js
 
 # Platinum sponsors
 
-[![WizardTales](https://www.wizardtales.com/wzrdtales.png | width=100)](https://www.wizardtales.com)
+[<img src="https://www.wizardtales.com/wzrdtales.png" width="100">](https://www.wizardtales.com)
 
 [Details about sponsorships](https://github.com/db-migrate/node-db-migrate/issues/605)
 
