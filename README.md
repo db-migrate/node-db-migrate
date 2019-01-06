@@ -16,6 +16,10 @@ Database migration framework for node.js
 
 # Platinum sponsors
 
+[![WizardTales](https://www.wizardtales.com/wzrdtales.png)](https://www.wizardtales.com)
+
+[Details about sponsorships](https://github.com/db-migrate/node-db-migrate/issues/605)
+
 Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/node-db-migrate#sponsor)] or reach out to magic+dbsponsorship@wizardtales.com.
 
 # Usage
