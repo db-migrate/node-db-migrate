@@ -1,6 +1,7 @@
 require('pkginfo')(module, 'version'); // jshint ignore:line
 var fs = require('fs');
 var path = require('path');
+var log = require('db-migrate-shared').log;
 
 exports.dataType = require('db-migrate-shared').dataType;
 
@@ -53,7 +54,9 @@ module.exports.getInstance = function (isModule, options, callback) {
 
   try {
     if (!options || !options.noPlugins) plugins = loadPlugins();
-  } catch (ex) {}
+  } catch (ex) {
+    log.warn(ex);
+  }
 
   if (options && options.plugins) {
     plugins = Object.assign(plugins, options.plugins);
