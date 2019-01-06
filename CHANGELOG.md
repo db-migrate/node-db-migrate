@@ -1,3 +1,15 @@
+<a name="0.11.5"></a>
+## [0.11.5](https://github.com/db-migrate/node-db-migrate/compare/v0.11.4...v0.11.5) (2019-01-06)
+
+
+### Bug Fixes
+
+* **db:** set exit code as 1 only on error ([3148cc9](https://github.com/db-migrate/node-db-migrate/commit/3148cc9))
+* Added warning on plugin loading failure ([fcffd62](https://github.com/db-migrate/node-db-migrate/commit/fcffd62))
+* **lgtm:** fix errors ([4cd5558](https://github.com/db-migrate/node-db-migrate/commit/4cd5558))
+
+
+
 <a name="0.11.3"></a>
 ## [0.11.3](https://github.com/db-migrate/node-db-migrate/compare/v0.11.2...v0.11.3) (2018-09-08)
 
