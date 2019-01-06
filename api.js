@@ -73,14 +73,20 @@ function dbmigrate (plugins, isModule, options, callback) {
   // delayed loading of bluebird
   Promise = require('bluebird');
   this.internals.migrationOptions = {
-    dbmigrate: this.internals.dbm,
+    dbmigrate: {
+      version: this.internals.dbm.version,
+      dataType: this.internals.dbm.dataType
+    },
+    dryRun: this.internals.dryRun,
+    cwd: this.internals.cwd,
+    noTransactions: this.internals.notransactions,
+    verbose: this.internals.verbose,
+    type: this.internals.dbm.dataType,
+    log: log,
     ignoreOnInit: this.internals.argv['ignore-on-init'],
     Promise: Promise
   };
-  this.internals.seederOptions = {
-    dbmigrate: this.internals.dbm,
-    Promise: Promise
-  };
+  this.internals.safeOptions = this.internals.migrationOptions;
 }
 
 dbmigrate.prototype = {
@@ -101,10 +107,10 @@ dbmigrate.prototype = {
   },
 
   /**
-    * Registers and initializes hooks.
-    *
-    * @returns Promise
-    */
+   * Registers and initializes hooks.
+   *
+   * @returns Promise
+   */
   registerAPIHook: function (callback) {
     var plugins = this.internals.plugins;
     var self = this;
@@ -309,8 +315,8 @@ dbmigrate.prototype = {
   },
 
   /**
-    * Transition migrations to the latest defined protocol.
-    */
+   * Transition migrations to the latest defined protocol.
+   */
   transition: function () {
     load('transition')(this.internals);
   },
