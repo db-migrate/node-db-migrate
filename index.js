@@ -1,4 +1,5 @@
-require('pkginfo')(module, 'version'); // jshint ignore:line
+module.exports.version = require('./package.json').version;
+
 var fs = require('fs');
 var path = require('path');
 var log = require('db-migrate-shared').log;

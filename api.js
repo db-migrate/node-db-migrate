@@ -1,8 +1,9 @@
 'use strict';
 
+module.exports.version = require('./package.json').version;
+
 var load = require('./lib/commands');
 var log = require('db-migrate-shared').log;
-require('pkginfo')(module, 'version'); // jshint ignore:line
 var Promise;
 var onComplete = load('on-complete');
 
