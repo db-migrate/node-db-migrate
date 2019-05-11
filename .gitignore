@@ -1,5 +1,6 @@
 migrations/
 node_modules/
+.tern-port
 VCSeeder/
 Seeder/
 *.db
