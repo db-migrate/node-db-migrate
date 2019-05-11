@@ -5,9 +5,9 @@ var log = require('db-migrate-shared').log;
 
 exports.dataType = require('db-migrate-shared').dataType;
 
-function loadPluginList () {
+function loadPluginList (options) {
   var plugins = JSON.parse(
-    fs.readFileSync(path.join(process.cwd(), 'package.json'), 'utf-8')
+    fs.readFileSync(path.join(options.cwd, 'package.json'), 'utf-8')
   );
   var targets = [];
 
@@ -20,14 +20,14 @@ function loadPluginList () {
   return targets;
 }
 
-function loadPlugins () {
-  var plugins = loadPluginList();
+function loadPlugins (options) {
+  var plugins = loadPluginList(options);
   var i = 0;
   var length = plugins.length;
   var hooks = {};
 
   for (; i < length; ++i) {
-    var plugin = require(path.join(process.cwd(), 'node_modules', plugins[i]));
+    var plugin = require(path.join(options.cwd, 'node_modules', plugins[i]));
 
     if (
       typeof plugin.name !== 'string' ||
@@ -51,9 +51,11 @@ module.exports.getInstance = function (isModule, options, callback) {
   delete require.cache[require.resolve('optimist')];
   var Mod = require('./api.js');
   var plugins = {};
-
+  
+  var options_ = options || {};
+  options_.cwd = options.cwd || process.cwd;
   try {
-    if (!options || !options.noPlugins) plugins = loadPlugins();
+    if (!options || !options.noPlugins) plugins = loadPlugins(options_);
   } catch (ex) {
     log.warn(ex);
   }
