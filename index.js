@@ -46,16 +46,18 @@ function loadPlugins (options) {
   return hooks;
 }
 
-module.exports.getInstance = function (isModule, options, callback) {
+module.exports.getInstance = function (
+  isModule,
+  options = { cwd: process.cwd() },
+  callback
+) {
   delete require.cache[require.resolve('./api.js')];
   delete require.cache[require.resolve('optimist')];
   var Mod = require('./api.js');
   var plugins = {};
-  
-  var options_ = options || {};
-  options_.cwd = options.cwd || process.cwd;
+
   try {
-    if (!options || !options.noPlugins) plugins = loadPlugins(options_);
+    if (!options || !options.noPlugins) plugins = loadPlugins(options);
   } catch (ex) {
     log.warn(ex);
   }
