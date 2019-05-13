@@ -57,12 +57,12 @@ module.exports.getInstance = function (
   var plugins = {};
 
   try {
-    if (!options || !options.noPlugins) plugins = loadPlugins(options);
+    if (!options.noPlugins) plugins = loadPlugins(options);
   } catch (ex) {
     log.warn(ex);
   }
 
-  if (options && options.plugins) {
+  if (options.plugins) {
     plugins = Object.assign(plugins, options.plugins);
   }
 

@@ -57,7 +57,9 @@ function dbmigrate (plugins, isModule, options, callback) {
     if (typeof options.cwd === 'string') internals.cwd = options.cwd;
     else internals.cwd = process.cwd();
 
-    if (typeof options.cmdOptions === 'object') internals.cmdOptions = options.cmdOptions;
+    if (typeof options.cmdOptions === 'object') {
+      internals.cmdOptions = options.cmdOptions;
+    }
   } else internals.cwd = process.cwd();
 
   if (typeof isModule === 'function') {
@@ -196,11 +198,9 @@ dbmigrate.prototype = {
       }
     }
 
-    return Promise.fromCallback(
-      function (callback) {
-        executeUp(this.internals, this.config, callback);
-      }.bind(this)
-    ).asCallback(callback);
+    return Promise.resolve(executeUp(this.internals, this.config)).asCallback(
+      callback
+    );
   },
 
   /**
@@ -226,10 +226,8 @@ dbmigrate.prototype = {
       }
     }
 
-    return Promise.fromCallback(
-      function (callback) {
-        executeDown(this.internals, this.config, callback);
-      }.bind(this)
+    return Promise.promisify(
+      executeDown(this.internals, this.config)
     ).asCallback(callback);
   },
 
@@ -251,10 +249,8 @@ dbmigrate.prototype = {
       }
     }
 
-    return Promise.fromCallback(
-      function (callback) {
-        executeCheck(this.internals, this.config, callback);
-      }.bind(this)
+    return Promise.promisify(
+      executeCheck(this.internals, this.config)
     ).asCallback(callback);
   },
 
@@ -279,10 +275,8 @@ dbmigrate.prototype = {
       }
     }
 
-    return Promise.fromCallback(
-      function (callback) {
-        executeSync(this.internals, this.config, callback);
-      }.bind(this)
+    return Promise.promisify(
+      executeSync(this.internals, this.config)
     ).asCallback(callback);
   },
 
@@ -300,10 +294,8 @@ dbmigrate.prototype = {
     }
 
     this.internals.argv.count = Number.MAX_VALUE;
-    return Promise.fromCallback(
-      function (callback) {
-        executeDown(this.internals, this.config, callback);
-      }.bind(this)
+    return Promise.promisify(
+      executeDown(this.internals, this.config)
     ).asCallback(callback);
   },
 
@@ -334,10 +326,8 @@ dbmigrate.prototype = {
     }
 
     this.internals.argv._.push(migrationName);
-    return Promise.fromCallback(
-      function (callback) {
-        executeCreateMigration(this.internals, this.config, callback);
-      }.bind(this)
+    return Promise.resolve(
+      executeCreateMigration(this.internals, this.config)
     ).asCallback(callback);
   },
 
@@ -348,11 +338,9 @@ dbmigrate.prototype = {
     var executeDB = load('db');
     this.internals.argv._.push(dbname);
     this.internals.mode = 'create';
-    return Promise.fromCallback(
-      function (callback) {
-        executeDB(this.internals, this.config, callback);
-      }.bind(this)
-    ).asCallback(callback);
+    return Promise.resolve(executeDB(this.internals, this.config)).asCallback(
+      callback
+    );
   },
 
   /**
@@ -362,11 +350,9 @@ dbmigrate.prototype = {
     var executeDB = load('db');
     this.internals.argv._.push(dbname);
     this.internals.mode = 'drop';
-    return Promise.fromCallback(
-      function (callback) {
-        executeDB(this.internals, this.config, callback);
-      }.bind(this)
-    ).asCallback(callback);
+    return Promise.resolve(executeDB(this.internals, this.config)).asCallback(
+      callback
+    );
   },
 
   /**
@@ -405,11 +391,9 @@ dbmigrate.prototype = {
     }
 
     this.internals.mode = mode || 'vc';
-    return Promise.fromCallback(
-      function (callback) {
-        executeSeed(this.internals, this.config, callback);
-      }.bind(this)
-    ).asCallback(callback);
+    return Promise.resolve(executeSeed(this.internals, this.config)).asCallback(
+      callback
+    );
   },
 
   /**
@@ -431,10 +415,8 @@ dbmigrate.prototype = {
       }
     }
 
-    return Promise.fromCallback(
-      function (callback) {
-        executeUndoSeed(this.internals, this.config, callback);
-      }.bind(this)
+    return Promise.resolve(
+      executeUndoSeed(this.internals, this.config)
     ).asCallback(callback);
   },
 
@@ -458,10 +440,8 @@ dbmigrate.prototype = {
     }
 
     this.internals.argv.count = Number.MAX_VALUE;
-    return Promise.fromCallback(
-      function (callback) {
-        executeUndoSeed(this.internals, this.config, callback);
-      }.bind(this)
+    return Promise.resolve(
+      executeUndoSeed(this.internals, this.config)
     ).asCallback(callback);
   },
 
