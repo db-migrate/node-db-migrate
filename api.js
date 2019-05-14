@@ -198,7 +198,7 @@ dbmigrate.prototype = {
       }
     }
 
-    return Promise.resolve(executeUp(this.internals, this.config)).asCallback(
+    return Promise.resolve(executeUp(this.internals, this.config)).nodeify(
       callback
     );
   },
@@ -226,9 +226,9 @@ dbmigrate.prototype = {
       }
     }
 
-    return Promise.promisify(
-      executeDown(this.internals, this.config)
-    ).asCallback(callback);
+    return Promise.resolve(executeDown(this.internals, this.config)).asCallback(
+      callback
+    );
   },
 
   check: function (specification, opts, callback) {
@@ -249,7 +249,7 @@ dbmigrate.prototype = {
       }
     }
 
-    return Promise.promisify(
+    return Promise.resolve(
       executeCheck(this.internals, this.config)
     ).asCallback(callback);
   },
@@ -275,9 +275,9 @@ dbmigrate.prototype = {
       }
     }
 
-    return Promise.promisify(
-      executeSync(this.internals, this.config)
-    ).asCallback(callback);
+    return Promise.resolve(executeSync(this.internals, this.config)).asCallback(
+      callback
+    );
   },
 
   /**
@@ -294,9 +294,9 @@ dbmigrate.prototype = {
     }
 
     this.internals.argv.count = Number.MAX_VALUE;
-    return Promise.promisify(
-      executeDown(this.internals, this.config)
-    ).asCallback(callback);
+    return Promise.resolve(executeDown(this.internals, this.config)).asCallback(
+      callback
+    );
   },
 
   /**

@@ -29,7 +29,11 @@ lab.experiment('create', function () {
     lab.before(function (done) {
       wipeMigrations(function (err) {
         Code.expect(err).to.be.null();
-        dbMigrate('create', 'first migration').on('exit', function (code) {
+        const db = dbMigrate('create', 'first migration');
+        // db.stderr.on('data', data => console.log(data.toString()));
+        // db.stdout.on('data', data => console.log(data.toString()));
+
+        db.on('exit', function (code) {
           exitCode = code;
           done();
         });

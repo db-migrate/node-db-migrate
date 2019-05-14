@@ -6,6 +6,11 @@ var log = require('db-migrate-shared').log;
 exports.dataType = require('db-migrate-shared').dataType;
 
 function loadPluginList (options) {
+  try {
+    fs.accessSync(path.join(options.cwd, 'package.json'), fs.constants.R_OK);
+  } catch (err) {
+    return {};
+  }
   var plugins = JSON.parse(
     fs.readFileSync(path.join(options.cwd, 'package.json'), 'utf-8')
   );

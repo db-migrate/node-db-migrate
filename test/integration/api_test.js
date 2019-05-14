@@ -136,14 +136,9 @@ lab.experiment('api', function () {
     function () {
       return Promise.resolve([
         [], // promise
-        [sinon.spy()],
-        ['nameatargetmigration', sinon.spy()], // targeted migration
         ['nameatargetmigration'], // promise targeted migration
-        [1, sinon.spy()], // targeted migration
         [1], // promise targeted migration
-        ['nameatargetmigration', 'testscope', sinon.spy()], // scoped target
         ['nameatargetmigration', 'testscope'], // promise scope target
-        [1, 'testscope', sinon.spy()], // scoped target
         [1, 'testscope'] // promise scope target
       ])
         .each(defaultExecParams('up'))
@@ -157,10 +152,7 @@ lab.experiment('api', function () {
     function () {
       return Promise.resolve([
         [], // promise
-        [sinon.spy()],
-        [1, sinon.spy()], // targeted migration
         [1], // promise targeted migration
-        [1, 'testscope', sinon.spy()], // scoped target
         [1, 'testscope'] // promise scope target
       ])
         .each(defaultExecParams('down'))
@@ -174,10 +166,7 @@ lab.experiment('api', function () {
     function () {
       return Promise.resolve([
         [], // promise
-        [sinon.spy()],
-        [1, sinon.spy()], // targeted migration
         [1], // promise targeted migration
-        [1, 'testscope', sinon.spy()], // scoped target
         [1, 'testscope'] // promise scope target
       ])
         .each(defaultExecParams('check'))
@@ -191,8 +180,6 @@ lab.experiment('api', function () {
     function () {
       return Promise.resolve([
         [], // promise
-        [sinon.spy()],
-        ['testscope', sinon.spy()], // scoped target
         ['testscope'] // promise scope target
       ])
         .each(defaultExecParams('reset'))
@@ -206,9 +193,7 @@ lab.experiment('api', function () {
     function () {
       return Promise.resolve([
         [],
-        ['nameatargetmigration', sinon.spy()], // targeted migration
         ['nameatargetmigration'], // promise targeted migration
-        ['nameatargetmigration', 'testscope', sinon.spy()], // scoped target
         ['nameatargetmigration', 'testscope'] // promise scope target
       ])
         .each(defaultExecParams('sync'))
@@ -226,7 +211,7 @@ function defaultExecParams (method) {
 
     return [api[method].apply(api, args), args];
 
-    function stub (internals, config, callback) {
+    async function stub (internals, config) {
       if (typeof args[0] === 'string') {
         Code.expect(internals.argv.destination).to.equal(args[0]);
       } else if (typeof args[0] === 'number') {
@@ -238,7 +223,7 @@ function defaultExecParams (method) {
         Code.expect(internals.matching).to.equal(args[1]);
       }
 
-      callback();
+      return Promise.resolve();
     }
   };
 }
