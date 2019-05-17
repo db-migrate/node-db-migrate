@@ -5,6 +5,7 @@ var log = require('db-migrate-shared').log;
 require('pkginfo')(module, 'version'); // jshint ignore:line
 var Promise;
 var onComplete = load('on-complete');
+var config = require('rc')('db-migrate');
 
 // constant hooks for this file
 var APIHooks = {
@@ -37,9 +38,12 @@ function dbmigrate (plugins, isModule, options, callback) {
   this.internals.dbm = require('./');
   this.dataType = this.internals.dbm.dataType;
   this.version = this.internals.dbm.version;
-  dotenv.load({
-    silent: true
-  });
+
+  var dotenvConfig = { silent: true };
+  if (config.dotenvCustomPath) {
+    dotenvConfig.path = config.dotenvCustomPath;
+  }
+  dotenv.load(dotenvConfig);
 
   /* $lab:coverage:off$ */
   if (!options || !options.throwUncatched) load('helper/register-events')();
