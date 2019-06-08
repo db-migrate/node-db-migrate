@@ -1,3 +1,29 @@
+# [1.0.0-beta.0](https://github.com/db-migrate/node-db-migrate/compare/v0.11.5...v1.0.0-beta.0) (2019-06-08)
+
+
+### Bug Fixes
+
+* **cwd:** addition of cwd missed function definition ([7c238a4](https://github.com/db-migrate/node-db-migrate/commit/7c238a4))
+* **plugin:** handle non existent dependencies and improve UX ([91b9da9](https://github.com/db-migrate/node-db-migrate/commit/91b9da9)), closes [#628](https://github.com/db-migrate/node-db-migrate/issues/628)
+* **plugin:** respect options cwd ([#618](https://github.com/db-migrate/node-db-migrate/issues/618)) ([3a8a09f](https://github.com/db-migrate/node-db-migrate/commit/3a8a09f))
+* **reset:** regression introduced in check functionality ([61ca5bb](https://github.com/db-migrate/node-db-migrate/commit/61ca5bb)), closes [#552](https://github.com/db-migrate/node-db-migrate/issues/552)
+* **scope:** new scoping errored out when using templates ([b2421e3](https://github.com/db-migrate/node-db-migrate/commit/b2421e3))
+* **utils:** resolve when returned null ([68361fe](https://github.com/db-migrate/node-db-migrate/commit/68361fe))
+* **walker:** rename interface to Interface ([6234d42](https://github.com/db-migrate/node-db-migrate/commit/6234d42))
+
+
+### Features
+
+* **chain:** add step chaining ([8203c55](https://github.com/db-migrate/node-db-migrate/commit/8203c55))
+* **error handling:** added advanced error handling and rollback ([aa13a35](https://github.com/db-migrate/node-db-migrate/commit/aa13a35))
+* **learning:** add db learning ([d5c9aa1](https://github.com/db-migrate/node-db-migrate/commit/d5c9aa1))
+* **migration:** add support for first basic options on new schema ([d891628](https://github.com/db-migrate/node-db-migrate/commit/d891628))
+* **schemav2:** add foreignKey support on tables ([3dd7158](https://github.com/db-migrate/node-db-migrate/commit/3dd7158))
+* **state:** add state manager and adjust driver functions ([10c3f1a](https://github.com/db-migrate/node-db-migrate/commit/10c3f1a))
+* **statemanager:** add first edition of state manager ([6dc4d3b](https://github.com/db-migrate/node-db-migrate/commit/6dc4d3b)), closes [#538](https://github.com/db-migrate/node-db-migrate/issues/538)
+
+
+
 ## [0.11.6](https://github.com/db-migrate/node-db-migrate/compare/v0.11.5...v0.11.6) (2019-06-08)
 
 
