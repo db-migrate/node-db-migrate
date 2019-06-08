@@ -1,3 +1,26 @@
+## [0.11.6](https://github.com/db-migrate/node-db-migrate/compare/v0.11.5...v0.11.6) (2019-06-08)
+
+
+### Bug Fixes
+
+* **cwd:** addition of cwd missed function definition ([fae85cf](https://github.com/db-migrate/node-db-migrate/commit/fae85cf))
+* **plugin:** allow no package.json ([f27dce0](https://github.com/db-migrate/node-db-migrate/commit/f27dce0))
+* **plugin:** handle non existent dependencies and improve UX ([006ef5e](https://github.com/db-migrate/node-db-migrate/commit/006ef5e)), closes [#628](https://github.com/db-migrate/node-db-migrate/issues/628)
+* **plugin:** respect options cwd ([#618](https://github.com/db-migrate/node-db-migrate/issues/618)) ([3dae762](https://github.com/db-migrate/node-db-migrate/commit/3dae762))
+
+
+<a name="0.11.5"></a>
+## [0.11.5](https://github.com/db-migrate/node-db-migrate/compare/v0.11.4...v0.11.5) (2019-01-06)
+
+
+### Bug Fixes
+
+* **db:** set exit code as 1 only on error ([3148cc9](https://github.com/db-migrate/node-db-migrate/commit/3148cc9))
+* Added warning on plugin loading failure ([fcffd62](https://github.com/db-migrate/node-db-migrate/commit/fcffd62))
+* **lgtm:** fix errors ([4cd5558](https://github.com/db-migrate/node-db-migrate/commit/4cd5558))
+
+
+
 <a name="0.11.3"></a>
 ## [0.11.3](https://github.com/db-migrate/node-db-migrate/compare/v0.11.2...v0.11.3) (2018-09-08)
 
