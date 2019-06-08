@@ -9,15 +9,26 @@ function loadPluginList (options) {
   try {
     fs.accessSync(path.join(options.cwd, 'package.json'), fs.constants.R_OK);
   } catch (err) {
-    return {};
+    throw new Error(
+      'There was no package.json found in the current working dir!',
+      options.cwd
+    );
   }
 
-  var plugins = JSON.parse(
-    fs.readFileSync(path.join(options.cwd, 'package.json'), 'utf-8')
-  );
+  try {
+    var plugins = JSON.parse(
+      fs.readFileSync(path.join(options.cwd, 'package.json'), 'utf-8')
+    );
+  } catch (err) {
+    throw new Error('Error parsing package.json', err);
+  }
+
   var targets = [];
 
-  plugins = Object.assign(plugins.dependencies, plugins.devDependencies);
+  plugins = Object.assign(
+    plugins.dependencies || {},
+    plugins.devDependencies || {}
+  );
 
   for (var plugin in plugins) {
     if (plugin.startsWith('db-migrate-plugin')) targets.push(plugin);
@@ -65,7 +76,8 @@ module.exports.getInstance = function (
   try {
     if (!options || !options.noPlugins) plugins = loadPlugins(options);
   } catch (ex) {
-    log.warn(ex);
+    log.verbose('No plugin could be loaded!');
+    log.verbose(ex);
   }
 
   if (options && options.plugins) {
