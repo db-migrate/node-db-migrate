@@ -1,3 +1,16 @@
+# [1.0.0-beta.2](https://github.com/db-migrate/node-db-migrate/compare/v1.0.0-beta.1...v1.0.0-beta.2) (2019-06-11)
+
+
+
+# [1.0.0-beta.1](https://github.com/db-migrate/node-db-migrate/compare/v1.0.0-beta.0...v1.0.0-beta.1) (2019-06-11)
+
+
+### Bug Fixes
+
+* **learn:** respect column arrays for indizies ([3649d69](https://github.com/db-migrate/node-db-migrate/commit/3649d69))
+
+
+
 # [1.0.0-beta.0](https://github.com/db-migrate/node-db-migrate/compare/v0.11.5...v1.0.0-beta.0) (2019-06-08)
 
 
