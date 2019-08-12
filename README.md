@@ -66,6 +66,10 @@ DB-Migrate is now available to you via:
   https://github.com/db-migrate/sqlite
 - Mongodb (https://github.com/mongodb/node-mongodb-native)
   https://github.com/db-migrate/mongodb
+  
+## Unofficial Database Drivers
+- Aurora Serverless MySQL (https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/data-api.html)
+  https://github.com/drg-adaptive/db-migrate-aurora
 
 ## Resources and usage instructions
 
