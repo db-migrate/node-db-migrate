@@ -216,6 +216,61 @@ lab.experiment('create', function () {
       });
     }
   );
+  lab.experiment(
+    'with scoped migration',
+    function () {
+      let exitCode;
+      lab.experiment('without a migration directory', function () {
+        let exitCode;
+
+        lab.before(function (done) {
+          wipeMigrations(function (err) {
+            Code.expect(err).to.be.null();
+            const configOption = path.join('--sql-file');
+            const db = dbMigrate('create', 'test/first migration', configOption);
+            // db.stderr.on('data', data => console.log(data.toString()));
+            // db.stdout.on('data', data => console.log(data.toString()));
+
+            db.on('exit', function (code) {
+              exitCode = code;
+              done();
+            });
+          });
+        });
+
+        lab.test('does not cause an error', function (done) {
+          Code.expect(exitCode).to.equal(0);
+          done();
+        });
+
+        lab.test('will create a new migration directory', function (done) {
+          const stats = fs.statSync(path.join(__dirname, 'migrations/test'));
+          Code.expect(stats.isDirectory()).to.be.true();
+          done();
+        });
+
+        lab.test('will create a new migration', function (done) {
+          const files = fs.readdirSync(path.join(__dirname, 'migrations/test'));
+          Code.expect(files.length).to.equal(2);
+          const file = files[0];
+          Code.expect(file).to.match(/first-migration\.js$/);
+          done();
+        });
+        lab.test('will create a new migration/test/sqls directory', function (done) {
+          const stats = fs.statSync(path.join(__dirname, 'migrations/test/sqls'));
+          Code.expect(stats.isDirectory()).to.be.true();
+          done();
+        });
+        lab.test('will create a new migration sql up file', function (done) {
+          const files = fs.readdirSync(path.join(__dirname, 'migrations/test/sqls'));
+          Code.expect(files.length).to.equal(2);
+          const file = files[1];
+          Code.expect(file).to.match(/first-migration-up\.sql$/);
+          done();
+        });
+      });
+    }
+  );
 
   lab.experiment(
     'with coffee-file option set to true as a command parameter',
