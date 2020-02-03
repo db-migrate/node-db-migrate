@@ -218,6 +218,9 @@ dbmigrate.prototype = {
     if (arguments.length > 0) {
       if (typeof specification === 'number') {
         this.internals.argv.count = arguments[0];
+      } else if (typeof specification === 'string') {
+        this.internals.argv.destination = specification;
+        this.internals.argv.count = Number.MAX_VALUE;
       } else if (typeof specification === 'function') {
         callback = specification;
       }
