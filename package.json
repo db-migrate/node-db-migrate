@@ -54,7 +54,6 @@
     "mkdirp": "~0.5.0",
     "optimist": "~0.6.1",
     "parse-database-url": "~0.3.0",
-    "pkginfo": "^0.4.0",
     "prompt": "^1.0.0",
     "rc": "^1.2.8",
     "resolve": "^1.1.6",
