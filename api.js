@@ -2,10 +2,9 @@
 
 module.exports.version = require('./package.json').version;
 
-var load = require('./lib/commands');
 var log = require('db-migrate-shared').log;
 var Promise;
-var onComplete = load('on-complete');
+var onComplete = require('./lib/commands/on-complete');
 var config = require('rc')('db-migrate');
 
 // constant hooks for this file
@@ -20,7 +19,7 @@ var APIHooks = {
 
 function dbmigrate (plugins, isModule, options, callback) {
   var dotenv = require('dotenv');
-  var setDefaultArgv = load('set-default-argv');
+  var setDefaultArgv = require('./lib/commands/set-default-argv');
 
   this.internals = {
     onComplete: onComplete,
@@ -31,7 +30,7 @@ function dbmigrate (plugins, isModule, options, callback) {
   }
   var internals = this.internals;
 
-  this.internals.plugins = load('fn/plugin')(plugins);
+  this.internals.plugins = require('./lib/commands/fn/plugin')(plugins);
 
   if (typeof callback === 'function') this.internals.onComplete = callback;
   else if (typeof options === 'function') this.internals.onComplete = options;
@@ -47,7 +46,7 @@ function dbmigrate (plugins, isModule, options, callback) {
   dotenv.load(dotenvConfig);
 
   /* $lab:coverage:off$ */
-  if (!options || !options.throwUncatched) load('helper/register-events')();
+  if (!options || !options.throwUncatched) require('./lib/commands/helper/register-events')();
   /* $lab:coverage:on$ */
 
   if (typeof options === 'object') {
@@ -72,7 +71,7 @@ function dbmigrate (plugins, isModule, options, callback) {
     setDefaultArgv(this.internals);
   } else setDefaultArgv(this.internals, isModule);
 
-  this.config = load('helper/load-config')(
+  this.config = require('./lib/commands/helper/load-config')(
     require('./lib/config.js'),
     this.internals
   );
@@ -184,7 +183,7 @@ dbmigrate.prototype = {
    * Defaults to up all migrations if no count is given.
    */
   up: function (specification, opts, callback) {
-    var executeUp = load('up');
+    var executeUp = require('./lib/commands/up');
 
     if (arguments.length > 0) {
       if (typeof specification === 'string') {
@@ -214,7 +213,7 @@ dbmigrate.prototype = {
    * Defaults to up all migrations if no count is given.
    */
   down: function (specification, opts, callback) {
-    var executeDown = load('down');
+    var executeDown = require('./lib/commands/down');
 
     if (arguments.length > 0) {
       if (typeof specification === 'number') {
@@ -240,7 +239,7 @@ dbmigrate.prototype = {
   },
 
   check: function (specification, opts, callback) {
-    var executeCheck = load('check');
+    var executeCheck = require('./lib/commands/check');
 
     if (arguments.length > 0) {
       if (typeof specification === 'number') {
@@ -268,7 +267,7 @@ dbmigrate.prototype = {
    * Defaults to up all migrations if no count is given.
    */
   sync: function (specification, opts, callback) {
-    var executeSync = load('sync');
+    var executeSync = require('./lib/commands/sync');
 
     if (arguments.length > 0) {
       if (typeof specification === 'string') {
@@ -292,7 +291,7 @@ dbmigrate.prototype = {
    * Executes down for all currently migrated migrations.
    */
   reset: function (scope, callback) {
-    var executeDown = load('down');
+    var executeDown = require('./lib/commands/down');
 
     if (typeof scope === 'string') {
       this.internals.migrationMode = scope;
@@ -318,14 +317,14 @@ dbmigrate.prototype = {
    * Transition migrations to the latest defined protocol.
    */
   transition: function () {
-    load('transition')(this.internals);
+    require('./lib/commands/transition')(this.internals);
   },
 
   /**
    * Creates a correctly formatted migration
    */
   create: function (migrationName, scope, callback) {
-    var executeCreateMigration = load('create-migration');
+    var executeCreateMigration = require('./lib/commands/create-migration');
     if (typeof scope === 'function') {
       callback = scope;
     } else if (scope) {
@@ -343,7 +342,7 @@ dbmigrate.prototype = {
    * Creates a database of the given dbname.
    */
   createDatabase: function (dbname, callback) {
-    var executeDB = load('db');
+    var executeDB = require('./lib/commands/db');
     this.internals.argv._.push(dbname);
     this.internals.mode = 'create';
     return Promise.resolve(executeDB(this.internals, this.config)).asCallback(
@@ -355,7 +354,7 @@ dbmigrate.prototype = {
    * Drops a database of the given dbname.
    */
   dropDatabase: function (dbname, callback) {
-    var executeDB = load('db');
+    var executeDB = require('./lib/commands/db');
     this.internals.argv._.push(dbname);
     this.internals.mode = 'drop';
     return Promise.resolve(executeDB(this.internals, this.config)).asCallback(
@@ -392,7 +391,7 @@ dbmigrate.prototype = {
    * the passed mode.
    */
   seed: function (mode, scope, callback) {
-    var executeSeed = load('seed');
+    var executeSeed = require('./lib/commands/seed');
     if (scope) {
       this.internals.migrationMode = scope;
       this.internals.matching = scope;
@@ -408,7 +407,7 @@ dbmigrate.prototype = {
    * Execute the down function of currently executed seeds.
    */
   undoSeed: function (specification, scope, callback) {
-    var executeUndoSeed = load('undo-seed');
+    var executeUndoSeed = require('./lib/commands/undo-seed');
     if (arguments.length > 0) {
       if (typeof specification === 'number') {
         this.internals.argv.count = specification;
@@ -432,7 +431,7 @@ dbmigrate.prototype = {
    * Execute the reset function of currently executed seeds.
    */
   resetSeed: function (specification, scope, callback) {
-    var executeUndoSeed = load('undo-seed');
+    var executeUndoSeed = require('./lib/commands/undo-seed');
     if (arguments.length > 0) {
       if (typeof specification === 'number') {
         this.internals.argv.count = specification;
@@ -457,7 +456,7 @@ dbmigrate.prototype = {
    * Executes the default routine.
    */
   run: function () {
-    load('run')(this.internals, this.config);
+    require('./lib/commands/run')(this.internals, this.config);
   }
 };
 

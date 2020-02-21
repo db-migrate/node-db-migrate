@@ -22,7 +22,7 @@ lab.experiment('api', function () {
       var dbmigrate = stubApiInstance(
         true,
         {
-          up: upStub
+          './lib/commands/up': upStub
         },
         config
       );
@@ -205,7 +205,7 @@ lab.experiment('api', function () {
 function defaultExecParams (method) {
   return function (args, index) {
     var stubs = {};
-    stubs[method] = stub;
+    stubs['./lib/commands/' + method] = stub;
 
     var api = stubApiInstance(true, stubs);
 
@@ -235,24 +235,10 @@ function spyCallback (api, args) {
   }
 }
 
-function loader (stubs) {
-  var load = require('../../lib/commands');
-  var keys = Object.keys(stubs);
-  return function (module) {
-    var index = keys.indexOf(module);
-    if (index !== -1) {
-      return stubs[keys[index]];
-    }
-    return load(module);
-  };
-}
-
 function stubApiInstance (isModule, stubs, options, callback) {
   delete require.cache[require.resolve('../../api.js')];
   delete require.cache[require.resolve('optimist')];
-  var Mod = proxyquire('../../api.js', {
-    './lib/commands': loader(stubs)
-  });
+  var Mod = proxyquire('../../api.js', stubs);
   var plugins = {};
   options = options || {};
 
