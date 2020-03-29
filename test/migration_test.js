@@ -286,7 +286,7 @@ function getTemplate () {
 
 function stubApiInstance (isModule, stubs, options, callback) {
   delete require.cache[require.resolve('../api.js')];
-  delete require.cache[require.resolve('optimist')];
+  delete require.cache[require.resolve('yargs')];
   const Mod = proxyquire('../api.js', stubs);
   const plugins = {};
   options = options || {};

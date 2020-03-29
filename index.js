@@ -70,7 +70,7 @@ module.exports.getInstance = function (
   callback
 ) {
   delete require.cache[require.resolve('./api.js')];
-  delete require.cache[require.resolve('optimist')];
+  delete require.cache[require.resolve('yargs')];
   var Mod = require('./api.js');
   var plugins = {};
 
