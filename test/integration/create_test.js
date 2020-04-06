@@ -2,14 +2,14 @@
 
 const Code = require('@hapi/code');
 const Lab = require('@hapi/lab');
+const Promise = require('bluebird');
 const lab = (exports.lab = Lab.script());
 const fs = require('fs');
 const path = require('path');
 const cp = require('child_process');
-const util = require('util');
 const dbmUtil = require('db-migrate-shared').util;
 
-const rmdir = util.promisify(require('rimraf'));
+const rmdir = Promise.promisify(require('rimraf'));
 
 function wipeMigrations () {
   const dir = path.join(__dirname, 'migrations');

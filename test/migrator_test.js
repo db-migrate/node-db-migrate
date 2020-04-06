@@ -6,7 +6,7 @@ const lab = (exports.lab = Lab.script());
 
 lab.experiment('migrators', function () {
   lab.experiment('check', function () {
-    lab.test('should return the migrations to be run', () => {
+    lab.test('should return the migrations to be run', async () => {
       const completedMigration = {
         name: '20180330020329-thisMigrationIsCompleted'
       };
@@ -24,7 +24,8 @@ lab.experiment('migrators', function () {
         }
       });
 
-      Migrator.prototype.check(null, function (_err, res) {
+      Migrator.prototype.check(null, function (err, res) {
+        Code.expect(err).to.be.null();
         Code.expect(res.length).to.equal(1);
         Code.expect(res[0].name).to.equal(uncompletedMigration.name);
       });
