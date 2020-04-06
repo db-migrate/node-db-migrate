@@ -12,6 +12,7 @@ database.json
 *.sublime-workspace
 archive
 .db-migraterc
+coverage.html
 
 # Vim swap files
 .*.sw[a-z]
