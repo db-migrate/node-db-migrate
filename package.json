@@ -51,7 +51,6 @@
     "dotenv": "^5.0.1",
     "final-fs": "^1.6.0",
     "inflection": "^1.10.0",
-    "lab": "16.x",
     "mkdirp": "~0.5.0",
     "parse-database-url": "~0.3.0",
     "prompt": "^1.0.0",
@@ -62,7 +61,8 @@
     "yargs": "^15.3.1"
   },
   "devDependencies": {
-    "code": "^4.1.0",
+    "@hapi/lab": "18.x",
+    "@hapi/code": "5.x",
     "db-migrate-base": "^1.2.5",
     "db-migrate-mysql": "^1.1.10",
     "db-migrate-sqlite3": "^0.3.1",
@@ -78,6 +78,7 @@
   },
   "scripts": {
     "pretest": "eslint *.js lib/*.js test/*.js bin/*",
-    "test": "make test-cov"
+    "test": "lab",
+    "test:coverage": "lab -r html -o coverage.html"
   }
 }

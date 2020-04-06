@@ -1,6 +1,6 @@
 const Promise = require('bluebird');
-const Code = require('code');
-const Lab = require('lab');
+const Code = require('@hapi/code');
+const Lab = require('@hapi/lab');
 const proxyquire = require('proxyquire').noPreserveCache();
 const lab = (exports.lab = Lab.script());
 

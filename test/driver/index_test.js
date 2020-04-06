@@ -1,7 +1,7 @@
 var proxyquire = require('proxyquire').noPreserveCache();
 var sinon = require('sinon');
-var Code = require('code');
-var Lab = require('lab');
+var Code = require('@hapi/code');
+var Lab = require('@hapi/lab');
 var lab = exports.lab = Lab.script();
 var validDbConfigWithTunnel = {
   driver: 'mysql',
