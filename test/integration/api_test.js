@@ -249,7 +249,7 @@ function loader (stubs) {
 
 function stubApiInstance (isModule, stubs, options, callback) {
   delete require.cache[require.resolve('../../api.js')];
-  delete require.cache[require.resolve('optimist')];
+  delete require.cache[require.resolve('yargs')];
   var Mod = proxyquire('../../api.js', {
     './lib/commands': loader(stubs)
   });
