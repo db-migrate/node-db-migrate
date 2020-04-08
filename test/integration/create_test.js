@@ -1,18 +1,19 @@
 'use strict';
 
-const Code = require('code');
-const Lab = require('lab');
+const Code = require('@hapi/code');
+const Lab = require('@hapi/lab');
+const Promise = require('bluebird');
 const lab = (exports.lab = Lab.script());
 const fs = require('fs');
 const path = require('path');
 const cp = require('child_process');
 const dbmUtil = require('db-migrate-shared').util;
 
-const rmdir = require('rimraf');
+const rmdir = Promise.promisify(require('rimraf'));
 
-function wipeMigrations (callback) {
+function wipeMigrations () {
   const dir = path.join(__dirname, 'migrations');
-  rmdir(dir, callback);
+  return rmdir(dir);
 }
 
 function dbMigrate () {
@@ -23,73 +24,61 @@ function dbMigrate () {
 }
 
 lab.experiment('create', function () {
-  lab.experiment('without a migration directory', function () {
+  lab.experiment('without a migration directory', () => {
     let exitCode;
 
-    lab.before(function (done) {
-      wipeMigrations(function (err) {
-        Code.expect(err).to.be.null();
-        const db = dbMigrate('create', 'first migration');
-        // db.stderr.on('data', data => console.log(data.toString()));
-        // db.stdout.on('data', data => console.log(data.toString()));
+    lab.before(async () => {
+      await wipeMigrations();
 
-        db.on('exit', function (code) {
-          exitCode = code;
-          done();
-        });
-      });
+      const db = dbMigrate('create', 'first migration');
+      // db.stderr.on('data', data => console.log(data.toString()));
+      // db.stdout.on('data', data => console.log(data.toString()));
+
+      const exitCodePromise = new Promise((resolve) => db.on('exit', resolve));
+      exitCode = await exitCodePromise;
     });
 
-    lab.test('does not cause an error', function (done) {
+    lab.test('does not cause an error', () => {
       Code.expect(exitCode).to.equal(0);
-      done();
     });
 
-    lab.test('will create a new migration directory', function (done) {
+    lab.test('will create a new migration directory', () => {
       const stats = fs.statSync(path.join(__dirname, 'migrations'));
       Code.expect(stats.isDirectory()).to.be.true();
-      done();
     });
 
-    lab.test('will create a new migration', function (done) {
+    lab.test('will create a new migration', () => {
       const files = fs.readdirSync(path.join(__dirname, 'migrations'));
       Code.expect(files.length).to.equal(1);
       const file = files[0];
       Code.expect(file).to.match(/first-migration\.js$/);
-      done();
     });
   });
 
   lab.experiment(
-    'with sql-file option set to true from config file',
-    function () {
+    'with sql-file option set to true from config file', () => {
       let exitCode;
 
-      lab.before(function (done) {
+      lab.before(async () => {
         const configOption = path.join(
           '--config=',
           __dirname,
           'database_with_sql_file.json'
         );
 
-        wipeMigrations(function (err) {
-          Code.expect(err).to.not.exist();
-          dbMigrate('create', 'second migration', configOption).on(
-            'exit',
-            function (code) {
-              exitCode = code;
-              done();
-            }
-          );
+        await wipeMigrations();
+        const exitCodePromise = new Promise((resolve) => {
+          dbMigrate('create', 'second migration', configOption)
+            .on('exit', resolve);
         });
+        exitCode = await exitCodePromise;
       });
 
-      lab.test('does not cause an error', function (done) {
+      lab.test('does not cause an error', () => {
         Code.expect(exitCode).to.equal(0);
-        done();
       });
 
-      lab.test('will create a new migration', function (done) {
+      lab.test('will create a new migration', () => {
         const files = fs.readdirSync(path.join(__dirname, 'migrations'));
 
         for (let i = 0; i < files.length; i++) {
@@ -99,51 +88,42 @@ lab.experiment('create', function () {
             Code.expect(file).to.match(/second-migration\.js$/);
           }
         }
-
-        done();
       });
 
-      lab.test('will create a new migration/sqls directory', function (done) {
+      lab.test('will create a new migration/sqls directory', () => {
         const stats = fs.statSync(path.join(__dirname, 'migrations/sqls'));
         Code.expect(stats.isDirectory()).to.be.true();
-        done();
       });
 
-      lab.test('will create a new migration sql up file', function (done) {
+      lab.test('will create a new migration sql up file', () => {
         const files = fs.readdirSync(path.join(__dirname, 'migrations/sqls'));
         Code.expect(files.length).to.equal(2);
         const file = files[1];
         Code.expect(file).to.match(/second-migration-up\.sql$/);
-        done();
       });
     }
   );
 
   lab.experiment(
-    'with sql-file option set to true as a command parameter',
-    function () {
+    'with sql-file option set to true as a command parameter', () => {
       let exitCode;
 
-      lab.before(function (done) {
+      lab.before(async () => {
         const configOption = path.join('--sql-file');
-        wipeMigrations(function (err) {
-          Code.expect(err).to.not.exist();
-          dbMigrate('create', 'third migration', configOption).on(
-            'exit',
-            function (code) {
-              exitCode = code;
-              done();
-            }
-          );
+
+        await wipeMigrations();
+        const exitCodePromise = new Promise((resolve) => {
+          dbMigrate('create', 'third migration', configOption).on('exit', resolve);
         });
+
+        exitCode = await exitCodePromise;
       });
 
-      lab.test('does not cause an error', function (done) {
+      lab.test('does not cause an error', () => {
         Code.expect(exitCode).to.equal(0);
-        done();
       });
 
-      lab.test('will create a new migration', function (done) {
+      lab.test('will create a new migration', () => {
         const files = fs.readdirSync(path.join(__dirname, 'migrations'));
 
         for (let i = 0; i < files.length; i++) {
@@ -153,55 +133,45 @@ lab.experiment('create', function () {
             Code.expect(file).to.match(/third-migration\.js$/);
           }
         }
-        done();
       });
 
-      lab.test('will create a new migration/sqls directory', function (done) {
+      lab.test('will create a new migration/sqls directory', () => {
         const stats = fs.statSync(path.join(__dirname, 'migrations/sqls'));
         Code.expect(stats.isDirectory()).to.be.true();
-        done();
       });
 
-      lab.test('will create a new migration sql up file', function (done) {
+      lab.test('will create a new migration sql up file', () => {
         const files = fs.readdirSync(path.join(__dirname, 'migrations/sqls'));
         Code.expect(files.length).to.equal(2);
         const file = files[1];
         Code.expect(file).to.match(/third-migration-up\.sql$/);
-        done();
       });
     }
   );
 
   lab.experiment(
-    'with coffee-file option set to true from config file',
-    function () {
+    'with coffee-file option set to true from config file', () => {
       let exitCode;
 
-      lab.before(function (done) {
+      lab.before(async () => {
         const configOption = path.join(
           '--config=',
           __dirname,
           'database_with_coffee_file.json'
         );
 
-        wipeMigrations(function (err) {
-          Code.expect(err).to.not.exist();
-          dbMigrate('create', 'fourth migration', configOption).on(
-            'exit',
-            function (code) {
-              exitCode = code;
-              done();
-            }
-          );
+        await wipeMigrations();
+        const exitCodePromise = new Promise((resolve) => {
+          dbMigrate('create', 'fourth migration', configOption).on('exit', resolve);
         });
+        exitCode = await exitCodePromise;
       });
 
-      lab.test('does not cause an error', function (done) {
+      lab.test('does not cause an error', () => {
         Code.expect(exitCode).to.equal(0);
-        done();
       });
 
-      lab.test('will create a new coffeescript migration', function (done) {
+      lab.test('will create a new coffeescript migration', () => {
         const files = fs.readdirSync(path.join(__dirname, 'migrations'));
 
         for (let i = 0; i < files.length; i++) {
@@ -211,92 +181,74 @@ lab.experiment('create', function () {
             Code.expect(file).to.match(/fourth-migration\.coffee$/);
           }
         }
-
-        done();
       });
     }
   );
   lab.experiment(
-    'with scoped migration',
-    function () {
-      let exitCode;
-      lab.experiment('without a migration directory', function () {
+    'with scoped migration', () => {
+      lab.experiment('without a migration directory', () => {
         let exitCode;
 
-        lab.before(function (done) {
-          wipeMigrations(function (err) {
-            Code.expect(err).to.be.null();
-            const configOption = path.join('--sql-file');
-            const db = dbMigrate('create', 'test/first migration', configOption);
-            // db.stderr.on('data', data => console.log(data.toString()));
-            // db.stdout.on('data', data => console.log(data.toString()));
+        lab.before(async () => {
+          await wipeMigrations();
+          const configOption = path.join('--sql-file');
+          const db = dbMigrate('create', 'test/first migration', configOption);
+          // db.stderr.on('data', data => console.log(data.toString()));
+          // db.stdout.on('data', data => console.log(data.toString()));
 
-            db.on('exit', function (code) {
-              exitCode = code;
-              done();
-            });
-          });
+          const exitCodePromise = new Promise((resolve) => db.on('exit', resolve));
+          exitCode = await exitCodePromise;
         });
 
-        lab.test('does not cause an error', function (done) {
+        lab.test('does not cause an error', () => {
           Code.expect(exitCode).to.equal(0);
-          done();
         });
 
-        lab.test('will create a new migration directory', function (done) {
+        lab.test('will create a new migration directory', () => {
           const stats = fs.statSync(path.join(__dirname, 'migrations/test'));
           Code.expect(stats.isDirectory()).to.be.true();
-          done();
         });
 
-        lab.test('will create a new migration', function (done) {
+        lab.test('will create a new migration', () => {
           const files = fs.readdirSync(path.join(__dirname, 'migrations/test'));
           Code.expect(files.length).to.equal(2);
           const file = files[0];
           Code.expect(file).to.match(/first-migration\.js$/);
-          done();
         });
-        lab.test('will create a new migration/test/sqls directory', function (done) {
+        lab.test('will create a new migration/test/sqls directory', () => {
           const stats = fs.statSync(path.join(__dirname, 'migrations/test/sqls'));
           Code.expect(stats.isDirectory()).to.be.true();
-          done();
         });
-        lab.test('will create a new migration sql up file', function (done) {
+        lab.test('will create a new migration sql up file', () => {
           const files = fs.readdirSync(path.join(__dirname, 'migrations/test/sqls'));
           Code.expect(files.length).to.equal(2);
           const file = files[1];
           Code.expect(file).to.match(/first-migration-up\.sql$/);
-          done();
         });
       });
     }
   );
 
   lab.experiment(
-    'with coffee-file option set to true as a command parameter',
-    function () {
+    'with coffee-file option set to true as a command parameter', () => {
       let exitCode;
 
-      lab.before(function (done) {
+      lab.before(async () => {
         const configOption = path.join('--coffee-file');
-        wipeMigrations(function (err) {
-          Code.expect(err).to.not.exist();
-          dbMigrate('create', 'fifth migration', configOption).on(
-            'exit',
-            function (code) {
-              exitCode = code;
-              done();
-            }
-          );
+
+        await wipeMigrations();
+
+        const exitCodePromise = new Promise((resolve) => {
+          dbMigrate('create', 'fifth migration', configOption).on('exit', resolve);
         });
+        exitCode = await exitCodePromise;
       });
 
-      lab.test('does not cause an error', function (done) {
+      lab.test('does not cause an error', () => {
         Code.expect(exitCode).to.equal(0);
-        done();
       });
 
-      lab.test('will create a new coffeescript migration', function (done) {
+      lab.test('will create a new coffeescript migration', () => {
         const files = fs.readdirSync(path.join(__dirname, 'migrations'));
 
         for (let i = 0; i < files.length; i++) {
@@ -306,53 +258,49 @@ lab.experiment('create', function () {
             Code.expect(file).to.match(/fifth-migration\.coffee$/);
           }
         }
-        done();
       });
     }
   );
 
   lab.experiment(
-    'with sql-file and a bad migration, causes an exit',
-    function () {
+    'with sql-file and a bad migration, causes an exit', () => {
       let exitCode;
 
-      lab.before(function (done) {
+      lab.before(async () => {
         const configOption = path.join('--sql-file');
-        wipeMigrations(function (err) {
-          Code.expect(err).to.not.exist();
-          dbMigrate('create', 'sixth migration', configOption).on(
-            'exit',
-            function () {
-              const files = fs.readdirSync(path.join(__dirname, 'migrations'));
 
-              for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                const stats = fs.statSync(
-                  path.join(__dirname, 'migrations', file)
-                );
+        await wipeMigrations();
 
-                if (stats.isFile() && file.match(/sixth-migration\.js$/)) {
-                  fs.writeFileSync(
-                    path.join(__dirname, 'migrations', file),
-                    'asdfghij;'
-                  );
-                  dbMigrate('up').on('exit', function (code) {
-                    exitCode = code;
-                    done();
-                  });
-                }
-              }
+        dbMigrate('create', 'sixth migration', configOption).on('exit', () => {
+          const files = fs.readdirSync(path.join(__dirname, 'migrations'));
+
+          for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const stats = fs.statSync(
+              path.join(__dirname, 'migrations', file)
+            );
+
+            if (stats.isFile() && file.match(/sixth-migration\.js$/)) {
+              fs.writeFileSync(
+                path.join(__dirname, 'migrations', file),
+                'asdfghij;'
+              );
             }
-          );
+          }
         });
+
+        const codePromise = new Promise((resolve) => {
+          dbMigrate('up').on('exit', resolve);
+        });
+
+        exitCode = await codePromise;
       });
 
-      lab.test('does cause an error', function (done) {
+      lab.test('does cause an error', () => {
         Code.expect(exitCode).to.equal(1);
-        done();
       });
 
-      lab.test('did create the new migration', function (done) {
+      lab.test('did create the new migration', () => {
         const files = fs.readdirSync(path.join(__dirname, 'migrations'));
 
         for (let i = 0; i < files.length; i++) {
@@ -362,12 +310,10 @@ lab.experiment('create', function () {
             Code.expect(file).to.match(/sixth-migration\.js$/);
           }
         }
-
-        done();
       });
 
-      lab.after(function (done) {
-        cp.exec('rm -r ' + path.join(__dirname, 'migrations'), done);
+      lab.after(() => {
+        cp.exec('rm -r ' + path.join(__dirname, 'migrations'));
       });
     }
   );

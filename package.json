@@ -52,16 +52,17 @@
     "final-fs": "^1.6.0",
     "inflection": "^1.10.0",
     "mkdirp": "~0.5.0",
-    "optimist": "~0.6.1",
     "parse-database-url": "~0.3.0",
     "prompt": "^1.0.0",
     "rc": "^1.2.8",
     "resolve": "^1.1.6",
     "semver": "^5.3.0",
-    "tunnel-ssh": "^4.0.0"
+    "tunnel-ssh": "^4.0.0",
+    "yargs": "^15.3.1"
   },
   "devDependencies": {
-    "code": "^4.1.0",
+    "@hapi/lab": "18.x",
+    "@hapi/code": "5.x",
     "db-migrate-base": "^1.2.5",
     "db-migrate-mysql": "^1.1.10",
     "db-migrate-sqlite3": "^0.3.1",
@@ -71,13 +72,13 @@
     "eslint-plugin-node": "^8.0.1",
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
-    "lab": "^14.3.1",
     "proxyquire": "^1.4.0",
     "rimraf": "^2.6.2",
     "sinon": "^7.2.2"
   },
   "scripts": {
     "pretest": "eslint *.js lib/*.js test/*.js bin/*",
-    "test": "make test-cov"
+    "test": "lab",
+    "test:coverage": "lab -r html -o coverage.html"
   }
 }

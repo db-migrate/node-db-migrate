@@ -1,7 +1,7 @@
 'use strict';
 
-const Code = require('code');
-const Lab = require('lab');
+const Code = require('@hapi/code');
+const Lab = require('@hapi/lab');
 const proxyquire = require('proxyquire').noPreserveCache();
 const lab = (exports.lab = Lab.script());
 const Migration = require('../lib/file.js');
@@ -34,11 +34,11 @@ lab.experiment('migration', function () {
 });
 
 function asModule () {
-  lab.test('should create migration', function (done) {
+  lab.test('should create migration', async () => {
     const dbmigrate = stubApiInstance(true, {}, {});
     dbmigrate.setConfigParam('_', []);
 
-    dbmigrate.create('migrationName').then(done);
+    await dbmigrate.create('migrationName');
   });
 }
 
@@ -53,42 +53,33 @@ function newMigrationObject () {
       );
 
       lab.test(
-        'should have title set without file extension',
-
-        function (done) {
+        'should have title set without file extension', () => {
           Code.expect(migration.title).to.equal(fileNameNoExtension);
-          done();
         }
       );
 
-      lab.test('should have date set', function (done) {
+      lab.test('should have date set', () => {
         migration.date.setMilliseconds(0);
         date.setMilliseconds(0);
         Code.expect(migration.date.getTime()).to.equal(date.getTime());
-        done();
       });
 
       lab.test(
-        'should have name set without file extension',
-
-        function (done) {
+        'should have name set without file extension', () => {
           Code.expect(migration.name).to.equal(
             dateString + '-' + fileNameNoExtension
           );
-          done();
         }
       );
 
-      lab.test('should have path set', function (done) {
+      lab.test('should have path set', () => {
         Code.expect(migration.path).to.equal(
           dirName + dateString + '-' + fileName
         );
-        done();
       });
 
-      lab.test('should have templateType not set', function (done) {
+      lab.test('should have templateType not set', () => {
         Code.expect(migration.templateType).to.be.undefined();
-        done();
       });
     }
   );
@@ -96,31 +87,26 @@ function newMigrationObject () {
   lab.experiment('with 3 parameters', function () {
     const migration = new Migration(fileName, dirName, date);
 
-    lab.test('should have title set', function (done) {
+    lab.test('should have title set', () => {
       Code.expect(migration.title).to.equal(fileName);
-      done();
     });
 
-    lab.test('should have date set with month', function (done) {
+    lab.test('should have date set with month', () => {
       Code.expect(migration.date).to.equal(date);
-      done();
     });
 
-    lab.test('should have name set', function (done) {
+    lab.test('should have name set', () => {
       Code.expect(migration.name).to.equal(dateString + '-' + fileName);
-      done();
     });
 
-    lab.test('should have path set', function (done) {
+    lab.test('should have path set', () => {
       Code.expect(migration.path).to.equal(
         dirName + dateString + '-' + fileName
       );
-      done();
     });
 
-    lab.test('should have templateType not set', function (done) {
+    lab.test('should have templateType not set', () => {
       Code.expect(migration.templateType).to.be.undefined();
-      done();
     });
   });
 
@@ -133,31 +119,26 @@ function newMigrationObject () {
       internals
     );
 
-    lab.test('should have title set', function (done) {
+    lab.test('should have title set', () => {
       Code.expect(migration.file.title).to.equal(fileName);
-      done();
     });
 
-    lab.test('should have date set', function (done) {
+    lab.test('should have date set', () => {
       Code.expect(migration.file.date).to.equal(date);
-      done();
     });
 
-    lab.test('should have name set', function (done) {
+    lab.test('should have name set', () => {
       Code.expect(migration.file.name).to.equal(dateString + '-' + fileName);
-      done();
     });
 
-    lab.test('should have path set', function (done) {
+    lab.test('should have path set', () => {
       Code.expect(migration.file.path).to.equal(
         dirName + dateString + '-' + fileName
       );
-      done();
     });
 
-    lab.test('should have templateType set', function (done) {
+    lab.test('should have templateType set', () => {
       Code.expect(migration.templateType).to.equal(templateType);
-      done();
     });
   });
 }
@@ -170,12 +151,9 @@ function getTemplate () {
       const migration = new Template(fileName, dirName, date, internals);
 
       lab.test(
-        'should return default javascript template',
-
-        function (done) {
+        'should return default javascript template', () => {
           const actual = migration.getTemplate();
           Code.expect(actual).to.equal(migration.defaultJsTemplate());
-          done();
         }
       );
     }
@@ -192,12 +170,9 @@ function getTemplate () {
       );
 
       lab.test(
-        'should return sql file loader template',
-
-        function (done) {
+        'should return sql file loader template', () => {
           const actual = migration.getTemplate();
           Code.expect(actual).to.equal(migration.sqlFileLoaderTemplate());
-          done();
         }
       );
     });
@@ -212,12 +187,9 @@ function getTemplate () {
       );
 
       lab.test(
-        'should return default sql template',
-
-        function (done) {
+        'should return default sql template', () => {
           const actual = migration.getTemplate();
           Code.expect(actual).to.equal(migration.defaultSqlTemplate());
-          done();
         }
       );
     });
@@ -232,12 +204,9 @@ function getTemplate () {
       );
 
       lab.test(
-        'should return default coffee template',
-
-        function (done) {
+        'should return default coffee template', () => {
           const actual = migration.getTemplate();
           Code.expect(actual).to.equal(migration.defaultCoffeeTemplate());
-          done();
         }
       );
     });
@@ -252,12 +221,9 @@ function getTemplate () {
       );
 
       lab.test(
-        'should return default coffee template',
-
-        function (done) {
+        'should return default coffee template', () => {
           const actual = migration.getTemplate();
           Code.expect(actual).to.equal(migration.coffeeSqlFileLoaderTemplate());
-          done();
         }
       );
     });
@@ -272,12 +238,9 @@ function getTemplate () {
       );
 
       lab.test(
-        'should return default sql template',
-
-        function (done) {
+        'should return default sql template', () => {
           const actual = migration.getTemplate();
           Code.expect(actual).to.equal(migration.defaultJsTemplate());
-          done();
         }
       );
     });
@@ -286,7 +249,7 @@ function getTemplate () {
 
 function stubApiInstance (isModule, stubs, options, callback) {
   delete require.cache[require.resolve('../api.js')];
-  delete require.cache[require.resolve('optimist')];
+  delete require.cache[require.resolve('yargs')];
   const Mod = proxyquire('../api.js', stubs);
   const plugins = {};
   options = options || {};

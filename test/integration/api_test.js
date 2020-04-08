@@ -1,5 +1,5 @@
-var Code = require('code');
-var Lab = require('lab');
+var Code = require('@hapi/code');
+var Lab = require('@hapi/lab');
 var lab = (exports.lab = Lab.script());
 var sinon = require('sinon');
 var proxyquire = require('proxyquire').noPreserveCache();
@@ -7,16 +7,14 @@ var Promise = require('bluebird');
 
 lab.experiment('api', function () {
   lab.test(
-    'force process exit after migrations have been run',
-
-    function (done, onCleanup) {
+    'force process exit after migrations have been run', (flags) => {
       var processExit = process.exit;
       var argv = process.argv;
       var called = false;
       var config = {};
 
       // register cleanup method and start preparing the test
-      onCleanup(teardown);
+      flags.onCleanup = teardown;
       overwriteExit();
 
       var dbmigrate = stubApiInstance(
@@ -44,7 +42,6 @@ lab.experiment('api', function () {
        */
       function validate () {
         Code.expect(called).to.be.true();
-        done();
       }
 
       function upStub (internals) {
@@ -75,15 +72,14 @@ lab.experiment('api', function () {
         };
       }
 
-      function teardown (next) {
+      function teardown () {
         process.exit = processExit;
         process.argv = argv;
-        return next();
       }
     }
   );
 
-  lab.test('should load config from parameter', function (done) {
+  lab.test('should load config from parameter', () => {
     var options = {
       env: 'dev',
       cwd: process.cwd() + '/test/integration',
@@ -107,12 +103,9 @@ lab.experiment('api', function () {
     delete actual.getCurrent;
 
     Code.expect(actual).to.equal(expected);
-    done();
   });
 
-  lab.test('should load commandline options from options parameter', function (
-    done
-  ) {
+  lab.test('should load commandline options from options parameter', () => {
     var options = {
       cmdOptions: {
         'migrations-dir': './test'
@@ -127,7 +120,6 @@ lab.experiment('api', function () {
     delete actual.getCurrent;
 
     Code.expect(actual).to.equal(expected);
-    done();
   });
 
   lab.test(
@@ -249,7 +241,7 @@ function loader (stubs) {
 
 function stubApiInstance (isModule, stubs, options, callback) {
   delete require.cache[require.resolve('../../api.js')];
-  delete require.cache[require.resolve('optimist')];
+  delete require.cache[require.resolve('yargs')];
   var Mod = proxyquire('../../api.js', {
     './lib/commands': loader(stubs)
   });
