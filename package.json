@@ -61,19 +61,19 @@
     "yargs": "^15.3.1"
   },
   "devDependencies": {
-    "@hapi/lab": "18.x",
     "@hapi/code": "5.x",
+    "@hapi/lab": "18.x",
     "db-migrate-base": "^1.2.5",
     "db-migrate-mysql": "^1.1.10",
     "db-migrate-sqlite3": "^0.3.1",
-    "eslint": "^5.12.0",
-    "eslint-config-standard": "^12.0.0",
-    "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-node": "^8.0.1",
-    "eslint-plugin-promise": "^4.0.1",
-    "eslint-plugin-standard": "^4.0.0",
+    "eslint": "^6.8.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
     "proxyquire": "^1.4.0",
-    "rimraf": "^2.6.2",
+    "rimraf": "^3.0.2",
     "sinon": "^7.2.2"
   },
   "scripts": {
