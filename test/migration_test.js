@@ -215,6 +215,23 @@ function getTemplate () {
       });
     });
 
+    lab.experiment('as sql default ignore on init template', function () {
+      const migration = new Template(
+        fileName,
+        dirName,
+        date,
+        Template.TemplateType.SQL_FILE_LOADER_IGNORE_ON_INIT,
+        internals
+      );
+
+      lab.test('should return sql ignore on init template', () => {
+        const actual = migration.getTemplate();
+        Code.expect(actual).to.equal(
+          migration.sqlFileLoaderIgnoreOnInitTemplate()
+        );
+      });
+    });
+
     lab.experiment('as default javascript', function () {
       const migration = new Template(
         fileName,
@@ -235,7 +252,7 @@ function getTemplate () {
     lab.experiment('as sql file loader', function () {
       const name = 'test';
 
-      lab.test('should return sql file loader template', () => {
+      lab.test('should return plugin specified template', () => {
         const plugins = Plugins.createSinglePlugin(
           `template:overwrite:provider:${name}`,
           opts => {
@@ -260,83 +277,6 @@ function getTemplate () {
           Error,
           'test'
         );
-      });
-    });
-
-    lab.experiment('as default sql', function () {
-      const migration = new Template(
-        fileName,
-        dirName,
-        date,
-        Template.TemplateType.DEFAULT_SQL,
-        internals
-      );
-
-      lab.test('should return default sql template', () => {
-        const actual = migration.getTemplate();
-        Code.expect(actual).to.equal(migration.defaultSqlTemplate());
-      });
-    });
-
-    lab.experiment('as sql default ignore on init template', function () {
-      const migration = new Template(
-        fileName,
-        dirName,
-        date,
-        Template.TemplateType.SQL_FILE_LOADER_IGNORE_ON_INIT,
-        internals
-      );
-
-      lab.test('should return sql ignore on init template', () => {
-        const actual = migration.getTemplate();
-        Code.expect(actual).to.equal(
-          migration.sqlFileLoaderIgnoreOnInitTemplate()
-        );
-      });
-    });
-
-    lab.experiment('as default coffee', function () {
-      const migration = new Template(
-        fileName,
-        dirName,
-        date,
-        Template.TemplateType.DEFAULT_COFFEE,
-        internals
-      );
-
-      lab.test('should return default coffee template', () => {
-        const actual = migration.getTemplate();
-        Code.expect(actual).to.equal(migration.defaultCoffeeTemplate());
-      });
-    });
-
-    lab.experiment('as coffee sql loader', function () {
-      const migration = new Template(
-        fileName,
-        dirName,
-        date,
-        Template.TemplateType.COFFEE_SQL_FILE_LOADER,
-        internals
-      );
-
-      lab.test('should return default coffee template', () => {
-        const actual = migration.getTemplate();
-        Code.expect(actual).to.equal(migration.coffeeSqlFileLoaderTemplate());
-      });
-    });
-
-    lab.experiment('as default javascript', function () {
-      const migration = new Template(
-        fileName,
-        dirName,
-        date,
-        Template.TemplateType.DEFAULT_JS,
-        internals
-      );
-
-      lab.test('should return default sql template', () => {
-        const actual = migration.getTemplate();
-        Code.expect(actual).to.equal(migration.defaultJsTemplate());
       });
     });
   });
