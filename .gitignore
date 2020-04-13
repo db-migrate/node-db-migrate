@@ -1,5 +1,6 @@
 migrations/
 node_modules/
+lib/commands/generated.js
 .tern-port
 VCSeeder/
 Seeder/
