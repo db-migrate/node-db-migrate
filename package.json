@@ -74,7 +74,7 @@
     "eslint-plugin-standard": "^4.0.1",
     "proxyquire": "^1.4.0",
     "rimraf": "^3.0.2",
-    "sinon": "^7.2.2"
+    "sinon": "^9.0.2"
   },
   "scripts": {
     "pretest": "eslint *.js lib/*.js",
