@@ -1,5 +1,7 @@
 migrations/
 node_modules/
+lib/commands/generated.js
+.tern-port
 VCSeeder/
 Seeder/
 *.db
@@ -11,6 +13,7 @@ database.json
 *.sublime-workspace
 archive
 .db-migraterc
+coverage.html
 
 # Vim swap files
 .*.sw[a-z]

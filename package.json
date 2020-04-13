@@ -33,7 +33,7 @@
   ],
   "version": "0.11.6",
   "engines": {
-    "node": ">=0.6.0"
+    "node": ">=8.0.0"
   },
   "bugs": {
     "url": "https://github.com/db-migrate/node-db-migrate/issues"
@@ -52,14 +52,13 @@
     "final-fs": "^1.6.0",
     "inflection": "^1.10.0",
     "mkdirp": "~0.5.0",
-    "optimist": "~0.6.1",
     "parse-database-url": "~0.3.0",
-    "pkginfo": "^0.4.0",
     "prompt": "^1.0.0",
     "rc": "^1.2.8",
     "resolve": "^1.1.6",
     "semver": "^5.3.0",
-    "tunnel-ssh": "^4.0.0"
+    "tunnel-ssh": "^4.0.0",
+    "yargs": "^15.3.1"
   },
   "devDependencies": {
     "code": "^4.1.0",
@@ -78,6 +77,7 @@
     "sinon": "^4.1.2"
   },
   "scripts": {
+    "prepublishOnly": "node generateLoader.js",
     "pretest": "eslint *.js lib/*.js test/*.js bin/*",
     "test": "make test-cov"
   }

@@ -1,10 +1,11 @@
 'use strict';
 
-var load = require('./lib/commands');
+module.exports.version = require('./package.json').version;
+
+let load;
 var log = require('db-migrate-shared').log;
-require('pkginfo')(module, 'version'); // jshint ignore:line
 var Promise;
-var onComplete = load('on-complete');
+let onComplete;
 
 // constant hooks for this file
 var APIHooks = {
@@ -17,12 +18,18 @@ var APIHooks = {
 };
 
 function dbmigrate (plugins, isModule, options, callback) {
+  if (!options.staticLoader) load = require('./lib/commands');
+  else load = require('./lib/commands/generated.js');
+
+  onComplete = load('on-complete');
+
   var dotenv = require('dotenv');
   var setDefaultArgv = load('set-default-argv');
 
   this.internals = {
     onComplete: onComplete,
-    migrationProtocol: 1
+    migrationProtocol: 1,
+    load
   };
   if (typeof isModule !== 'function') {
     this.internals.isModule = isModule;

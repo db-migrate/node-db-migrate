@@ -63,15 +63,12 @@ function loadPlugins (options) {
   return hooks;
 }
 
-module.exports.getInstance = function (
-  isModule,
-  options = { cwd: process.cwd() },
-  callback
-) {
+module.exports.getInstance = function (isModule, options = {}, callback) {
   delete require.cache[require.resolve('./api.js')];
   delete require.cache[require.resolve('optimist')];
   var Mod = require('./api.js');
   var plugins = {};
+  options.cwd = options.cwd || process.cwd();
 
   try {
     if (!options || !options.noPlugins) plugins = loadPlugins(options);
