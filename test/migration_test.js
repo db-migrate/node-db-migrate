@@ -14,7 +14,7 @@ const fileNameNoExtension = 'filename';
 const fileName = 'filename.js';
 const templateType = Template.TemplateType.SQL_FILE_LOADER;
 
-let internals = {};
+const internals = {};
 internals.migrationTable = 'migrations';
 
 lab.experiment('migration', function () {
@@ -52,11 +52,9 @@ function newMigrationObject () {
         internals
       );
 
-      lab.test(
-        'should have title set without file extension', () => {
-          Code.expect(migration.title).to.equal(fileNameNoExtension);
-        }
-      );
+      lab.test('should have title set without file extension', () => {
+        Code.expect(migration.title).to.equal(fileNameNoExtension);
+      });
 
       lab.test('should have date set', () => {
         migration.date.setMilliseconds(0);
@@ -64,13 +62,11 @@ function newMigrationObject () {
         Code.expect(migration.date.getTime()).to.equal(date.getTime());
       });
 
-      lab.test(
-        'should have name set without file extension', () => {
-          Code.expect(migration.name).to.equal(
-            dateString + '-' + fileNameNoExtension
-          );
-        }
-      );
+      lab.test('should have name set without file extension', () => {
+        Code.expect(migration.name).to.equal(
+          dateString + '-' + fileNameNoExtension
+        );
+      });
 
       lab.test('should have path set', () => {
         Code.expect(migration.path).to.equal(
@@ -150,12 +146,10 @@ function getTemplate () {
     function () {
       const migration = new Template(fileName, dirName, date, internals);
 
-      lab.test(
-        'should return default javascript template', () => {
-          const actual = migration.getTemplate();
-          Code.expect(actual).to.equal(migration.defaultJsTemplate());
-        }
-      );
+      lab.test('should return default javascript template', () => {
+        const actual = migration.getTemplate();
+        Code.expect(actual).to.equal(migration.defaultJsTemplate());
+      });
     }
   );
 
@@ -169,12 +163,10 @@ function getTemplate () {
         internals
       );
 
-      lab.test(
-        'should return sql file loader template', () => {
-          const actual = migration.getTemplate();
-          Code.expect(actual).to.equal(migration.sqlFileLoaderTemplate());
-        }
-      );
+      lab.test('should return sql file loader template', () => {
+        const actual = migration.getTemplate();
+        Code.expect(actual).to.equal(migration.sqlFileLoaderTemplate());
+      });
     });
 
     lab.experiment('as default sql', function () {
@@ -186,12 +178,10 @@ function getTemplate () {
         internals
       );
 
-      lab.test(
-        'should return default sql template', () => {
-          const actual = migration.getTemplate();
-          Code.expect(actual).to.equal(migration.defaultSqlTemplate());
-        }
-      );
+      lab.test('should return default sql template', () => {
+        const actual = migration.getTemplate();
+        Code.expect(actual).to.equal(migration.defaultSqlTemplate());
+      });
     });
 
     lab.experiment('as default coffee', function () {
@@ -203,12 +193,10 @@ function getTemplate () {
         internals
       );
 
-      lab.test(
-        'should return default coffee template', () => {
-          const actual = migration.getTemplate();
-          Code.expect(actual).to.equal(migration.defaultCoffeeTemplate());
-        }
-      );
+      lab.test('should return default coffee template', () => {
+        const actual = migration.getTemplate();
+        Code.expect(actual).to.equal(migration.defaultCoffeeTemplate());
+      });
     });
 
     lab.experiment('as coffee sql loader', function () {
@@ -220,12 +208,10 @@ function getTemplate () {
         internals
       );
 
-      lab.test(
-        'should return default coffee template', () => {
-          const actual = migration.getTemplate();
-          Code.expect(actual).to.equal(migration.coffeeSqlFileLoaderTemplate());
-        }
-      );
+      lab.test('should return default coffee template', () => {
+        const actual = migration.getTemplate();
+        Code.expect(actual).to.equal(migration.coffeeSqlFileLoaderTemplate());
+      });
     });
 
     lab.experiment('as default javascript', function () {
@@ -237,12 +223,10 @@ function getTemplate () {
         internals
       );
 
-      lab.test(
-        'should return default sql template', () => {
-          const actual = migration.getTemplate();
-          Code.expect(actual).to.equal(migration.defaultJsTemplate());
-        }
-      );
+      lab.test('should return default sql template', () => {
+        const actual = migration.getTemplate();
+        Code.expect(actual).to.equal(migration.defaultJsTemplate());
+      });
     });
   });
 }
