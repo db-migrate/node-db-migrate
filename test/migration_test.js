@@ -6,6 +6,7 @@ const proxyquire = require('proxyquire').noPreserveCache();
 const lab = (exports.lab = Lab.script());
 const Migration = require('../lib/file.js');
 const Template = require('../lib/template.js');
+const Plugins = require('./pluginHelper.js');
 
 const date = createDateForTest();
 const dateString = '20140220143050';
@@ -166,6 +167,84 @@ function getTemplate () {
       lab.test('should return sql file loader template', () => {
         const actual = migration.getTemplate();
         Code.expect(actual).to.equal(migration.sqlFileLoaderTemplate());
+      });
+    });
+
+    lab.experiment('as default sql', function () {
+      const migration = new Template(
+        fileName,
+        dirName,
+        date,
+        Template.TemplateType.DEFAULT_SQL,
+        internals
+      );
+
+      lab.test('should return default sql template', () => {
+        const actual = migration.getTemplate();
+        Code.expect(actual).to.equal(migration.defaultSqlTemplate());
+      });
+    });
+
+    lab.experiment('as default coffee', function () {
+      const migration = new Template(
+        fileName,
+        dirName,
+        date,
+        Template.TemplateType.DEFAULT_COFFEE,
+        internals
+      );
+
+      lab.test('should return default coffee template', () => {
+        const actual = migration.getTemplate();
+        Code.expect(actual).to.equal(migration.defaultCoffeeTemplate());
+      });
+    });
+
+    lab.experiment('as coffee sql loader', function () {
+      const migration = new Template(
+        fileName,
+        dirName,
+        date,
+        Template.TemplateType.COFFEE_SQL_FILE_LOADER,
+        internals
+      );
+
+      lab.test('should return default coffee template', () => {
+        const actual = migration.getTemplate();
+        Code.expect(actual).to.equal(migration.coffeeSqlFileLoaderTemplate());
+      });
+    });
+
+    lab.experiment('as default javascript', function () {
+      const migration = new Template(
+        fileName,
+        dirName,
+        date,
+        Template.TemplateType.DEFAULT_JS,
+        internals
+      );
+
+      lab.test('should return default sql template', () => {
+        const actual = migration.getTemplate();
+        Code.expect(actual).to.equal(migration.defaultJsTemplate());
+      });
+    });
+  });
+
+  lab.experiment('when template plugin is set', function () {
+    lab.experiment('as sql file loader', function () {
+      const name = 'test';
+      const plugins = Plugins.createSinglePlugin(
+        `template:overwrite:provider:${name}`,
+        opts => {
+          return `test all variables`;
+        }
+      );
+      const migration = new Template(fileName, dirName, date, name, plugins);
+
+      lab.test('should return sql file loader template', () => {
+        const actual = migration.getTemplate();
+        Code.expect(actual).to.equal(`test all variables`);
       });
     });
 

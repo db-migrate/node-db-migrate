@@ -55,7 +55,7 @@ function loadPlugins (options) {
       continue;
     }
 
-    plugin.hooks.map(function (hook) {
+    plugin.hooks.forEach(function (hook) {
       hooks[hook] = hooks[hook] || [];
       hooks[hook].push(plugin);
     });
