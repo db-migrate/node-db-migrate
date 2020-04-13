@@ -234,17 +234,32 @@ function getTemplate () {
   lab.experiment('when template plugin is set', function () {
     lab.experiment('as sql file loader', function () {
       const name = 'test';
-      const plugins = Plugins.createSinglePlugin(
-        `template:overwrite:provider:${name}`,
-        opts => {
-          return `test all variables`;
-        }
-      );
-      const migration = new Template(fileName, dirName, date, name, plugins);
 
       lab.test('should return sql file loader template', () => {
-        const actual = migration.getTemplate();
-        Code.expect(actual).to.equal(`test all variables`);
+        const plugins = Plugins.createSinglePlugin(
+          `template:overwrite:provider:${name}`,
+          opts => {
+            return `test all variables`;
+          }
+        );
+        const migration = new Template(fileName, dirName, date, name, plugins);
+
+        Code.expect(migration.getTemplate()).to.equal(`test all variables`);
+      });
+
+      lab.test('should throw if plugin fails', () => {
+        const plugins = Plugins.createSinglePlugin(
+          `template:overwrite:provider:${name}`,
+          opts => {
+            throw new Error('test');
+          }
+        );
+        const migration = new Template(fileName, dirName, date, name, plugins);
+
+        Code.expect(migration.getTemplate.bind(migration)).to.throw(
+          Error,
+          'test'
+        );
       });
     });
 
@@ -260,6 +275,23 @@ function getTemplate () {
       lab.test('should return default sql template', () => {
         const actual = migration.getTemplate();
         Code.expect(actual).to.equal(migration.defaultSqlTemplate());
+      });
+    });
+
+    lab.experiment('as sql default ignore on init template', function () {
+      const migration = new Template(
+        fileName,
+        dirName,
+        date,
+        Template.TemplateType.SQL_FILE_LOADER_IGNORE_ON_INIT,
+        internals
+      );
+
+      lab.test('should return sql ignore on init template', () => {
+        const actual = migration.getTemplate();
+        Code.expect(actual).to.equal(
+          migration.sqlFileLoaderIgnoreOnInitTemplate()
+        );
       });
     });
 
