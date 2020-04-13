@@ -1,5 +1,8 @@
 {
   "extends": "standard",
+  "parserOptions": {
+    "ecmaVersion": 2019 
+  },
   "rules": {
     "semi": ["error", "always"],
     "no-unused-vars": "warn",
