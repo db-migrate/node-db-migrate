@@ -64,7 +64,9 @@ function dbmigrate (plugins, isModule, options, callback) {
     if (typeof options.cwd === 'string') internals.cwd = options.cwd;
     else internals.cwd = process.cwd();
 
-    if (typeof options.cmdOptions === 'object') internals.cmdOptions = options.cmdOptions;
+    if (typeof options.cmdOptions === 'object') {
+      internals.cmdOptions = options.cmdOptions;
+    }
   } else internals.cwd = process.cwd();
 
   if (typeof isModule === 'function') {
@@ -108,10 +110,10 @@ dbmigrate.prototype = {
   },
 
   /**
-    * Registers and initializes hooks.
-    *
-    * @returns Promise
-    */
+   * Registers and initializes hooks.
+   *
+   * @returns Promise
+   */
   registerAPIHook: function (callback) {
     var plugins = this.internals.plugins;
     var self = this;
@@ -316,8 +318,8 @@ dbmigrate.prototype = {
   },
 
   /**
-    * Transition migrations to the latest defined protocol.
-    */
+   * Transition migrations to the latest defined protocol.
+   */
   transition: function () {
     load('transition')(this.internals);
   },

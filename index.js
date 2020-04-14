@@ -1,4 +1,5 @@
-require('pkginfo')(module, 'version'); // jshint ignore:line
+module.exports.version = require('./package.json').version;
+
 var fs = require('fs');
 var path = require('path');
 var log = require('db-migrate-shared').log;
@@ -65,7 +66,7 @@ function loadPlugins (options) {
 
 module.exports.getInstance = function (isModule, options = {}, callback) {
   delete require.cache[require.resolve('./api.js')];
-  delete require.cache[require.resolve('optimist')];
+  delete require.cache[require.resolve('yargs')];
   var Mod = require('./api.js');
   var plugins = {};
   options.cwd = options.cwd || process.cwd();

@@ -15,8 +15,8 @@ const path = require('path');
 
 const files = {
 ${files
-  .map(x => `  "${x.substring(0, x.indexOf('.js'))}": require('./${x}')`)
-  .join(',\n')}
+    .map(x => `  "${x.substring(0, x.indexOf('.js'))}": require('./${x}')`)
+    .join(',\n')}
 }
 
 function register (module) {
