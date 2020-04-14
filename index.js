@@ -47,13 +47,12 @@ function loadPlugins (options) {
   for (; i < length; ++i) {
     var plugin = require(path.join(options.cwd, 'node_modules', plugins[i]));
 
-    if (
-      typeof plugin.name !== 'string' ||
-      !plugin.hooks ||
-      !plugin.loadPlugin
-    ) {
+    if (!plugin.hooks || !plugin.loadPlugin) {
       continue;
     }
+
+    // name is now derived from package name
+    plugin.name = plugins[i];
 
     plugin.hooks.forEach(function (hook) {
       hooks[hook] = hooks[hook] || [];

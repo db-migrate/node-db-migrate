@@ -37,7 +37,6 @@ function dbmigrate (plugins, isModule, options, callback) {
   }
   var internals = this.internals;
 
-  console.log(load('fn/plugin'));
   this.internals.plugins = load('fn/plugin')(plugins);
 
   if (typeof callback === 'function') this.internals.onComplete = callback;
