@@ -3,7 +3,6 @@
 const path = require('path');
 const recursive = require('final-fs').readdirRecursive;
 const start = path.join(__dirname, 'lib/commands');
-const Promise = require('bluebird');
 const fs = require('fs');
 
 (async () => {
