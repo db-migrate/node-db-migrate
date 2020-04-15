@@ -1,4 +1,4 @@
-.github
+.*
 test
 migrations
 VCSeeder
@@ -9,4 +9,8 @@ database.json
 *.sublime-project
 *.sublime-workspace
 archive
-.db-migraterc
+coverage.html
+Makefile
+*.md
+commitlint.config.js
+generateLoader.js
