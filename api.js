@@ -321,13 +321,6 @@ dbmigrate.prototype = {
   },
 
   /**
-   * Transition migrations to the latest defined protocol.
-   */
-  transition: function () {
-    load('transition')(this.internals);
-  },
-
-  /**
    * Creates a correctly formatted migration
    */
   create: function (migrationName, scope, callback) {
