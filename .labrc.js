@@ -6,5 +6,5 @@ module.exports = {
     'verbose,dryRun,SharedArrayBuffer,Atomics,BigUint64Array,BigInt64Array,BigInt,URL,URLSearchParams,TextEncoder,TextDecoder,queueMicrotask',
   assert: '@hapi/code',
   verbose: true,
-  'coverage-exclude': ['lib/interface', 'lib/transitions']
+  'coverage-exclude': ['lib/interface']
 };
