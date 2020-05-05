@@ -1,0 +1,16 @@
+{
+  "dev": {
+    "user": { "ENV": "user" },
+    "driver": { "ENV": "driver" },
+    "database": { "ENV": "database" },
+    "native": { "ENV": "native" },
+    "host": { "ENV": "host" },
+    "port": { "ENV": "port" },
+    "ssl": {
+      "sslrootcert": { "ENV": "ca_crt" },
+      "sslcert": { "ENV": "ssl_cert" },
+      "sslkey": { "ENV": "ssl_key" },
+      "sslmode": { "ENV": "ssl_mode" }
+    }
+  }
+}
