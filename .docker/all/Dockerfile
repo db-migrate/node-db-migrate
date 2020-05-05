@@ -13,3 +13,5 @@ COPY .docker/database.json /home/node
 
 USER node
 WORKDIR /home/node
+
+ENTRYPOINT ["db-migrate"]
