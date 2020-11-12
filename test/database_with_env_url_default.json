@@ -1,0 +1,3 @@
+{
+  "prod": {"ENV": "BOGUS_ENV_VAR", "default": "postgres://uname:pw@server.com/dbname" }
+}

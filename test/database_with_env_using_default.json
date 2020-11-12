@@ -1,0 +1,7 @@
+{
+  "prod": {
+    "driver": "sqlite3",
+    "filename": "prod.db",
+    "username": {"ENV": "BOGUS_ENV_VAR", "default": "defaultUser" }
+  }
+}
