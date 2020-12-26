@@ -25,10 +25,10 @@ exports.connect = function (config, PassedClass) {
         return;
       }
 
+      var dirPath = path.resolve(
+        internals.argv['migrations-dir'] || 'migrations'
+      );
       if (internals.migrationMode) {
-        var dirPath = path.resolve(
-          internals.argv['migrations-dir'] || 'migrations'
-        );
         if (internals.migrationMode !== 'all') {
           var switched = false;
           var newConf;
@@ -56,7 +56,7 @@ exports.connect = function (config, PassedClass) {
                 null,
                 new PassedClass(
                   db,
-                  internals.argv['migrations-dir'],
+                  dirPath,
                   internals.mode !== 'static',
                   internals,
                   prefix
@@ -69,7 +69,7 @@ exports.connect = function (config, PassedClass) {
               null,
               new PassedClass(
                 db,
-                internals.argv['migrations-dir'],
+                dirPath,
                 internals.mode !== 'static',
                 internals,
                 prefix
@@ -112,7 +112,7 @@ exports.connect = function (config, PassedClass) {
           null,
           new PassedClass(
             db,
-            internals.argv['migrations-dir'],
+            dirPath,
             internals.mode !== 'static',
             internals,
             prefix
