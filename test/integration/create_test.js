@@ -8,8 +8,10 @@ const fs = require('fs');
 const path = require('path');
 const cp = require('child_process');
 const dbmUtil = require('db-migrate-shared').util;
+const mkdirp = Promise.promisify(require('mkdirp'));
 
 const rmdir = Promise.promisify(require('rimraf'));
+const writeFile = Promise.promisify(fs.writeFile);
 
 function wipeMigrations () {
   const dir = path.join(__dirname, 'migrations');
@@ -49,9 +51,48 @@ lab.experiment('create', function () {
 
     lab.test('will create a new migration', () => {
       const files = fs.readdirSync(path.join(__dirname, 'migrations'));
-      Code.expect(files.length).to.equal(1);
-      const file = files[0];
-      Code.expect(file).to.match(/first-migration\.js$/);
+      const file = files.find(file => /first-migration\.js$/.test(file));
+      Code.expect(file).to.exist();
+    });
+
+    lab.test('will create migrations/package.json', () => {
+      const files = fs.readdirSync(path.join(__dirname, 'migrations'));
+      const packageJson = files.find(file => /package\.json$/.test(file));
+      Code.expect(packageJson).to.exist();
+    })
+  });
+
+  lab.experiment(
+    'with existing migrations/package.json file', () => {
+    let exitCode;
+
+    lab.before(async () => {
+      await wipeMigrations();
+
+      await mkdirp(path.join(__dirname, 'migrations'));
+
+      await writeFile(path.join(__dirname, 'migrations', 'package.json'), '{"name": "test", "type": "module"}');
+
+      const db = dbMigrate('create', 'first migration');
+      // db.stderr.on('data', data => console.log(data.toString()));
+      // db.stdout.on('data', data => console.log(data.toString()));
+
+      const exitCodePromise = new Promise((resolve) => db.on('exit', resolve));
+      exitCode = await exitCodePromise;
+    });
+
+    lab.test('does not cause an error', () => {
+      Code.expect(exitCode).to.equal(0);
+    });
+
+    lab.test('will modify an existing migrations/package.json\'s type field', () => {
+      const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, 'migrations', 'package.json')))
+      Code.expect(packageJson.type).to.equal("commonjs");
+    });
+
+    lab.test('will preserve other properties in an existing package.json', () => {
+      const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, 'migrations', 'package.json')))
+      Code.expect(packageJson.name).to.equal("test");
     });
   });
 
@@ -84,7 +125,7 @@ lab.experiment('create', function () {
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
           const stats = fs.statSync(path.join(__dirname, 'migrations', file));
-          if (stats.isFile()) {
+          if (stats.isFile() && !/package\.json$/.test(file)) {
             Code.expect(file).to.match(/second-migration\.js$/);
           }
         }
@@ -97,9 +138,8 @@ lab.experiment('create', function () {
 
       lab.test('will create a new migration sql up file', () => {
         const files = fs.readdirSync(path.join(__dirname, 'migrations/sqls'));
-        Code.expect(files.length).to.equal(2);
-        const file = files[1];
-        Code.expect(file).to.match(/second-migration-up\.sql$/);
+        const file = files.find(file => /second-migration-up\.sql$/.test(file));
+        Code.expect(file).to.exist();
       });
     }
   );
@@ -129,7 +169,7 @@ lab.experiment('create', function () {
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
           const stats = fs.statSync(path.join(__dirname, 'migrations', file));
-          if (stats.isFile()) {
+          if (stats.isFile() && !/package\.json$/.test(file)) {
             Code.expect(file).to.match(/third-migration\.js$/);
           }
         }
@@ -142,9 +182,8 @@ lab.experiment('create', function () {
 
       lab.test('will create a new migration sql up file', () => {
         const files = fs.readdirSync(path.join(__dirname, 'migrations/sqls'));
-        Code.expect(files.length).to.equal(2);
-        const file = files[1];
-        Code.expect(file).to.match(/third-migration-up\.sql$/);
+        const file = files.find(file => /third-migration-up\.sql$/.test(file));
+        Code.expect(file).to.exist();
       });
     }
   );
@@ -177,7 +216,7 @@ lab.experiment('create', function () {
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
           const stats = fs.statSync(path.join(__dirname, 'migrations', file));
-          if (stats.isFile()) {
+          if (stats.isFile() && !/package\.json$/.test(file)) {
             Code.expect(file).to.match(/fourth-migration\.coffee$/);
           }
         }
@@ -211,9 +250,8 @@ lab.experiment('create', function () {
 
         lab.test('will create a new migration', () => {
           const files = fs.readdirSync(path.join(__dirname, 'migrations/test'));
-          Code.expect(files.length).to.equal(2);
-          const file = files[0];
-          Code.expect(file).to.match(/first-migration\.js$/);
+          const file = files.find(file => /first-migration\.js$/.test(file));
+          Code.expect(file).to.exist();
         });
         lab.test('will create a new migration/test/sqls directory', () => {
           const stats = fs.statSync(path.join(__dirname, 'migrations/test/sqls'));
@@ -221,9 +259,8 @@ lab.experiment('create', function () {
         });
         lab.test('will create a new migration sql up file', () => {
           const files = fs.readdirSync(path.join(__dirname, 'migrations/test/sqls'));
-          Code.expect(files.length).to.equal(2);
-          const file = files[1];
-          Code.expect(file).to.match(/first-migration-up\.sql$/);
+          const file = files.find(file => /first-migration-up\.sql$/.test(file));
+          Code.expect(file).to.exist();
         });
       });
     }
@@ -254,7 +291,7 @@ lab.experiment('create', function () {
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
           const stats = fs.statSync(path.join(__dirname, 'migrations', file));
-          if (stats.isFile()) {
+          if (stats.isFile() && !/package\.json$/.test(file)) {
             Code.expect(file).to.match(/fifth-migration\.coffee$/);
           }
         }
@@ -306,7 +343,7 @@ lab.experiment('create', function () {
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
           const stats = fs.statSync(path.join(__dirname, 'migrations', file));
-          if (stats.isFile()) {
+          if (stats.isFile() && !/package\.json$/.test(file)) {
             Code.expect(file).to.match(/sixth-migration\.js$/);
           }
         }
