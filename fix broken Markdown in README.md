@@ -44,14 +44,10 @@ DB-Migrate is now available to you via:
 
 ## Officially Supported Databases
 
-- Mysql (https://github.com/felixge/node-mysql)
-  https://github.com/db-migrate/mysql
-- PostgreSQL (https://github.com/brianc/node-postgres)
-  https://github.com/db-migrate/pg
-- sqlite3 (https://github.com/developmentseed/node-sqlite3)
-  https://github.com/db-migrate/sqlite
-- Mongodb (https://github.com/mongodb/node-mongodb-native)
-  https://github.com/db-migrate/mongodb
+- [Mysql](https://github.com/felixge/node-mysql)
+- [PostgreSQL](https://github.com/brianc/node-postgres)
+- [sqlite3](https://github.com/developmentseed/node-sqlite3)
+- [Mongodb](https://github.com/mongodb/node-mongodb-native)
 
 ## Resources and usage instructions
 
