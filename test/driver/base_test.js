@@ -1,8 +1,13 @@
+'use strict';
+
+//#region Imports
 var Code = require('@hapi/code');
 var Lab = require('@hapi/lab');
 var lab = (exports.lab = Lab.script());
 var Base = require('db-migrate-base');
+//#endregion
 
+//#region Variables
 var internals = {
   migrationTable: 'migrations',
   mod: {
@@ -10,9 +15,11 @@ var internals = {
     type: require('db-migrate-shared').dataType
   }
 };
+//#endregion
 
-lab.experiment('base', function () {
-  lab.experiment('default implementation', function () {
+// Tests
+lab.experiment('base', () => {
+  lab.experiment('default implementation', () => {
     var base = new Base(internals);
 
     lab.test('inherits from EventEmitter', () => {
@@ -79,8 +86,8 @@ lab.experiment('base', function () {
     });
 
     lab.test('escapes single quotes', () => {
-      Code.expect("Bill''s Mother''s House").to.equal(
-        base.escape("Bill's Mother's House")
+      Code.expect('Bill\'\'s Mother\'\'s House').to.equal(
+        base.escape('Bill\'s Mother\'s House')
       );
     });
   });

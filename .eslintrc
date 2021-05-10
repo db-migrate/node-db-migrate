@@ -1,11 +1,23 @@
 {
+  "env": {
+    "node": true
+  },
   "extends": "standard",
   "parserOptions": {
-    "ecmaVersion": 2019 
+    "ecmaVersion": 2021
   },
   "rules": {
     "semi": ["error", "always"],
+    "spaced-comment": [
+      "error",
+      "always",
+      { "markers": ["#region", "#endregion"] }
+    ],
     "no-unused-vars": "warn",
-    "quotes": ["error", "single", { "avoidEscape": true, "allowTemplateLiterals": true }]
+    "quotes": [
+      "error",
+      "single",
+      { "avoidEscape": true, "allowTemplateLiterals": true }
+    ]
   }
 }

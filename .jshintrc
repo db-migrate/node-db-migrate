@@ -1,4 +1,5 @@
 {
+  "esversion": 9,
   "expr": true,
   "-W092": false,
   "quotmark": true,
@@ -10,5 +11,6 @@
   "nonew": true,
   "unused": true,
   "shadow": true,
-  "loopfunc": true
+  "loopfunc": true,
+  "node": true
 }
