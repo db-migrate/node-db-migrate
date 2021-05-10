@@ -3,13 +3,13 @@
 module.exports.version = require('./package.json').version;
 
 let load;
-var log = require('db-migrate-shared').log;
-var Promise;
+let Promise;
 let onComplete;
-var config = require('rc')('db-migrate');
+const log = require('db-migrate-shared').log;
+const config = require('rc')('db-migrate');
 
 // constant hooks for this file
-var APIHooks = {
+const APIHooks = {
   'init:api:addfunction:hook': function (name, fn) {
     this[name] = fn;
   },
@@ -18,43 +18,46 @@ var APIHooks = {
   }
 };
 
-function dbmigrate (plugins, isModule, options, callback) {
-  if (!options.staticLoader) load = require('./lib/commands');
-  else load = require('./lib/commands/generated.js');
+const dbmigrate = function (plugins, isModule, options, callback) {
+  load = !options.staticLoader
+    ? require('./lib/commands')
+    : require('./lib/commands/generated.js');
+  const dotenv = require('dotenv');
 
   onComplete = load('on-complete');
-
-  var dotenv = require('dotenv');
-  var setDefaultArgv = load('set-default-argv');
+  const setDefaultArgv = load('set-default-argv');
 
   this.internals = {
     onComplete: onComplete,
     migrationProtocol: 1,
     load
   };
+
   if (typeof isModule !== 'function') {
     this.internals.isModule = isModule;
   }
-  var internals = this.internals;
-
+  const internals = this.internals;
   this.internals.plugins = load('fn/plugin')(plugins);
 
-  if (typeof callback === 'function') this.internals.onComplete = callback;
-  else if (typeof options === 'function') this.internals.onComplete = options;
+  if (typeof callback === 'function') {
+    this.internals.onComplete = callback;
+  } else if (typeof options === 'function') {
+    this.internals.onComplete = options;
+  }
 
   this.internals.dbm = require('./');
   this.dataType = this.internals.dbm.dataType;
   this.version = this.internals.dbm.version;
 
-  var dotenvConfig = { silent: true };
+  const dotenvConfig = { silent: true };
   if (config.dotenvCustomPath) {
     dotenvConfig.path = config.dotenvCustomPath;
   }
   dotenv.load(dotenvConfig);
 
-  /* $lab:coverage:off$ */
-  if (!options || !options.throwUncatched) load('helper/register-events')();
-  /* $lab:coverage:on$ */
+  if (!options || !options.throwUncatched) {
+    load('helper/register-events')();
+  }
 
   if (typeof options === 'object') {
     if (typeof options.config === 'string') {
@@ -63,20 +66,29 @@ function dbmigrate (plugins, isModule, options, callback) {
       internals.configObject = options.config;
     }
 
-    if (typeof options.env === 'string') internals.currentEnv = options.env;
+    if (typeof options.env === 'string') {
+      internals.currentEnv = options.env;
+    }
 
-    if (typeof options.cwd === 'string') internals.cwd = options.cwd;
-    else internals.cwd = process.cwd();
+    if (typeof options.cwd === 'string') {
+      internals.cwd = options.cwd;
+    } else {
+      internals.cwd = process.cwd();
+    }
 
     if (typeof options.cmdOptions === 'object') {
       internals.cmdOptions = options.cmdOptions;
     }
-  } else internals.cwd = process.cwd();
+  } else {
+    internals.cwd = process.cwd();
+  }
 
   if (typeof isModule === 'function') {
     this.internals.onComplete = isModule;
     setDefaultArgv(this.internals);
-  } else setDefaultArgv(this.internals, isModule);
+  } else {
+    setDefaultArgv(this.internals, isModule);
+  }
 
   this.config = load('helper/load-config')(
     require('./lib/config.js'),
@@ -100,7 +112,7 @@ function dbmigrate (plugins, isModule, options, callback) {
     Promise: Promise
   };
   this.internals.safeOptions = this.internals.migrationOptions;
-}
+};
 
 dbmigrate.prototype = {
   /**
@@ -125,15 +137,15 @@ dbmigrate.prototype = {
    * @returns Promise
    */
   registerAPIHook: function (callback) {
-    var plugins = this.internals.plugins;
-    var self = this;
+    const plugins = this.internals.plugins;
+    const self = this;
 
     return Promise.resolve(Object.keys(APIHooks))
       .each(function (hook) {
-        var plugin = plugins.hook(hook);
+        const plugin = plugins.hook(hook);
         if (!plugin) return;
 
-        var APIHook = APIHooks[hook].bind(self);
+        const APIHook = APIHooks[hook].bind(self);
 
         return Promise.resolve(plugin)
           .map(function (plugin) {
@@ -154,10 +166,10 @@ dbmigrate.prototype = {
    * @return boolean
    */
   addConfiguration: function (description, args, type) {
-    var name = args.shift();
+    const name = args.shift();
     this.internals.argv.describe(name, description);
 
-    for (var i = 0; i < args.length; ++i) {
+    for (let i = 0; i < args.length; ++i) {
       this.internals.argv.alias(args[i], name);
     }
 
@@ -190,7 +202,7 @@ dbmigrate.prototype = {
    * Defaults to up all migrations if no count is given.
    */
   up: function (specification, opts, callback) {
-    var executeUp = load('up');
+    const executeUp = load('up');
 
     if (arguments.length > 0) {
       if (typeof specification === 'string') {
@@ -220,7 +232,7 @@ dbmigrate.prototype = {
    * Defaults to up all migrations if no count is given.
    */
   down: function (specification, opts, callback) {
-    var executeDown = load('down');
+    const executeDown = load('down');
 
     if (arguments.length > 0) {
       if (typeof specification === 'number') {
@@ -246,7 +258,7 @@ dbmigrate.prototype = {
   },
 
   check: function (specification, opts, callback) {
-    var executeCheck = load('check');
+    const executeCheck = load('check');
 
     if (arguments.length > 0) {
       if (typeof specification === 'number') {
@@ -274,7 +286,7 @@ dbmigrate.prototype = {
    * Defaults to up all migrations if no count is given.
    */
   sync: function (specification, opts, callback) {
-    var executeSync = load('sync');
+    const executeSync = load('sync');
 
     if (arguments.length > 0) {
       if (typeof specification === 'string') {
@@ -298,7 +310,7 @@ dbmigrate.prototype = {
    * Executes down for all currently migrated migrations.
    */
   reset: function (scope, callback) {
-    var executeDown = load('down');
+    const executeDown = load('down');
 
     if (typeof scope === 'string') {
       this.internals.migrationMode = scope;
@@ -324,7 +336,7 @@ dbmigrate.prototype = {
    * Creates a correctly formatted migration
    */
   create: function (migrationName, scope, callback) {
-    var executeCreateMigration = load('create-migration');
+    const executeCreateMigration = load('create-migration');
     if (typeof scope === 'function') {
       callback = scope;
     } else if (scope) {
@@ -342,7 +354,7 @@ dbmigrate.prototype = {
    * Creates a database of the given dbname.
    */
   createDatabase: function (dbname, callback) {
-    var executeDB = load('db');
+    const executeDB = load('db');
     this.internals.argv._.push(dbname);
     this.internals.mode = 'create';
     return Promise.resolve(executeDB(this.internals, this.config)).asCallback(
@@ -354,7 +366,7 @@ dbmigrate.prototype = {
    * Drops a database of the given dbname.
    */
   dropDatabase: function (dbname, callback) {
-    var executeDB = load('db');
+    const executeDB = load('db');
     this.internals.argv._.push(dbname);
     this.internals.mode = 'drop';
     return Promise.resolve(executeDB(this.internals, this.config)).asCallback(
@@ -391,7 +403,7 @@ dbmigrate.prototype = {
    * the passed mode.
    */
   seed: function (mode, scope, callback) {
-    var executeSeed = load('seed');
+    const executeSeed = load('seed');
     if (scope) {
       this.internals.migrationMode = scope;
       this.internals.matching = scope;
@@ -407,7 +419,7 @@ dbmigrate.prototype = {
    * Execute the down function of currently executed seeds.
    */
   undoSeed: function (specification, scope, callback) {
-    var executeUndoSeed = load('undo-seed');
+    const executeUndoSeed = load('undo-seed');
     if (arguments.length > 0) {
       if (typeof specification === 'number') {
         this.internals.argv.count = specification;
@@ -431,7 +443,7 @@ dbmigrate.prototype = {
    * Execute the reset function of currently executed seeds.
    */
   resetSeed: function (specification, scope, callback) {
-    var executeUndoSeed = load('undo-seed');
+    const executeUndoSeed = load('undo-seed');
     if (arguments.length > 0) {
       if (typeof specification === 'number') {
         this.internals.argv.count = specification;

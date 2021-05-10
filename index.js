@@ -1,8 +1,8 @@
 module.exports.version = require('./package.json').version;
 
-var fs = require('fs');
-var path = require('path');
-var log = require('db-migrate-shared').log;
+const fs = require('fs');
+const path = require('path');
+const log = require('db-migrate-shared').log;
 
 exports.dataType = require('db-migrate-shared').dataType;
 
@@ -16,22 +16,23 @@ function loadPluginList (options) {
     );
   }
 
+  let plugins;
   try {
-    var plugins = JSON.parse(
+    plugins = JSON.parse(
       fs.readFileSync(path.join(options.cwd, 'package.json'), 'utf-8')
     );
   } catch (err) {
     throw new Error('Error parsing package.json', err);
   }
 
-  var targets = [];
+  const targets = [];
 
   plugins = Object.assign(
     plugins.dependencies || {},
     plugins.devDependencies || {}
   );
 
-  for (var plugin in plugins) {
+  for (const plugin in plugins) {
     if (plugin.startsWith('db-migrate-plugin')) targets.push(plugin);
   }
 
@@ -39,13 +40,13 @@ function loadPluginList (options) {
 }
 
 function loadPlugins (options) {
-  var plugins = loadPluginList(options);
-  var i = 0;
-  var length = plugins.length;
-  var hooks = {};
+  const plugins = loadPluginList(options);
+  let i = 0;
+  const length = plugins.length;
+  const hooks = {};
 
   for (; i < length; ++i) {
-    var plugin = require(path.join(options.cwd, 'node_modules', plugins[i]));
+    const plugin = require(path.join(options.cwd, 'node_modules', plugins[i]));
 
     if (!plugin.hooks || !plugin.loadPlugin) {
       continue;
@@ -63,15 +64,17 @@ function loadPlugins (options) {
   return hooks;
 }
 
-module.exports.getInstance = function (isModule, options = {}, callback) {
+module.exports.getInstance = function (isModule, options = {}, callback = () => {}) {
   delete require.cache[require.resolve('./api.js')];
   delete require.cache[require.resolve('yargs')];
-  var Mod = require('./api.js');
-  var plugins = {};
+  const Mod = require('./api.js');
+  let plugins = {};
   options.cwd = options.cwd || process.cwd();
 
   try {
-    if (!options || !options.noPlugins) plugins = loadPlugins(options);
+    if (!options || !options.noPlugins) {
+      plugins = loadPlugins(options);
+    }
   } catch (ex) {
     log.verbose('No plugin could be loaded!');
     log.verbose(ex);

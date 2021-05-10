@@ -2,16 +2,16 @@
  * This file is going to disappear.
  * Only still here for backwards compatibility.
  * */
-var recursive = require('final-fs').readdirRecursive;
-var fs = require('fs');
-var driver = require('./lib/driver');
-var path = require('path');
-var log = require('db-migrate-shared').log;
+const recursive = require('final-fs').readdirRecursive;
+const fs = require('fs');
+const driver = require('./lib/driver');
+const path = require('path');
+const log = require('db-migrate-shared').log;
 const Promise = require('bluebird');
 
 exports.connect = function (config, PassedClass) {
-  var internals = {};
-  var prefix = 'migration';
+  let internals = {};
+  let prefix = 'migration';
   if (config.config) {
     prefix = config.prefix || prefix;
     internals = config.internals;
@@ -25,13 +25,13 @@ exports.connect = function (config, PassedClass) {
         return;
       }
 
-      var dirPath = path.resolve(
+      const dirPath = path.resolve(
         internals.argv['migrations-dir'] || 'migrations'
       );
       if (internals.migrationMode) {
         if (internals.migrationMode !== 'all') {
-          var switched = false;
-          var newConf;
+          let switched = false;
+          let newConf;
 
           try {
             newConf = require(path.resolve(
@@ -82,7 +82,7 @@ exports.connect = function (config, PassedClass) {
             false,
             internals.argv['migrations-dir'] || 'migrations'
           ).then(function (files) {
-            var oldClose = db.close;
+            const oldClose = db.close;
 
             files = files.filter(function (file) {
               return file !== 'migrations' && fs.statSync(file).isDirectory();
@@ -124,7 +124,7 @@ exports.connect = function (config, PassedClass) {
 };
 
 exports.driver = function (config, callback) {
-  var internals = {};
+  let internals = {};
   if (config.config) {
     internals = config.internals;
     config = config.config;
@@ -144,15 +144,14 @@ function migrationFiles (
   prefix,
   cb
 ) {
-  var file;
-  var switched = false;
-  var newConf;
+  let switched = false;
+  let newConf;
 
   if (files.length === 1) {
     db.close = close;
   }
 
-  file = files.pop();
+  const file = files.pop();
   log.info('Enter scope "' + (file !== '' ? file : '/') + '"');
 
   if (file !== '') {
