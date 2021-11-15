@@ -1,3 +1,13 @@
+# [1.0.0-beta.17](https://github.com/db-migrate/node-db-migrate/compare/v1.0.0-beta.16...v1.0.0-beta.17) (2021-11-15)
+
+
+### Bug Fixes
+
+* bump dependencies ([0c6a9f3](https://github.com/db-migrate/node-db-migrate/commit/0c6a9f33eb213323f8280f4a48211591a2d09d2c))
+* scopes did not use new properties on walker class ([4a0326b](https://github.com/db-migrate/node-db-migrate/commit/4a0326bc4175f63655014823b71890d6174e3fae)), closes [#757](https://github.com/db-migrate/node-db-migrate/issues/757)
+
+
+
 # [1.0.0-beta.2](https://github.com/db-migrate/node-db-migrate/compare/v1.0.0-beta.1...v1.0.0-beta.2) (2019-06-11)
 
 
