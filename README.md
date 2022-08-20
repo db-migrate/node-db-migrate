@@ -1,5 +1,5 @@
 [![Backers on Open Collective](https://opencollective.com/node-db-migrate/backers/badge.svg)](#backers) [![Sponsors on Open Collective](https://opencollective.com/node-db-migrate/sponsors/badge.svg)](#sponsors)
-[![Build Status](https://travis-ci.org/db-migrate/node-db-migrate.svg?branch=master)](https://travis-ci.org/db-migrate/node-db-migrate)
+[![Build Status](https://github.com/db-migrate/node-db-migrate/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/db-migrate/node-db-migrate/actions/workflows/ci.yml)
 [![Dependency Status](https://david-dm.org/db-migrate/node-db-migrate.svg)](https://david-dm.org/db-migrate/node-db-migrate)
 [![devDependency Status](https://david-dm.org/db-migrate/node-db-migrate/dev-status.svg)](https://david-dm.org/db-migrate/node-db-migrate#info=devDependencies)
 [![Documentation Status](https://readthedocs.org/projects/db-migrate/badge/?version=latest)](https://readthedocs.org/projects/db-migrate/?badge=latest)
