@@ -59,8 +59,8 @@
     "yargs": "^17.5.1"
   },
   "devDependencies": {
-    "@hapi/code": "5.x",
-    "@hapi/lab": "18.x",
+    "@hapi/code": "9.x",
+    "@hapi/lab": "25.x",
     "db-migrate-base": "^2.1.1",
     "db-migrate-mysql": "^2.1.1",
     "db-migrate-sqlite3": "^0.4.0",
