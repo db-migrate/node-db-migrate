@@ -33,7 +33,7 @@
   ],
   "version": "1.0.0-beta.18",
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=12.0.0"
   },
   "bugs": {
     "url": "https://github.com/db-migrate/node-db-migrate/issues"
