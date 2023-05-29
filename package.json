@@ -44,7 +44,7 @@
     "url": "https://github.com/db-migrate/node-db-migrate.git"
   },
   "dependencies": {
-    "bluebird": "^3.1.1",
+    "bluebird": "^3.7.2",
     "db-migrate-shared": "^1.2.0",
     "deep-extend": "^0.6.0",
     "dotenv": "^5.0.1",
