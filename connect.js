@@ -9,7 +9,9 @@ var path = require('path');
 var log = require('db-migrate-shared').log;
 const Promise = require('bluebird');
 
-exports.connect = function (config, PassedClass) {
+Promise.promisifyAll(driver);
+
+exports.connect = async function (config, PassedClass) {
   var internals = {};
   var prefix = 'migration';
   if (config.config) {
@@ -18,12 +20,22 @@ exports.connect = function (config, PassedClass) {
     config = config.config;
   }
 
+  const db2 = await driver.connectAsync(config, internals);
+
   return Promise.fromCallback(callback => {
     driver.connect(config, internals, function (err, db) {
       if (err) {
         callback(err);
         return;
       }
+
+      const realClose = db.close;
+      // close both lines with one disconnect action
+      db.close = function (cb) {
+        db2.close(function () {});
+        db.close = realClose;
+        db.close(cb);
+      };
 
       var dirPath = path.resolve(
         internals.argv['migrations-dir'] || 'migrations'
@@ -59,7 +71,8 @@ exports.connect = function (config, PassedClass) {
                   dirPath,
                   internals.mode !== 'static',
                   internals,
-                  prefix
+                  prefix,
+                  { db2 }
                 )
               );
             });
@@ -100,6 +113,7 @@ exports.connect = function (config, PassedClass) {
                 db,
                 oldClose,
                 prefix,
+                db2,
                 cb
               );
             };
@@ -115,7 +129,8 @@ exports.connect = function (config, PassedClass) {
             dirPath,
             internals.mode !== 'static',
             internals,
-            prefix
+            prefix,
+            { db2 }
           )
         );
       }
@@ -142,6 +157,7 @@ function migrationFiles (
   db,
   close,
   prefix,
+  db2,
   cb
 ) {
   var file;
@@ -187,7 +203,8 @@ function migrationFiles (
         internals.argv['migrations-dir'],
         internals.mode !== 'static',
         internals,
-        prefix
+        prefix,
+        { db2 }
       )
     );
 
