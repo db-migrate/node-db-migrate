@@ -245,6 +245,31 @@ dbmigrate.prototype = {
     );
   },
 
+  fix: function (specification, opts, callback) {
+    var executeFix = load('fix');
+
+    if (arguments.length > 0) {
+      if (typeof specification === 'string') {
+        this.internals.argv.destination = specification;
+      } else if (typeof specification === 'number') {
+        this.internals.argv.count = specification;
+      } else if (typeof specification === 'function') {
+        callback = specification;
+      }
+
+      if (typeof opts === 'string') {
+        this.internals.migrationMode = opts;
+        this.internals.matching = opts;
+      } else if (typeof opts === 'function') {
+        callback = opts;
+      }
+    }
+
+    return Promise.resolve(executeFix(this.internals, this.config)).nodeify(
+      callback
+    );
+  },
+
   check: function (specification, opts, callback) {
     var executeCheck = load('check');
 
