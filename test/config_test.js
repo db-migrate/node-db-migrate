@@ -102,11 +102,43 @@ lab.experiment('config', function () {
   );
 
   lab.experiment(
+    'loading from a file with ENV vars that have defaults set',
+    function () {
+      var _config = config.load(path.join(__dirname, 'database_with_env_using_default.json'), 'prod');
+      lab.test(
+        'should load the default value specified in the config', () => {
+          Code.expect(_config.prod.username).to.equal('defaultUser');
+        }
+      );
+    }
+  );
+
+  lab.experiment(
     'loading from a file with ENV URL',
 
     function () {
       process.env.DB_MIGRATE_TEST_VAR = 'postgres://uname:pw@server.com/dbname';
       var configPath = path.join(__dirname, 'database_with_env_url.json');
+      var _config = config.load(configPath, 'prod');
+
+      lab.test(
+        'should load a value from the environments', () => {
+          var current = _config.getCurrent();
+          Code.expect(current.settings.driver).to.equal('postgres');
+          Code.expect(current.settings.user).to.equal('uname');
+          Code.expect(current.settings.password).to.equal('pw');
+          Code.expect(current.settings.host).to.equal('server.com');
+          Code.expect(current.settings.database).to.equal('dbname');
+        }
+      );
+    }
+  );
+
+  lab.experiment(
+    'loading from a file with ENV URL default',
+
+    function () {
+      var configPath = path.join(__dirname, 'database_with_env_url_default.json');
       var _config = config.load(configPath, 'prod');
 
       lab.test(
