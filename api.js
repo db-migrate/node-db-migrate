@@ -336,7 +336,7 @@ dbmigrate.prototype = {
       this.internals.matching = scope;
     }
 
-    this.internals.argv._.push(migrationName);
+    this.internals.argv._.unshift(migrationName);
     return Promise.fromCallback(
       function (callback) {
         executeCreateMigration(this.internals, this.config, callback);
