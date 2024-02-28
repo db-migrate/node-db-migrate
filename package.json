@@ -54,7 +54,7 @@
     "parse-database-url": "~0.3.0",
     "rc": "^1.2.8",
     "resolve": "^1.19.0",
-    "tunnel-ssh": "^4.0.0",
+    "tunnel-ssh": "^5.1.2",
     "yargs": "^17.5.1"
   },
   "devDependencies": {
