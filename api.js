@@ -370,7 +370,7 @@ dbmigrate.prototype = {
     var executeDB = load('db');
     this.internals.argv._.push(dbname);
     this.internals.mode = 'create';
-    return Promise.resolve(executeDB(this.internals, this.config)).asCallback(
+    return Promise.resolve(executeDB(this.internals, this.config, callback)).asCallback(
       callback
     );
   },
@@ -382,7 +382,7 @@ dbmigrate.prototype = {
     var executeDB = load('db');
     this.internals.argv._.push(dbname);
     this.internals.mode = 'drop';
-    return Promise.resolve(executeDB(this.internals, this.config)).asCallback(
+    return Promise.resolve(executeDB(this.internals, this.config, callback)).asCallback(
       callback
     );
   },
