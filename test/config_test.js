@@ -265,6 +265,28 @@ lab.experiment('config', function () {
     }
   );
 
+  lab.experiment('loading a url from the DATABASE_URL environment variable', function () {
+    lab.test('should use DATABASE_URL env var in lue of anything else', function (done, cleanup) {
+      process.env.DATABASE_URL = 'postgres://uname:pw@server.com/dbname';
+      var configPath = path.join(__dirname, 'database_with_default_env.json');
+      var cfg = config.load(configPath, 'dev');
+      cleanup(function (next) {
+        delete process.env.DATABASE_URL;
+        next();
+      });
+
+      Code.expect(cfg.getCurrent).to.exists();
+      var current = cfg.getCurrent();
+      Code.expect(current.env).to.equal('dev');
+      Code.expect(current.settings.driver).to.equal('postgres');
+      Code.expect(current.settings.user).to.equal('uname');
+      Code.expect(current.settings.password).to.equal('pw');
+      Code.expect(current.settings.database).to.equal('dbname');
+      Code.expect(current.settings.host).to.equal('server.com');
+      done();
+    });
+  });
+
   lab.experiment(
     'loading from an ENV URL within the object and extending it from the ENV',
     function () {
