@@ -50,7 +50,7 @@ function dbmigrate (plugins, isModule, options, callback) {
   if (config.dotenvCustomPath) {
     dotenvConfig.path = config.dotenvCustomPath;
   }
-  dotenv.load(dotenvConfig);
+  dotenv.config(dotenvConfig);
 
   /* $lab:coverage:off$ */
   if (!options || !options.throwUncatched) load('helper/register-events')();
