@@ -2,6 +2,8 @@
   "prod": {
     "driver": "sqlite3",
     "filename": "prod.db",
-    "username": {"ENV": "DB_MIGRATE_TEST_VAR"}
+    "username": {"ENV": "DB_MIGRATE_TEST_VAR"},
+    "password": {"ENV": "NOT_SET", "default": "my-password"},
+    "host": {"ENV": "EMPTY_VAR", "default": "my-host"}
   }
 }

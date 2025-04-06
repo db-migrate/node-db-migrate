@@ -90,12 +90,26 @@ lab.experiment('config', function () {
 
     function () {
       process.env.DB_MIGRATE_TEST_VAR = 'username_from_env';
+      process.env.EMPTY_VAR = '';
+      if (typeof process.env.NOT_SET !== 'undefined') {
+        delete process.env.NOT_SET;
+      }
       var configPath = path.join(__dirname, 'database_with_env.json');
       var _config = config.load(configPath, 'prod');
 
       lab.test(
         'should load a value from the environments', () => {
           Code.expect(_config.prod.username).to.equal('username_from_env');
+        }
+      );
+      lab.test(
+        'should load default value from not set env var', () => {
+          Code.expect(_config.prod.password).to.equal('my-password');
+        }
+      );
+      lab.test(
+        'should use value from env var even when empty, rather than default', () => {
+          Code.expect(_config.prod.host).to.equal('');
         }
       );
     }
@@ -111,6 +125,29 @@ lab.experiment('config', function () {
 
       lab.test(
         'should load a value from the environments', () => {
+          var current = _config.getCurrent();
+          Code.expect(current.settings.driver).to.equal('postgres');
+          Code.expect(current.settings.user).to.equal('uname');
+          Code.expect(current.settings.password).to.equal('pw');
+          Code.expect(current.settings.host).to.equal('server.com');
+          Code.expect(current.settings.database).to.equal('dbname');
+        }
+      );
+    }
+  );
+
+  lab.experiment(
+    'loading from a file from default when ENV URL is not set',
+
+    function () {
+      if (typeof process.env.DB_MIGRATE_TEST_VAR !== "undefined") {
+        delete process.env.DB_MIGRATE_TEST_VAR;
+      }
+      var configPath = path.join(__dirname, 'database_with_env_url.json');
+      var _config = config.load(configPath, 'prod');
+
+      lab.test(
+        'should load the url from default when env var not set', () => {
           var current = _config.getCurrent();
           Code.expect(current.settings.driver).to.equal('postgres');
           Code.expect(current.settings.user).to.equal('uname');
