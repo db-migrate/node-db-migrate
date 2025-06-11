@@ -8,6 +8,11 @@ if (process.argv.indexOf('--verbose') !== -1 ||
      process.argv.indexOf('-v') !== -1
 ) { global.verbose = true; }
 
+if (process.argv.length === 3 && process.argv[2] === 'version') {
+  console.log(require('../package.json').version);
+  process.exit(0);
+}
+
 resolve('db-migrate', {
 
   basedir: process.cwd()
