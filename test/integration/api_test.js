@@ -56,7 +56,7 @@ lab.experiment('api', function () {
       }
 
       /**
-       * Create a migration with the programatic API and overwrite process.exit.
+       * Create a migration with the programmatic API and overwrite process.exit.
        */
       function overwriteExit () {
         process.exit = function (err) {

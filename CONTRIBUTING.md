@@ -24,7 +24,7 @@ world once again even better!
 
 2.2. "Does not work", is not a proper problem description
 
-Neither is, "see title". When you follow the issue template and provide all informations asked for
+Neither is, "see title". When you follow the issue template and provide all information asked for
 you should be pretty fine, in providing us exactly the information we need to help you.
 
 2.3. Follow the CoC and contribute, not attack
@@ -57,7 +57,7 @@ this project:
 6. Create a commit that complies with our conventions, which you can view
    [here](https://github.com/conventional-changelog/conventional-changelog/tree/35e60b5be6027fb2784c5103eee111f6f99b045e/packages/conventional-changelog-angular)
    and last but not least also comply to the [DCO](https://github.com/probot/dco#how-it-works).
-   Which easiest work with just commiting via `git commit -s -m 'your commit message'`.
+   Which easiest work with just committing via `git commit -s -m 'your commit message'`.
 
 7. Push to your fork and submit a pull request.
 
