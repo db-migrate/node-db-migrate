@@ -8,8 +8,6 @@ const fs = require('fs');
 const path = require('path');
 const cp = require('child_process');
 const dbmUtil = require('db-migrate-shared').util;
-const mkdirp = Promise.promisify(require('mkdirp'));
-
 const rmdir = Promise.promisify(require('rimraf'));
 const writeFile = Promise.promisify(fs.writeFile);
 
@@ -69,7 +67,7 @@ lab.experiment('create', function () {
     lab.before(async () => {
       await wipeMigrations();
 
-      await mkdirp(path.join(__dirname, 'migrations'));
+      await fs.promises.mkdir(path.join(__dirname, 'migrations'), { recursive: true });
 
       await writeFile(path.join(__dirname, 'migrations', 'package.json'), '{"name": "test", "type": "module"}');
 
