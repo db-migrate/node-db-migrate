@@ -31,7 +31,7 @@
     "programable",
     "api"
   ],
-  "version": "1.0.0-beta.36",
+  "version": "1.0.0-beta.37",
   "engines": {
     "node": ">=8.0.0"
   },
