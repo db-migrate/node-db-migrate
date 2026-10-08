@@ -1,3 +1,44 @@
+# [1.0.0](https://github.com/db-migrate/node-db-migrate/compare/v1.0.0-rc.0...v1.0.0) (2026-10-09)
+
+The first stable release of db-migrate 1.0, identical to 1.0.0-rc.0. Coming
+from 0.11, these are the changes to know about.
+
+
+### Highlights since 0.11
+
+* **Migration lock:** concurrent processes migrating the same database
+  coordinate through a lock in the state table. Only one migrates, the others
+  wait and run whatever is still pending afterwards. A process that died is
+  detected and taken over after `--lock-timeout` (default 60s).
+* **Migration schema v2** (`_meta.version = 2`): migrations without a down
+  function, db-migrate learns the schema and reverts a failed migration on its
+  own. Interrupted runs are recovered on the next run, by skipping the steps
+  already executed or by rolling them back (`_meta.recovery`). v1 migrations
+  keep working unchanged.
+* **Error output:** a failed migration names the migration, the instruction,
+  the failed statement with a marker at the position reported by the database
+  and the diagnostic fields of the driver.
+* **Plugins:** plain SQL migrations with
+  [db-migrate-plugin-sql](https://github.com/db-migrate/plugin-sql), ssh tunnels
+  with [db-migrate-plugin-tunnel-ssh](https://github.com/db-migrate/plugin-tunnel-ssh).
+* **Dependencies:** `prompt`, `semver`, `mkdirp`, `balanced-match` and
+  `tunnel-ssh` are gone, and with them their known vulnerabilities.
+
+
+### ⚠ BREAKING CHANGES since 0.11
+
+* **node:** Node.js 24 and newer are supported officially.
+* **tunnel:** a configured `tunnel` requires installing
+  `db-migrate-plugin-tunnel-ssh`.
+* **seed:** the seeders are dropped, `db-migrate seed` and the seed API
+  methods fail with a clear message. A new concept follows separately.
+* **transition:** the `transition` command for migrations of db-migrate
+  before 0.9 is removed, use 0.11 to transition such migrations first.
+* **state:** db-migrate creates and maintains a state table
+  (`migrations_state`, set with `--state-table`) next to the migrations table.
+
+
+
 # [1.0.0-rc.0](https://github.com/db-migrate/node-db-migrate/compare/v1.0.0-beta.38...v1.0.0-rc.0) (2026-10-09)
 
 
