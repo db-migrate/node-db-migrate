@@ -49,6 +49,13 @@ DB-Migrate is now available to you via:
 - Mongodb (https://github.com/mongodb/node-mongodb-native)
   https://github.com/db-migrate/mongodb
 
+## Connecting through an SSH tunnel
+
+Tunnels are provided by plugins. Install the ssh tunnel plugin next to
+db-migrate to use the `tunnel` setting of your database config:
+
+    $ npm install db-migrate-plugin-tunnel-ssh
+
 ## Resources and usage instructions
 
 Please follow the link below, for usage instructions examples and the full
