@@ -20,6 +20,12 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
 
 # Usage
 
+## Upgrading from 0.11
+
+db-migrate 0.11 and older are end of life. See the
+[changelog of 1.0.0](CHANGELOG.md) for what changed, v1 migrations keep
+working unchanged.
+
 ## Requirements
 
 Officially supported is Node.js 24 and newer. Older versions may work, but
