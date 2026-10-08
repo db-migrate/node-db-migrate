@@ -31,4 +31,46 @@ lab.experiment('migrators', function () {
       });
     });
   });
+
+  lab.experiment('lock', function () {
+    const Migrator = require('../lib/walker.js');
+    const pending = [{ name: '20261008000001-pending' }];
+
+    const walker = (meta, internals = {}) => ({
+      prefix: 'migration',
+      title: '[migration] ',
+      internals,
+      _pdriver: { _meta: meta }
+    });
+
+    lab.test('should run without a lock if the driver does not support locking', async () => {
+      for (const meta of [undefined, { supports: {} }, { supports: { locking: false } }]) {
+        // the driver has no state methods, any lock attempt would throw
+        const res = await Migrator.prototype._withLock.call(
+          walker(meta),
+          async () => pending,
+          toRun => toRun
+        );
+        Code.expect(res).to.equal(pending);
+      }
+    });
+
+    lab.test('should not require locking for a dry run', async () => {
+      const res = await Migrator.prototype._withLock.call(
+        walker(undefined, { dryRun: true }),
+        async () => pending,
+        toRun => toRun
+      );
+      Code.expect(res).to.equal(pending);
+    });
+
+    lab.test('should not lock if there is nothing to run', async () => {
+      const res = await Migrator.prototype._withLock.call(
+        walker({ supports: { locking: true } }),
+        async () => [],
+        toRun => toRun
+      );
+      Code.expect(res).to.equal([]);
+    });
+  });
 });
