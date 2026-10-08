@@ -312,6 +312,96 @@ lab.experiment('state', function () {
     });
   });
 
+  lab.experiment('recovery', function () {
+    const kv = state => {
+      const rows = {
+        [MSTATE]: { value: JSON.stringify({ s: state }) },
+        m1: { value: JSON.stringify({ i: {}, c: {}, f: {}, s: [{ t: 0, a: 'dropTable', c: ['a'] }] }) }
+      };
+      const writes = [];
+      return {
+        writes,
+        _getKV: async (table, key) => rows[key],
+        _insertKV: async () => {},
+        _updateKV: async (table, key, value) => {
+          writes.push(JSON.parse(value).s);
+          rows[key] = { value };
+        }
+      };
+    };
+    const interrupted = { step: 2, learned: 2, done: 1, fin: 0, f: 'm1', o: 'up', rb: 0 };
+
+    lab.test('should return an interrupted run of the same migration', async () => {
+      const driver = kv(interrupted);
+      const newInt = { ...internals };
+
+      const res = await state.startMigration(driver, { name: 'm1' }, newInt, {
+        recover: true
+      });
+
+      Code.expect(res).to.equal({
+        step: 2,
+        learned: 2,
+        done: 1,
+        rollback: false,
+        changed: false
+      });
+      // not reset, the caller decides how to recover
+      Code.expect(driver.writes).to.equal([]);
+      // reverse operations of older runs belong to no step of this run
+      Code.expect(newInt.modSchema.s[0].n).to.equal(0);
+    });
+
+    lab.test('should report an interrupted rollback', async () => {
+      const driver = kv({ ...interrupted, rb: 1 });
+
+      const res = await state.startMigration(
+        driver,
+        { name: 'm1' },
+        { ...internals },
+        { recover: true }
+      );
+
+      Code.expect(res.rollback).to.be.true();
+    });
+
+    lab.test('should reset an interrupted run of another migration', async () => {
+      const driver = kv({ ...interrupted, f: 'm0' });
+
+      const res = await state.startMigration(
+        driver,
+        { name: 'm1' },
+        { ...internals },
+        { recover: true }
+      );
+
+      Code.expect(res).to.be.null();
+      Code.expect(driver.writes[0]).to.include({
+        f: 'm1',
+        o: 'up',
+        fin: 0,
+        step: 0,
+        learned: 0,
+        done: 0,
+        rb: 0
+      });
+    });
+
+    lab.test('should not recover without being asked to', async () => {
+      const driver = kv(interrupted);
+
+      const res = await state.startMigration(
+        driver,
+        { name: 'm1' },
+        { ...internals },
+        { op: 'down' }
+      );
+
+      Code.expect(res).to.be.null();
+      Code.expect(driver.writes[0]).to.include({ f: 'm1', o: 'down', fin: 0 });
+    });
+  });
+
   lab.experiment('startMigration', function () {
     const driver = {
       _insertKV: sinon.stub(),
