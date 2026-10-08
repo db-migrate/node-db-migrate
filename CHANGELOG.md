@@ -1,3 +1,30 @@
+# [1.0.0-beta.37](https://github.com/db-migrate/node-db-migrate/compare/v1.0.0-beta.36...v1.0.0-beta.37) (2026-10-08)
+
+
+### Features
+
+* **state:** recover interrupted migrations ([b840b76](https://github.com/db-migrate/node-db-migrate/commit/b840b76fd950eff7735a7fa99bc10ab6016aa6a4))
+
+  A v2 migration interrupted by a dying process, or by a rollback failing itself,
+  is recovered on the next run instead of being executed from the start again.
+  How is set per migration by `_meta.recovery`:
+
+  * `skip` (default): skip the steps already executed, each one is logged with
+    the migration, the instruction and its step, and continue with the rest.
+  * `rollback`: revert the steps already executed and run the migration again.
+
+  A run interrupted while rolling back always continues the rollback. Skipping is
+  refused if the migration file changed since it was interrupted.
+  Runs interrupted with an older version can not be recovered.
+
+
+### Bug Fixes
+
+* **connect:** running a scope without its own config.json failed with "the target of promisifyAll must be an object or a function" ([3c10136](https://github.com/db-migrate/node-db-migrate/commit/3c101369ebaed1123b5e3df6dce91d8c660a3878))
+* **state:** an interrupted rollback reversed the order of the stored reverse operations ([b840b76](https://github.com/db-migrate/node-db-migrate/commit/b840b76fd950eff7735a7fa99bc10ab6016aa6a4))
+
+
+
 # [1.0.0-beta.36](https://github.com/db-migrate/node-db-migrate/compare/v1.0.0-beta.35...v1.0.0-beta.36) (2026-10-08)
 
 
