@@ -1,3 +1,24 @@
+# [1.0.0-beta.38](https://github.com/db-migrate/node-db-migrate/compare/v1.0.0-beta.37...v1.0.0-beta.38) (2026-10-08)
+
+
+### Bug Fixes
+
+* **state:** roll back exactly the steps executed ([1b46d94](https://github.com/db-migrate/node-db-migrate/commit/1b46d940fa2a2af07d4fc2e2363be1eea0dcefbf))
+
+  Rolling back a failed v2 migration dropped the last recorded reverse operation
+  whenever the last started instruction did not signal its execution, which only
+  createTable and addColumn do. Instructions like addIndex or createEnum followed
+  by an error, or an instruction failing while being learned, left objects behind,
+  failing the next run with "already exists".
+
+* **learn:** keep everything removed for reverting ([1c927bf](https://github.com/db-migrate/node-db-migrate/commit/1c927bff6e069594562d3030bd4f241e9c08d4c8))
+
+  Removing a second column, index or foreign key from the same table in one
+  migration lost the definition of the first one, so its rollback failed and left
+  the state stuck. Removed foreign keys were not restored by rollback or down.
+
+
+
 # [1.0.0-beta.37](https://github.com/db-migrate/node-db-migrate/compare/v1.0.0-beta.36...v1.0.0-beta.37) (2026-10-08)
 
 
