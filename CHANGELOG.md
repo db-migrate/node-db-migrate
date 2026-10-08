@@ -1,3 +1,29 @@
+# [1.0.0-beta.36](https://github.com/db-migrate/node-db-migrate/compare/v1.0.0-beta.35...v1.0.0-beta.36) (2026-10-08)
+
+
+### Features
+
+* **state:** lock migrations against concurrent processes ([e52857c](https://github.com/db-migrate/node-db-migrate/commit/e52857c70fe5c7bfbaa88ed8f3b7c3b71a913bb7))
+
+  Pending migrations are determined first, the lock in the state table is only
+  acquired if there is something to run. Processes not getting the lock wait for
+  its release and determine the pending migrations again. A lock held by a process
+  without any sign of life for `--lock-timeout` ms (default 60000) is taken over,
+  waiting processes check every `--lock-interval` ms (default 1000).
+
+  Requires a driver declaring `_meta.supports.locking`: db-migrate-pg >= 1.6.0,
+  db-migrate-mysql >= 3.1.0, db-migrate-sqlite3 >= 1.1.0 and
+  db-migrate-cockroachdb >= 5.8.0. Other drivers show a warning and run without a
+  lock as before.
+
+
+### Bug Fixes
+
+* **state:** concurrent first runs on an empty database failed creating the state ([e52857c](https://github.com/db-migrate/node-db-migrate/commit/e52857c70fe5c7bfbaa88ed8f3b7c3b71a913bb7))
+* **state:** an empty stored schema broke v2 migrations ([e52857c](https://github.com/db-migrate/node-db-migrate/commit/e52857c70fe5c7bfbaa88ed8f3b7c3b71a913bb7))
+
+
+
 # [1.0.0-beta.17](https://github.com/db-migrate/node-db-migrate/compare/v1.0.0-beta.16...v1.0.0-beta.17) (2021-11-15)
 
 
