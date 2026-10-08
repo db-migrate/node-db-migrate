@@ -32,9 +32,6 @@
     "api"
   ],
   "version": "1.0.0-beta.38",
-  "engines": {
-    "node": ">=8.0.0"
-  },
   "bugs": {
     "url": "https://github.com/db-migrate/node-db-migrate/issues"
   },

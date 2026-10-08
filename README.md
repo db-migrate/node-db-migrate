@@ -20,6 +20,11 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
 
 # Usage
 
+## Requirements
+
+Officially supported is Node.js 24 and newer. Older versions may work, but
+are not tested.
+
 ## Installation
 
     $ npm install -g db-migrate

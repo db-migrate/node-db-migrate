@@ -13,17 +13,16 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x, 16.x, 18.x, latest]
+        node-version: [24.x, latest]
       fail-fast: false
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      - run: npm i -g npm@9.x.x
       - run: npm ci
       - run: cp test/db.config.ci test/db.config.json
       - run: npm test
