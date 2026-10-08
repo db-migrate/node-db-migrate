@@ -105,7 +105,7 @@ function dbmigrate (plugins, isModule, options, callback) {
 dbmigrate.prototype = {
   /**
    * Add a global defined variable to db-migrate, to enable access from
-   * local migrations without configuring pathes.
+   * local migrations without configuring paths.
    *
    * @return boolean
    */
