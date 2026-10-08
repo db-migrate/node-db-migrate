@@ -85,7 +85,8 @@ exports.connect = async function (config, PassedClass) {
                 dirPath,
                 internals.mode !== 'static',
                 internals,
-                prefix
+                prefix,
+                { db2 }
               )
             );
           }
