@@ -1,3 +1,34 @@
+# [1.0.0-rc.0](https://github.com/db-migrate/node-db-migrate/compare/v1.0.0-beta.38...v1.0.0-rc.0) (2026-10-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* **node:** Node.js 24 and newer are supported officially. The `engines` field is dropped, older versions keep installing and may work, untested. ([b01e9c7](https://github.com/db-migrate/node-db-migrate/commit/b01e9c7b9cee317fa7fc01f76f8c030b1e80651e))
+* **tunnel:** a configured `tunnel` requires `npm install db-migrate-plugin-tunnel-ssh`, it is no longer built in. ([ba5dc17](https://github.com/db-migrate/node-db-migrate/commit/ba5dc1758f6a893ccb96b80e11f6e13c2780c0e5))
+* **seed:** the unfinished seeders are dropped, `db-migrate seed` and the seed API methods fail with a clear message. ([e8de581](https://github.com/db-migrate/node-db-migrate/commit/e8de58156ada61eab471e15f4831d2cec4bf926c))
+
+
+### Features
+
+* **log:** show what failed in migration errors: the migration, for v2 the instruction and step, the failed statement with a marker at the position reported by the database, the diagnostic fields of the driver and always the stack ([e0017a7](https://github.com/db-migrate/node-db-migrate/commit/e0017a7bd22eaac5f28fa00025eaa7e49effa9d4)), closes [#815](https://github.com/db-migrate/node-db-migrate/issues/815)
+* **file:** let plugins load their migration files, used by the new [db-migrate-plugin-sql](https://github.com/db-migrate/plugin-sql) for plain SQL migrations ([34ac8c2](https://github.com/db-migrate/node-db-migrate/commit/34ac8c2581779eed75f12f86e7a7c35d334fed19)), closes [#401](https://github.com/db-migrate/node-db-migrate/issues/401)
+
+
+### Bug Fixes
+
+* **tunnel:** tunnels failed since db-migrate opens a second connection, the connections share one tunnel now ([ba5dc17](https://github.com/db-migrate/node-db-migrate/commit/ba5dc1758f6a893ccb96b80e11f6e13c2780c0e5))
+* **tunnel:** db-migrate-plugin-tunnel-ssh was never called the way it is implemented ([ba5dc17](https://github.com/db-migrate/node-db-migrate/commit/ba5dc1758f6a893ccb96b80e11f6e13c2780c0e5))
+* **seed:** `seed` silently did nothing and exited successfully, `undo-seed` failed on wrong require paths ([e8de581](https://github.com/db-migrate/node-db-migrate/commit/e8de58156ada61eab471e15f4831d2cec4bf926c)), closes [#798](https://github.com/db-migrate/node-db-migrate/issues/798)
+* **deps:** no more dependency on `tunnel-ssh` and its vulnerable `ssh2` ([ba5dc17](https://github.com/db-migrate/node-db-migrate/commit/ba5dc1758f6a893ccb96b80e11f6e13c2780c0e5)), closes [#830](https://github.com/db-migrate/node-db-migrate/issues/830)
+
+
+### Chores
+
+* replace mkdirp with native fs.promises.mkdir ([e161c44](https://github.com/db-migrate/node-db-migrate/commit/e161c449e95fc77e0bdc892c0b9c317377a88719)), closes [#835](https://github.com/db-migrate/node-db-migrate/issues/835)
+* fix typos ([a29ca87](https://github.com/db-migrate/node-db-migrate/commit/a29ca8736c3fc3c6bc37627187a6233ccd1b1556))
+
+
+
 # [1.0.0-beta.38](https://github.com/db-migrate/node-db-migrate/compare/v1.0.0-beta.37...v1.0.0-beta.38) (2026-10-08)
 
 
