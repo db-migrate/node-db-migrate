@@ -59,7 +59,7 @@
     "@hapi/lab": "25.x",
     "db-migrate-base": "^2.5.0",
     "db-migrate-mysql": "^3.2.0",
-    "db-migrate-sqlite3": "^1.2.0",
+    "db-migrate-sqlite3": "^1.2.1",
     "eslint": "^7.32.0",
     "eslint-config-standard": "^14.1.1",
     "eslint-plugin-import": "^2.26.0",
