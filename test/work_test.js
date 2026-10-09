@@ -76,6 +76,7 @@ const project = (...migrations) => {
     write,
     up: (...args) => instance().up(...args),
     down: (...args) => instance().down(...args),
+    status: () => instance().status(),
     work: (options = {}) => instance().executeWork(Object.assign({ interval: 10 }, options)),
     pets: () => query('SELECT id, name, kind FROM pets ORDER BY id'),
     flags: () =>
@@ -177,6 +178,13 @@ lab.experiment('background migrations', { timeout: 30000 }, () => {
       '/20261009000004-m4'
     ]);
     expect((await p.jobs())['20261009000003-m3'].s).to.equal('queued');
+
+    // running in the background, not pending
+    const status = await p.status();
+    expect(status.pending).to.equal([]);
+    expect(status.jobs).to.equal([
+      { name: '20261009000003-m3', state: 'queued', blocking: false, step: 0, done: 0, error: null }
+    ]);
 
     // running, so up does not run or register it again
     await p.up();

@@ -56,6 +56,7 @@ const project = () => {
     up: (options, ...args) => instance(options).up(...args),
     down: (...args) => instance().down(...args),
     fix: () => instance().fix(),
+    status: () => instance().status(),
     schema: async () =>
       Object.keys(JSON.parse((await query("SELECT value FROM migrations_state WHERE key = '__dbmigrate_schema__'"))[0].value).c)
         .map(t => t.replace(/_\d+$/, '_T'))
@@ -286,6 +287,31 @@ lab.experiment('releases', { timeout: 20000 }, () => {
     await p.up();
     await p.down();
     expect(await p.query("SELECT value FROM migrations_state WHERE key = '__dbmigrate_backups__'")).to.equal([{ value: '{}' }]);
+  });
+
+  lab.test('status tells what is pending, deprecated and due', async () => {
+    p = project();
+    p.add("await db.createTable('pets', { id: { type: 'int', primaryKey: true }, kind: 'string', deleted_at: 'datetime' });\n  await db.createTable('owners', { id: 'int' });\n  await db.deprecateTable('owners', { releases: 1 });", 'r1');
+    p.add("await db.insert('pets', [{ id: 1, kind: 'dog' }]);\n  await db.update('pets', { kind: 'hound' }, { kind: 'dog' });\n  await db.delete('pets', { id: 1 }, { mode: 'soft', column: 'deleted_at', purge: true });", undefined, 'dml');
+    p.add("await db.createTable('a', { id: 'int' });", 'r2');
+    await p.up({ deprecation: { releases: 1 } });
+    p.add("await db.createTable('b', { id: 'int' });");
+
+    const s = await p.status();
+    expect(s.pending).to.equal(['20261009000004-m4']);
+    expect(s.release).to.equal('r2');
+    expect(s.lock).to.include({ held: false, interrupted: null });
+    expect(s.jobs).to.equal([]);
+    expect(s.deprecated).to.have.length(1);
+    expect(s.deprecated[0]).to.include({ table: 'owners', column: null, renamed: true, release: 'r1', age: 1, due: true, drop: 'manual' });
+    expect(s.purges).to.have.length(1);
+    expect(s.purges[0]).to.include({ table: 'pets', by: '20261009000002-m2#3', age: 1, releases: 4, due: false });
+    expect(s.backups).to.have.length(1);
+    expect(s.backups[0]).to.include({ migration: '20261009000002-m2', age: 1, due: false });
+
+    const text = require('../lib/status').format(s);
+    expect(text).to.contain('Pending migrations:\n  20261009000004-m4');
+    expect(text).to.contain('table "owners" renamed to __dbm_deprecated_owners_20261009000001, 1 of 1 releases, due to drop (manual)');
   });
 
   lab.test('refuses what it does not know', async () => {

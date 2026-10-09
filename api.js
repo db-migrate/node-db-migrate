@@ -422,6 +422,27 @@ dbmigrate.prototype = {
   },
 
   /**
+   * What db-migrate knows about the database: pending migrations, the lock,
+   * the jobs of background migrations, the release and what is deprecated
+   * or due, see lib/status.js.
+   */
+  status: function (scope, callback) {
+    if (typeof scope === 'function') {
+      callback = scope;
+      scope = undefined;
+    }
+
+    if (scope) {
+      this.internals.migrationMode = scope;
+      this.internals.matching = scope;
+    }
+
+    return Promise.resolve(load('status')(this.internals, this.config)).asCallback(
+      callback
+    );
+  },
+
+  /**
    * Runs the jobs of background migrations, see lib/work.js for the
    * options. Returns { done, stop }, done resolves with the jobs done and
    * failed.
