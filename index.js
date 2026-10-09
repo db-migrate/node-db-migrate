@@ -45,7 +45,16 @@ function loadPlugins (options) {
   var hooks = {};
 
   for (; i < length; ++i) {
-    var plugin = require(path.join(options.cwd, 'node_modules', plugins[i]));
+    var plugin;
+
+    try {
+      // resolved like node does from the project, so plugins hoisted in a
+      // monorepo are found as well
+      plugin = require(require.resolve(plugins[i], { paths: [options.cwd] }));
+    } catch (err) {
+      log.warn(`Could not load the plugin ${plugins[i]}: ${err.message}`);
+      continue;
+    }
 
     if (!plugin.hooks || !plugin.loadPlugin) {
       continue;
