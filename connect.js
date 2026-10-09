@@ -71,9 +71,8 @@ exports.connect = async function (config, PassedClass) {
     await Promise.promisify(db2.switchDatabase, { context: db2 })(switchTo);
   }
 
-  if (scope) {
-    internals.locTitle = scope;
-  }
+  // of this run only, an instance of the API runs several
+  internals.locTitle = scope || undefined;
 
   return new PassedClass(
     db,

@@ -193,12 +193,25 @@ dbmigrate.prototype = {
   },
 
   /**
+   * Every call starts from the options of the instance: the count,
+   * destination and scope of an earlier call do not carry over.
+   */
+  _begin: function () {
+    delete this.internals.argv.count;
+    delete this.internals.argv.destination;
+    this.internals.migrationMode = undefined;
+    this.internals.matching = '';
+    this.internals.locTitle = undefined;
+  },
+
+  /**
    * Executes up a given number of migrations or a specific one.
    *
    * Defaults to up all migrations if no count is given.
    */
   up: function (specification, opts, callback) {
     var executeUp = load('up');
+    this._begin();
 
     if (arguments.length > 0) {
       if (typeof specification === 'string') {
@@ -229,6 +242,7 @@ dbmigrate.prototype = {
    */
   down: function (specification, opts, callback) {
     var executeDown = load('down');
+    this._begin();
 
     if (arguments.length > 0) {
       if (typeof specification === 'number') {
@@ -255,6 +269,7 @@ dbmigrate.prototype = {
 
   fix: function (specification, opts, callback) {
     var executeFix = load('fix');
+    this._begin();
 
     if (arguments.length > 0) {
       if (typeof specification === 'string') {
@@ -280,6 +295,7 @@ dbmigrate.prototype = {
 
   check: function (specification, opts, callback) {
     var executeCheck = load('check');
+    this._begin();
 
     if (arguments.length > 0) {
       if (typeof specification === 'number') {
@@ -308,6 +324,7 @@ dbmigrate.prototype = {
    */
   sync: function (specification, opts, callback) {
     var executeSync = load('sync');
+    this._begin();
 
     if (arguments.length > 0) {
       if (typeof specification === 'string') {
@@ -332,6 +349,7 @@ dbmigrate.prototype = {
    */
   reset: function (scope, callback) {
     var executeDown = load('down');
+    this._begin();
 
     if (typeof scope === 'string') {
       this.internals.migrationMode = scope;
@@ -427,6 +445,7 @@ dbmigrate.prototype = {
    * or due, see lib/status.js.
    */
   status: function (scope, callback) {
+    this._begin();
     if (typeof scope === 'function') {
       callback = scope;
       scope = undefined;
