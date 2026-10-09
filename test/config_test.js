@@ -312,3 +312,71 @@ lab.experiment('config', function () {
     }
   );
 });
+
+lab.experiment('environment variables with defaults', function () {
+  const vars = ['DBM_TEST_HOST', 'DBM_TEST_ENV', 'DBM_TEST_URL'];
+
+  lab.afterEach(() => {
+    vars.forEach(v => delete process.env[v]);
+  });
+
+  lab.test('take the default if the variable is not set or empty', () => {
+    process.env.DBM_TEST_HOST = '';
+    const c = config.loadObject({
+      dev: {
+        driver: 'pg',
+        host: { ENV: 'DBM_TEST_HOST', default: 'localhost' },
+        port: { ENV: 'DBM_TEST_PORT', default: 5432 },
+        user: { ENV: 'DBM_TEST_USER' }
+      }
+    });
+
+    Code.expect(c.getCurrent().settings).to.include({
+      host: 'localhost',
+      port: 5432,
+      user: undefined
+    });
+
+    process.env.DBM_TEST_HOST = 'db';
+    Code.expect(
+      config.loadObject({ dev: { host: { ENV: 'DBM_TEST_HOST', default: 'localhost' } } })
+        .getCurrent().settings.host
+    ).to.equal('db');
+  });
+
+  lab.test('the default environment from a variable, with a default', () => {
+    const envs = { dev: { driver: 'a' }, local: { driver: 'b' }, prod: { driver: 'c' } };
+
+    Code.expect(
+      config.loadObject(Object.assign({ defaultEnv: { ENV: 'DBM_TEST_ENV', default: 'local' } }, envs))
+        .getCurrent().env
+    ).to.equal('local');
+
+    // without the variable and a default, the default environments
+    Code.expect(
+      config.loadObject(Object.assign({ defaultEnv: { ENV: 'DBM_TEST_ENV' } }, envs))
+        .getCurrent().env
+    ).to.equal('dev');
+
+    process.env.DBM_TEST_ENV = 'prod';
+    Code.expect(
+      config.loadObject(Object.assign({ defaultEnv: { ENV: 'DBM_TEST_ENV', default: 'local' } }, envs))
+        .getCurrent().env
+    ).to.equal('prod');
+  });
+
+  lab.test('an environment from a url variable keeps the keys next to it', () => {
+    process.env.DBM_TEST_URL = 'mysql://u:p@h:3306/d';
+    const c = config.loadObject({
+      dev: { ENV: 'DBM_TEST_URL', multipleStatements: true, charset: { ENV: 'DBM_TEST_CS', default: 'utf8mb4' } }
+    });
+
+    Code.expect(c.getCurrent().settings).to.include({
+      driver: 'mysql',
+      host: 'h',
+      database: 'd',
+      multipleStatements: true,
+      charset: 'utf8mb4'
+    });
+  });
+});
