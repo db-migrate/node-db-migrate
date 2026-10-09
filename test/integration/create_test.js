@@ -306,7 +306,8 @@ lab.experiment('create', function () {
 
         await wipeMigrations();
 
-        dbMigrate('create', 'sixth migration', configOption).on('exit', () => {
+        // the migration is broken once it is created, then up runs it
+        await new Promise(resolve => dbMigrate('create', 'sixth migration', configOption).on('exit', () => {
           const files = fs.readdirSync(path.join(__dirname, 'migrations'));
 
           for (let i = 0; i < files.length; i++) {
@@ -322,7 +323,9 @@ lab.experiment('create', function () {
               );
             }
           }
-        });
+
+          resolve();
+        }));
 
         const codePromise = new Promise((resolve) => {
           dbMigrate('up').on('exit', resolve);
