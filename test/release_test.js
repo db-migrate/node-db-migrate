@@ -240,6 +240,54 @@ lab.experiment('releases', { timeout: 20000 }, () => {
     expect(await p.tables()).to.equal([]);
   });
 
+  lab.test('backups are dropped once their migration is final', async () => {
+    const backups = async () =>
+      (await p.query("SELECT name FROM sqlite_master WHERE name LIKE '__dbm_backup%'")).length;
+    p = project();
+    p.add("await db.createTable('pets', { id: { type: 'int', primaryKey: true }, kind: 'string' });", 'r1');
+    p.add("await db.insert('pets', [{ id: 1, kind: 'dog' }, { id: 2, kind: 'cat' }]);\n  await db.update('pets', { kind: 'hound' }, { kind: 'dog' });\n  await db.delete('pets', { kind: 'cat' });", undefined, 'dml');
+    await p.up({ deprecation: { releases: 1, drop: 'auto' } });
+    expect(await backups()).to.equal(2);
+
+    p.add("await db.createTable('a', { id: 'int' });", 'r2');
+    await p.up({ deprecation: { releases: 1, drop: 'auto' } });
+    expect(await backups()).to.equal(0);
+    expect(await p.query("SELECT value FROM migrations_state WHERE key = '__dbmigrate_backups__'")).to.equal([{ value: '{}' }]);
+
+    // the data migration is final now
+    await p.down();
+    await expect(p.down()).to.reject(Error, /can not be reverted/);
+  });
+
+  lab.test('manual backups are warned about until dropped', async () => {
+    const warn = sinon.spy(log, 'warn');
+    const backups = async () =>
+      (await p.query("SELECT name FROM sqlite_master WHERE name LIKE '__dbm_backup%'")).length;
+    p = project();
+    p.add("await db.createTable('pets', { id: { type: 'int', primaryKey: true }, kind: 'string' });", 'r1');
+    p.add("await db.insert('pets', [{ id: 1, kind: 'dog' }]);\n  await db.update('pets', { kind: 'hound' }, { kind: 'dog' });", undefined, 'dml');
+    p.add("await db.createTable('a', { id: 'int' });", 'r2');
+    await p.up({ deprecation: { releases: 1 } });
+    expect(await backups()).to.equal(1);
+    expect(warn.args.some(a => /backups of 20261009000002-m2 are due/.test(a[0]))).to.be.true();
+
+    warn.resetHistory();
+    p.add("await db.dropBackups();", undefined, 'dml');
+    await p.up({ deprecation: { releases: 1 } });
+    expect(await backups()).to.equal(0);
+    expect(warn.args.some(a => /backups of/.test(a[0]))).to.be.false();
+    await expect(p.down()).to.reject(Error, /can not be reverted/);
+  });
+
+  lab.test('reverting forgets the backups', async () => {
+    p = project();
+    p.add("await db.createTable('pets', { id: { type: 'int', primaryKey: true }, kind: 'string' });");
+    p.add("await db.insert('pets', [{ id: 1, kind: 'dog' }]);\n  await db.update('pets', { kind: 'hound' }, { kind: 'dog' });", undefined, 'dml');
+    await p.up();
+    await p.down();
+    expect(await p.query("SELECT value FROM migrations_state WHERE key = '__dbmigrate_backups__'")).to.equal([{ value: '{}' }]);
+  });
+
   lab.test('refuses what it does not know', async () => {
     p = project();
     p.add("await db.deprecateTable('nope');");
