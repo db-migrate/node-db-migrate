@@ -1,3 +1,18 @@
+# [1.6.0](https://github.com/db-migrate/node-db-migrate/compare/v1.5.0...v1.6.0) (2026-10-10)
+
+
+### Bug Fixes
+
+* fix learns the records of migrations once, from an empty schema ([ae09d41](https://github.com/db-migrate/node-db-migrate/commit/ae09d41b2204f70f30993a0192edd0f34a840ad2))
+* fix learns the steps of the releases again ([6722c7c](https://github.com/db-migrate/node-db-migrate/commit/6722c7c53e4d1e4b03dce8fdcc57174d3c2bf030))
+
+
+### Features
+
+* db-migrate work runs the jobs of background migrations ([0328557](https://github.com/db-migrate/node-db-migrate/commit/03285574ff694ebc6ca056727652f9164e66ea20))
+
+
+
 # [1.5.0](https://github.com/db-migrate/node-db-migrate/compare/v1.4.1...v1.5.0) (2026-10-09)
 
 
