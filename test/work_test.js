@@ -323,7 +323,7 @@ lab.experiment('background migrations', { timeout: 30000 }, () => {
     p = project(PETS, DATA, BACKGROUND);
     await p.up();
 
-    const worker = p.work({ pause: 40, batch: 1, watch: true, interval: 20 });
+    const worker = p.work({ pause: 150, batch: 1, watch: true, interval: 20 });
     try {
       // the job is running its batches
       for (let i = 0; i < 100; i++) {
