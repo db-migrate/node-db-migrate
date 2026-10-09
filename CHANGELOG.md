@@ -1,3 +1,42 @@
+# [1.1.0](https://github.com/db-migrate/node-db-migrate/compare/v1.0.0...v1.1.0) (2026-10-09)
+
+
+### Features
+
+* **v2:** adopt objects created outside of v2 migrations ([90cb631](https://github.com/db-migrate/node-db-migrate/commit/90cb6317698710406e879fdb0ecc37c1f604a489))
+
+  `db.adopt.createTable`, `addColumn`, `addIndex`, `addForeignKey` and the other
+  create and add instructions declare objects created by v1 migrations or by hand
+  to the schema without executing anything. Afterwards v2 migrations handle them
+  like their own ones, fully revertible. Dropping an unknown table, column or
+  foreign key requires `{ irreversible: true }`, such a migration is not rolled
+  back and `down` refuses it. Errors on unknown objects point to both.
+
+* **scope:** scopes with their own database, state kept per scope ([7cf6d9a](https://github.com/db-migrate/node-db-migrate/commit/7cf6d9a842d05490aff35fdc0bc0310734c32bae))
+
+  A scope `config.json` with connection settings like a host or user connects the
+  scope on its own, inheriting the settings of the environment. Scopes switching
+  only the database or schema keep their lock, recovery progress and learned
+  schema in their own database now.
+
+
+### Bug Fixes
+
+* **scope:** `up:all` and the other commands with the scope `all` only ran the top level migrations ([7cf6d9a](https://github.com/db-migrate/node-db-migrate/commit/7cf6d9a842d05490aff35fdc0bc0310734c32bae))
+* **create:** `create:<scope> <name> --sql-file` put the sql files into the wrong folder ([ce20b2c](https://github.com/db-migrate/node-db-migrate/commit/ce20b2cb06ae069842bac3533611bdbe4ddb415f))
+* **db:** `db:create` and `db:drop` resolved before they were done and exited the process when called through the API ([0345f62](https://github.com/db-migrate/node-db-migrate/commit/0345f62cbcd6ea514dfe33eab0022acc012a2458))
+* **config:** `state-table` and `migration-table` in rc files, `--ignore-completed-migrations`, and the arguments of the application parsed in module mode ([11564c1](https://github.com/db-migrate/node-db-migrate/commit/11564c1e822026685335b446645ab1ccec49ac7c))
+
+
+### Upgrade notes
+
+* A scope with a `config.json` setting a database or schema keeps its state in its
+  own database now. If its v2 migrations ran before, run `db-migrate fix:<scope>`
+  once to learn its schema there.
+* The pg setting `schema` is applied again with db-migrate-pg 1.6.1.
+
+
+
 # [1.0.0](https://github.com/db-migrate/node-db-migrate/compare/v1.0.0-rc.0...v1.0.0) (2026-10-09)
 
 The first stable release of db-migrate 1.0, identical to 1.0.0-rc.0. Coming
