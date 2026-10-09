@@ -1,3 +1,13 @@
+# [1.4.0](https://github.com/db-migrate/node-db-migrate/compare/v1.3.0...v1.4.0) (2026-10-09)
+
+
+### Features
+
+* soft delete and purge in dml migrations, transactions per batch ([c664a74](https://github.com/db-migrate/node-db-migrate/commit/c664a74f2217380f3a2074d37731043314ab32b4))
+* background migrations, run as jobs by executeWork ([0acdb0b](https://github.com/db-migrate/node-db-migrate/commit/0acdb0b9c69bad396b6166171375b3fd78378ac3))
+
+
+
 # [1.3.0](https://github.com/db-migrate/node-db-migrate/compare/v1.2.0...v1.3.0) (2026-10-09)
 
 
