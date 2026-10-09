@@ -1,3 +1,18 @@
+# [1.5.0](https://github.com/db-migrate/node-db-migrate/compare/v1.4.1...v1.5.0) (2026-10-09)
+
+
+### Bug Fixes
+
+* revert changeColumn to the previous spec of the column ([43f3547](https://github.com/db-migrate/node-db-migrate/commit/43f35478cb27538ec2ce2c1eb36009f2008efd76))
+
+
+### Features
+
+* releases, deprecated tables and columns ([761dd3e](https://github.com/db-migrate/node-db-migrate/commit/761dd3eb153bb8e28751db10374954a71f47cf3c))
+* purge rows deleted in soft mode with a later release ([b4805a1](https://github.com/db-migrate/node-db-migrate/commit/b4805a12f9b7a6cf402d5288a37d3c756e75fda5))
+
+
+
 ## [1.4.1](https://github.com/db-migrate/node-db-migrate/compare/v1.4.0...v1.4.1) (2026-10-09)
 
 
