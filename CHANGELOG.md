@@ -1,3 +1,12 @@
+## [1.4.1](https://github.com/db-migrate/node-db-migrate/compare/v1.4.0...v1.4.1) (2026-10-09)
+
+
+### Bug Fixes
+
+* background jobs pause while migrations run, down reverts them ([2cf4621](https://github.com/db-migrate/node-db-migrate/commit/2cf4621b2b8335e1de65979c55d1950e464f5122))
+
+
+
 # [1.4.0](https://github.com/db-migrate/node-db-migrate/compare/v1.3.0...v1.4.0) (2026-10-09)
 
 
