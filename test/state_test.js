@@ -285,7 +285,7 @@ lab.experiment('state', function () {
 
       await state.init(driver, newInt, {});
       Code.expect(driver._insertKV.called).to.be.false();
-      Code.expect(newInt.schema).to.equal({ i: {}, c: { t: {} }, f: {}, e: {} });
+      Code.expect(newInt.schema).to.equal({ i: {}, c: { t: {} }, f: {}, e: {}, d: {} });
     });
 
     lab.test('should accept a schema inserted concurrently', async () => {
@@ -299,7 +299,7 @@ lab.experiment('state', function () {
       const newInt = { ...internals };
 
       await state.init(driver, newInt, {});
-      Code.expect(newInt.schema).to.equal({ i: {}, c: {}, f: {}, e: {} });
+      Code.expect(newInt.schema).to.equal({ i: {}, c: {}, f: {}, e: {}, d: {} });
       driver._insertKV.reset();
     });
 
