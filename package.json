@@ -31,7 +31,7 @@
     "programmable",
     "api"
   ],
-  "version": "1.4.0",
+  "version": "1.4.1",
   "bugs": {
     "url": "https://github.com/db-migrate/node-db-migrate/issues"
   },
