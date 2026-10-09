@@ -55,6 +55,11 @@ const project = () => {
     },
     up: (options, ...args) => instance(options).up(...args),
     down: (...args) => instance().down(...args),
+    fix: () => instance().fix(),
+    schema: async () =>
+      Object.keys(JSON.parse((await query("SELECT value FROM migrations_state WHERE key = '__dbmigrate_schema__'"))[0].value).c)
+        .map(t => t.replace(/_\d+$/, '_T'))
+        .sort(),
     check: () => instance({ check: true }).check(),
     tables: async () =>
       (await query("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'migrations%' AND name != 'sqlite_sequence' ORDER BY name"))
@@ -198,6 +203,41 @@ lab.experiment('releases', { timeout: 20000 }, () => {
     await p.up(undefined, 1);
     p.add("await db.delete('pets', {}, { mode: 'soft', column: 'deleted_at', purge: 'soon' });", undefined, 'dml');
     await expect(p.up()).to.reject(Error, /takes purge: true or/);
+  });
+
+  lab.test('fix learns the steps of the releases again', async () => {
+    p = project();
+    p.add("await db.createTable('pets', { id: { type: 'int', primaryKey: true } });\n  await db.createTable('owners', { id: { type: 'int', primaryKey: true } });\n  await db.deprecateTable('pets', { releases: 2, drop: 'auto' });\n  await db.deprecateTable('owners');", 'r1');
+    p.add("await db.createTable('a', { id: 'int' });", 'r2');
+    p.add("await db.createTable('b', { id: 'int' });", 'r3');
+    await p.up();
+    expect(await p.tables()).to.equal(['__dbm_deprecated_owners_T', 'a', 'b']);
+
+    const before = await p.schema();
+    await p.fix();
+    expect(await p.schema()).to.equal(before);
+    expect(before).to.equal(['__dbm_deprecated_owners_T', 'a', 'b']);
+
+    // reverting works on the schema learned again
+    await p.down(2);
+    expect(await p.tables()).to.equal(['owners', 'pets']);
+    await p.down();
+    expect(await p.tables()).to.equal([]);
+  });
+
+  lab.test('fix learns the records once, from an empty schema', async () => {
+    p = project();
+    p.add("await db.createTable('pets', { id: { type: 'int', primaryKey: true } });\n  await db.addColumn('pets', 'name', 'string');");
+    p.add("await db.createTable('owners', { id: 'int' });");
+    await p.up();
+    await p.fix();
+    await p.fix();
+
+    const [row] = await p.query("SELECT value FROM migrations_state WHERE key = '20261009000001-m1'");
+    expect(JSON.parse(row.value).s.length).to.equal(2);
+
+    await p.down(2);
+    expect(await p.tables()).to.equal([]);
   });
 
   lab.test('refuses what it does not know', async () => {
