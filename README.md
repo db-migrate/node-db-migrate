@@ -10,6 +10,15 @@
 
 Database migration framework for node.js
 
+> **New: [db-migrate for meta](https://github.com/db-migrate/meta-db-migrate)**
+>
+> db-migrate rewritten in meta: your program ships with its migrations
+> compiled in, as one binary, no node.js needed to migrate. It uses the same
+> migrations table and the same state as db-migrate, v2 migrations included,
+> so a database migrated by one of them can be carried on by the other.
+>
+> [Try meta-db-migrate](https://github.com/db-migrate/meta-db-migrate)
+
 # Platinum sponsors
 
 [<img src="https://www.wizardtales.com/wzrdtales.png" width="100">](https://www.wizardtales.com)
@@ -66,14 +75,6 @@ Tunnels are provided by plugins. Install the ssh tunnel plugin next to
 db-migrate to use the `tunnel` setting of your database config:
 
     $ npm install db-migrate-plugin-tunnel-ssh
-
-## db-migrate for meta
-
-[meta-db-migrate](https://github.com/db-migrate/meta-db-migrate) is db-migrate
-rewritten in meta: a program ships with its migrations compiled in, as one
-binary. It uses the same migrations table and the same state as db-migrate,
-v2 migrations included, so a database migrated by one of them can be carried
-on by the other.
 
 ## Resources and usage instructions
 
