@@ -422,69 +422,41 @@ dbmigrate.prototype = {
   },
 
   /**
-   * Seeds either the static or version controlled seeders, controlled by
-   * the passed mode.
+   * Inserts the rows of the static seeds in seeds-dir, all or the one named,
+   * removing the rows of their earlier runs first.
    */
-  seed: function (mode, scope, callback) {
-    var executeSeed = load('seed');
-    if (scope) {
-      this.internals.migrationMode = scope;
-      this.internals.matching = scope;
+  seed: function (name, callback) {
+    if (typeof name === 'function') {
+      callback = name;
+      name = undefined;
     }
 
-    this.internals.mode = mode || 'vc';
-    return Promise.resolve(executeSeed(this.internals, this.config)).asCallback(
+    this.internals.seedName = name;
+    return Promise.resolve(load('seed')(this.internals, this.config)).asCallback(
       callback
     );
   },
 
   /**
-   * Execute the down function of currently executed seeds.
+   * Removes the rows inserted by the static seeds, all or the one named.
    */
-  undoSeed: function (specification, scope, callback) {
-    var executeUndoSeed = load('undo-seed');
-    if (arguments.length > 0) {
-      if (typeof specification === 'number') {
-        this.internals.argv.count = specification;
-
-        if (scope) {
-          this.internals.migrationMode = scope;
-          this.internals.matching = scope;
-        }
-      } else if (typeof specification === 'string') {
-        this.internals.migrationMode = scope;
-        this.internals.matching = scope;
-      }
+  undoSeed: function (name, callback) {
+    if (typeof name === 'function') {
+      callback = name;
+      name = undefined;
     }
 
+    this.internals.seedName = name;
     return Promise.resolve(
-      executeUndoSeed(this.internals, this.config)
+      load('undo-seed')(this.internals, this.config)
     ).asCallback(callback);
   },
 
   /**
-   * Execute the reset function of currently executed seeds.
+   * Removes the rows inserted by all static seeds.
    */
-  resetSeed: function (specification, scope, callback) {
-    var executeUndoSeed = load('undo-seed');
-    if (arguments.length > 0) {
-      if (typeof specification === 'number') {
-        this.internals.argv.count = specification;
-
-        if (scope) {
-          this.internals.migrationMode = scope;
-          this.internals.matching = scope;
-        }
-      } else if (typeof specification === 'string') {
-        this.internals.migrationMode = scope;
-        this.internals.matching = scope;
-      }
-    }
-
-    this.internals.argv.count = Number.MAX_VALUE;
-    return Promise.resolve(
-      executeUndoSeed(this.internals, this.config)
-    ).asCallback(callback);
+  resetSeed: function (callback) {
+    return this.undoSeed(undefined, callback);
   },
 
   /**
