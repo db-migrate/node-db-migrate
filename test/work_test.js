@@ -319,6 +319,96 @@ lab.experiment('background migrations', { timeout: 30000 }, () => {
     ]);
   });
 
+  lab.test('jobs pause while migrations run', async () => {
+    p = project(PETS, DATA, BACKGROUND);
+    await p.up();
+
+    const worker = p.work({ pause: 40, batch: 1, watch: true, interval: 20 });
+    try {
+      // the job is running its batches
+      for (let i = 0; i < 100; i++) {
+        const [row] = await p.query("SELECT value FROM migrations_state WHERE key = '20261009000003-m3'");
+        if (row && (JSON.parse(row.value).s || []).length) break;
+        await new Promise(resolve => setTimeout(resolve, 20));
+      }
+
+      // a migration in between, the progress of the job does not change
+      // while it runs
+      p.write(3, `
+exports.up = async db => {
+  const progress = () => db.all("SELECT value FROM migrations_state WHERE key = '20261009000003-m3'");
+  const before = await progress();
+  await new Promise(resolve => setTimeout(resolve, 300));
+  const after = await progress();
+  global.__dbmSame = before[0].value === after[0].value;
+  global.__dbmJobs = (await db.all("SELECT value FROM migrations_state WHERE key = '${Jobs.JOBS}'"))[0].value;
+};
+exports.down = async () => {};
+`);
+      await p.up();
+      expect(global.__dbmSame).to.be.true();
+      expect(JSON.parse(global.__dbmJobs).pause).to.exist();
+      expect((await p.jobs())['20261009000003-m3']).to.exist();
+
+      for (let i = 0; i < 200 && (await p.migrations()).length < 4; i++) {
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+    } finally {
+      await worker.stop();
+      delete global.__dbmSame;
+      delete global.__dbmJobs;
+    }
+
+    expect((await worker.done).done).to.equal(['20261009000003-m3']);
+    expect(JSON.parse((await p.query(`SELECT value FROM migrations_state WHERE key = '${Jobs.JOBS}'`))[0].value).pause).to.not.exist();
+    expect((await p.pets()).map(r => r.kind)).to.equal([
+      'hound', 'cat', 'fish', 'hound', 'hound', 'fish'
+    ]);
+  });
+
+  lab.test('a pause whose holder released the lock does not hold', async () => {
+    p = project(PETS, DATA, BACKGROUND);
+    await p.up();
+
+    // a process paused the jobs and died, another one released the lock since
+    const [row] = await p.query(`SELECT value FROM migrations_state WHERE key = '${Jobs.JOBS}'`);
+    const state = JSON.parse(row.value);
+    state.pause = { ID: 'gone', n: 'x' };
+    await p.query(
+      `UPDATE migrations_state SET value = '${JSON.stringify(state)}' WHERE key = '${Jobs.JOBS}'`
+    );
+
+    const result = await p.work().done;
+    expect(result.done).to.equal(['20261009000003-m3']);
+  });
+
+  lab.test('down reverts the jobs first, running or not', async () => {
+    p = project(PETS, DATA, BACKGROUND);
+    await p.up();
+
+    // a job stopped half way
+    const worker = p.work({ pause: 30, batch: 1 });
+    await new Promise(resolve => setTimeout(resolve, 80));
+    await worker.stop();
+    expect((await p.jobs())['20261009000003-m3'].step).to.equal(1);
+    expect((await p.pets()).map(r => r.kind)).to.not.equal(ORIGINAL.map(r => r.kind));
+
+    await p.down();
+    expect(await p.jobs()).to.equal({});
+    expect(await p.pets()).to.equal(ORIGINAL);
+    expect((await p.migrations()).length).to.equal(2);
+    expect(await p.query("SELECT name FROM sqlite_master WHERE name LIKE '__dbm_backup%'")).to.equal([]);
+
+    // a job not started yet, up registers it again
+    await p.up();
+    await p.down();
+    expect(await p.jobs()).to.equal({});
+    expect((await p.migrations()).length).to.equal(2);
+
+    await p.down();
+    expect(await p.pets()).to.equal([]);
+  });
+
   lab.test('background needs a dml migration', async () => {
     p = project(PETS, PETS.replace('version: 2', 'version: 2, background: true'));
     await expect(p.up()).to.reject(Error, /only dml migrations/);
