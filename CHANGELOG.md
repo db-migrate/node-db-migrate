@@ -1,3 +1,18 @@
+# [1.7.0](https://github.com/db-migrate/node-db-migrate/compare/v1.6.0...v1.7.0) (2026-10-10)
+
+
+### Bug Fixes
+
+* a deprecated table keeps its deprecation when renamed for it ([73633f6](https://github.com/db-migrate/node-db-migrate/commit/73633f685d8139343c497bc2cd9dd07c71895e11))
+
+
+### Features
+
+* drop the backups of data migrations once they are final ([ab0b5d5](https://github.com/db-migrate/node-db-migrate/commit/ab0b5d531c9024f03a9495a73f6bdea1457f4ef3))
+* db-migrate status, what db-migrate knows about the database ([9bd150e](https://github.com/db-migrate/node-db-migrate/commit/9bd150e615ea9c6234dc9646ecb441e7008542c3))
+
+
+
 # [1.6.0](https://github.com/db-migrate/node-db-migrate/compare/v1.5.0...v1.6.0) (2026-10-10)
 
 
