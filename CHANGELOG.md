@@ -1,3 +1,22 @@
+# [1.2.0](https://github.com/db-migrate/node-db-migrate/compare/v1.1.0...v1.2.0) (2026-10-09)
+
+
+### Features
+
+* **v1:** run single migrations without a transaction ([7ea0c3a](https://github.com/db-migrate/node-db-migrate/commit/7ea0c3a62bc672990d8f9ca90de75f9da395c5d6)), closes [#659](https://github.com/db-migrate/node-db-migrate/issues/659) [#819](https://github.com/db-migrate/node-db-migrate/issues/819) [#424](https://github.com/db-migrate/node-db-migrate/issues/424)
+
+  A v1 migration with `exports._meta = { transactions: false }` runs without the
+  transaction of the driver, e.g. for `CREATE INDEX CONCURRENTLY` of PostgreSQL.
+  With mysql it needs db-migrate-mysql 3.1.2, before its data changes could get
+  lost after a migration running inside a transaction.
+
+
+### Chores
+
+* **deps:** update dependencies ([49b5a3f](https://github.com/db-migrate/node-db-migrate/commit/49b5a3fbb887d35c262779931ee497e0b05ae669))
+
+
+
 # [1.1.0](https://github.com/db-migrate/node-db-migrate/compare/v1.0.0...v1.1.0) (2026-10-09)
 
 
