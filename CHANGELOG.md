@@ -1,3 +1,20 @@
+# [1.8.0](https://github.com/db-migrate/node-db-migrate/compare/v1.7.0...v1.8.0) (2026-10-10)
+
+
+### Bug Fixes
+
+* sync and fix of a scope find its migrations ([1a89f34](https://github.com/db-migrate/node-db-migrate/commit/1a89f348362ee80d2f1eadeb0fb4068a2827f378)), closes [#471](https://github.com/db-migrate/node-db-migrate/issues/471)
+* calls of one instance of the API start from its options ([1764fb8](https://github.com/db-migrate/node-db-migrate/commit/1764fb833ad506db59aca8c575d0a8b5425a2d9a)), closes [#474](https://github.com/db-migrate/node-db-migrate/issues/474)
+* migrations created with --sql-file do not print their SQL ([85f806e](https://github.com/db-migrate/node-db-migrate/commit/85f806ef4125b088b3dfc69cfe5d79af72ed8bf3)), closes [#775](https://github.com/db-migrate/node-db-migrate/issues/775) [#829](https://github.com/db-migrate/node-db-migrate/issues/829) [#805](https://github.com/db-migrate/node-db-migrate/issues/805) [#422](https://github.com/db-migrate/node-db-migrate/issues/422)
+* plugins are found when hoisted, a broken one is skipped ([38c3bee](https://github.com/db-migrate/node-db-migrate/commit/38c3beef7f58c559dca298002f667a2184de7ac0)), closes [#826](https://github.com/db-migrate/node-db-migrate/issues/826)
+
+
+### Features
+
+* defaults for environment variables in the config ([3820b8f](https://github.com/db-migrate/node-db-migrate/commit/3820b8fbc5d5462778cfe5c9b947043d16697013)), closes [#765](https://github.com/db-migrate/node-db-migrate/issues/765) [#769](https://github.com/db-migrate/node-db-migrate/issues/769) [#750](https://github.com/db-migrate/node-db-migrate/issues/750) [#715](https://github.com/db-migrate/node-db-migrate/issues/715) [#766](https://github.com/db-migrate/node-db-migrate/issues/766)
+
+
+
 # [1.7.0](https://github.com/db-migrate/node-db-migrate/compare/v1.6.0...v1.7.0) (2026-10-10)
 
 
