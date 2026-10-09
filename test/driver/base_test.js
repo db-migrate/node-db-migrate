@@ -20,7 +20,7 @@ lab.experiment('base', function () {
       Code.expect(base.emit).to.be.not.null();
     });
 
-    lab.test('throws errors for all API methods', () => {
+    lab.test('throws errors for all API methods', async () => {
       Code.expect(function () {
         base.createTable();
       }).to.throw(Error);
@@ -49,9 +49,8 @@ lab.experiment('base', function () {
         base.addIndex();
       }).to.throw(Error);
 
-      Code.expect(function () {
-        base.insert();
-      }).to.throw(Error);
+      // insert rejects, without rows to insert
+      await Code.expect(base.insert()).to.reject(Error);
 
       Code.expect(function () {
         base.removeIndex();
