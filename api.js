@@ -154,6 +154,14 @@ dbmigrate.prototype = {
    * @return boolean
    */
   addConfiguration: function (description, args, type) {
+    // the command line options are parsed already when the API is available
+    if (typeof this.internals.argv.describe !== 'function') {
+      log.warn(
+        'addConfiguration has no effect, the options are parsed already.'
+      );
+      return false;
+    }
+
     var name = args.shift();
     this.internals.argv.describe(name, description);
 
@@ -368,7 +376,8 @@ dbmigrate.prototype = {
    */
   createDatabase: function (dbname, callback) {
     var executeDB = load('db');
-    this.internals.argv._.push(dbname);
+    // in module mode there are no positional arguments yet
+    this.internals.argv._ = (this.internals.argv._ || []).concat(dbname);
     this.internals.mode = 'create';
     return Promise.resolve(executeDB(this.internals, this.config)).asCallback(
       callback
@@ -380,7 +389,8 @@ dbmigrate.prototype = {
    */
   dropDatabase: function (dbname, callback) {
     var executeDB = load('db');
-    this.internals.argv._.push(dbname);
+    // in module mode there are no positional arguments yet
+    this.internals.argv._ = (this.internals.argv._ || []).concat(dbname);
     this.internals.mode = 'drop';
     return Promise.resolve(executeDB(this.internals, this.config)).asCallback(
       callback
