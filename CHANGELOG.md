@@ -1,3 +1,13 @@
+# [1.3.0](https://github.com/db-migrate/node-db-migrate/compare/v1.2.0...v1.3.0) (2026-10-09)
+
+
+### Features
+
+* dml migrations, reversible data changes in v2 migrations ([528e968](https://github.com/db-migrate/node-db-migrate/commit/528e96812a06f404d4c98688ac4c7dfc5bd8dae6))
+* static seeds, rerunnable data for development and tests ([e27e417](https://github.com/db-migrate/node-db-migrate/commit/e27e417b29e17a7c723bab896c275cba93f58562)), closes [#687](https://github.com/db-migrate/node-db-migrate/issues/687)
+
+
+
 # [1.2.0](https://github.com/db-migrate/node-db-migrate/compare/v1.1.0...v1.2.0) (2026-10-09)
 
 
