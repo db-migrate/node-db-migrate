@@ -64,6 +64,8 @@ const project = (...migrations) => {
   const query = sql =>
     new Promise((resolve, reject) => {
       const db = new sqlite3.Database(path.join(dir, 'db'));
+      // the workers write at the same time
+      db.configure('busyTimeout', 5000);
       db.all(sql, (err, rows) => {
         db.close();
         return err ? reject(err) : resolve(rows);
@@ -301,12 +303,16 @@ lab.experiment('background migrations', { timeout: 30000 }, () => {
       `UPDATE migrations_state SET value = '${JSON.stringify({ jobs })}' WHERE key = '${Jobs.JOBS}'`
     );
 
-    const worker = p.work({ watch: true, timeout: 50, interval: 20 });
-    for (let i = 0; i < 200 && Object.keys(await p.jobs()).length; i++) {
-      await new Promise(resolve => setTimeout(resolve, 20));
+    const worker = p.work({ watch: true, timeout: 300, interval: 50 });
+    try {
+      for (let i = 0; i < 200 && (await p.migrations()).length < 3; i++) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+    } finally {
+      await worker.stop();
     }
 
-    const result = await worker.stop();
+    const result = await worker.done;
     expect(result.done).to.equal(['20261009000003-m3']);
     expect((await p.pets()).map(r => r.kind)).to.equal([
       'hound', 'cat', 'fish', 'hound', 'hound', 'fish'
