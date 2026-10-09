@@ -422,6 +422,15 @@ dbmigrate.prototype = {
   },
 
   /**
+   * Runs the jobs of background migrations, see lib/work.js for the
+   * options. Returns { done, stop }, done resolves with the jobs done and
+   * failed.
+   */
+  executeWork: function (options) {
+    return load('work')(this.internals, this.config, options);
+  },
+
+  /**
    * Inserts the rows of the static seeds in seeds-dir, all or the one named,
    * removing the rows of their earlier runs first.
    */
