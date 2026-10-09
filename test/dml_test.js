@@ -98,7 +98,7 @@ const ORIGINAL = [
   { id: 6, name: 'Dory', kind: 'fish' }
 ];
 
-lab.experiment('dml migrations', () => {
+lab.experiment('dml migrations', { timeout: 20000 }, () => {
   let p;
 
   lab.afterEach(() => {

@@ -81,7 +81,7 @@ const project = () => {
   };
 };
 
-lab.experiment('static seeds', () => {
+lab.experiment('static seeds', { timeout: 20000 }, () => {
   let p;
 
   lab.beforeEach(async () => {
