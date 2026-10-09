@@ -108,19 +108,56 @@ lab.experiment('learn', function () {
     ]);
   });
 
-  lab.test('should reject instructions on unknown tables, columns and keys', async () => {
+  lab.test('should point to adopt for unknown tables, columns and keys', async () => {
     const { learn } = fresh();
 
     await learn.createTable('t', { id: { type: 'int' } });
 
-    Code.expect(() => learn.addColumn('missing', 'x', {})).to.throw(/no missing table/);
-    Code.expect(() => learn.changeColumn('t', 'missing', {})).to.throw(/no missing column/);
-    Code.expect(() => learn.removeIndex('missing', 'i')).to.throw(/no missing table/);
-    Code.expect(() => learn.removeIndex('t', 'i')).to.throw(/no index i/);
-    Code.expect(() => learn.addForeignKey('missing', 't', 'k', {})).to.throw(/no missing table/);
-    Code.expect(() => learn.addForeignKey('t', 'missing', 'k', {})).to.throw(/no missing table/);
-    Code.expect(() => learn.removeForeignKey('missing', 'k')).to.throw(/no missing table/);
-    Code.expect(() => learn.removeForeignKey('t', 'k')).to.throw(/no foreign key k/);
+    Code.expect(() => learn.addColumn('missing', 'x', {})).to.throw(
+      /The table "missing" is unknown .* db\.adopt\.createTable\("missing", columns\)\.$/
+    );
+    Code.expect(() => learn.changeColumn('t', 'missing', {})).to.throw(
+      /db\.adopt\.addColumn\("t", "missing", spec\)\.$/
+    );
+    Code.expect(() => learn.removeIndex('t', 'i')).to.throw(
+      /db\.adopt\.addIndex\("t", "i", columns\)\.$/
+    );
+    Code.expect(() => learn.addForeignKey('t', 'missing', 'k', {})).to.throw(
+      /The table "missing" is unknown/
+    );
+    Code.expect(() => learn.removeForeignKey('t', 'k')).to.throw(
+      /db\.adopt\.addForeignKey\("t", referencedTable, "k", mapping\), or pass \{ irreversible: true \}/
+    );
+  });
+
+  lab.test('should refuse to drop unknown tables unless irreversible', async () => {
+    const { learn, internals } = fresh();
+
+    Code.expect(() => learn.dropTable('legacy')).to.throw(
+      /db\.adopt\.createTable\("legacy", columns\), or pass \{ irreversible: true \}/
+    );
+    Code.expect(() => learn.removeColumn('legacy', 'x')).to.throw(
+      /The table "legacy" is unknown .* irreversible/
+    );
+
+    await learn.dropTable('legacy', { irreversible: true });
+    await learn.removeColumn('legacy', 'x', { irreversible: true });
+    await learn.removeForeignKey('legacy', 'k', { irreversible: true });
+
+    Code.expect(internals.modSchema.s).to.equal([
+      { t: 3, a: 'dropTable', c: ['legacy'] },
+      { t: 3, a: 'removeColumn', c: ['legacy', 'x'] },
+      { t: 3, a: 'removeForeignKey', c: ['legacy', 'k'] }
+    ]);
+  });
+
+  lab.test('should drop known tables as before, irreversible or not', async () => {
+    const { learn, internals } = fresh();
+
+    await learn.createTable('t', { id: { type: 'int' } });
+    await learn.dropTable('t', { irreversible: true });
+
+    Code.expect(internals.modSchema.s[1]).to.equal({ t: 1, a: 'createTable', c: ['t'] });
   });
 
   lab.test('should require a strategy to remove a notNull column', async () => {
