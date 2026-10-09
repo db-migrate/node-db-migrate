@@ -11,11 +11,11 @@ const DBMigrate = require('../');
 
 const { expect } = Code;
 
-const v2 = (body, release) => `
+const v2 = (body, release, type) => `
 exports.migrate = async db => {
 ${body}
 };
-exports._meta = { version: 2${release !== undefined ? `, release: ${JSON.stringify(release)}` : ''} };
+exports._meta = { version: 2${release !== undefined ? `, release: ${JSON.stringify(release)}` : ''}${type ? `, type: '${type}'` : ''} };
 `;
 
 const project = () => {
@@ -46,11 +46,11 @@ const project = () => {
     });
 
   return {
-    add: (body, release) => {
+    add: (body, release, type) => {
       n++;
       fs.writeFileSync(
         path.join(dir, 'migrations', `202610090000${String(n).padStart(2, '0')}-m${n}.js`),
-        v2(body, release)
+        v2(body, release, type)
       );
     },
     up: (options, ...args) => instance(options).up(...args),
@@ -150,6 +150,54 @@ lab.experiment('releases', { timeout: 20000 }, () => {
     p.add("await db.createTable('a', { id: 'int' });", 'b');
     await p.up({ deprecation: { releases: 1, drop: 'auto' } });
     expect(await p.tables()).to.equal(['a']);
+  });
+
+  lab.test('rows deleted in soft mode are purged with a later release', async () => {
+    p = project();
+    p.add("await db.createTable('pets', { id: { type: 'int', primaryKey: true }, deleted_at: 'datetime' });", 'r1');
+    p.add("await db.insert('pets', [{ id: 1 }, { id: 2 }, { id: 3 }]);\n  await db.delete('pets', { id: [1, 2] }, { mode: 'soft', column: 'deleted_at', purge: { releases: 1, drop: 'auto' } });", undefined, 'dml');
+    await p.up();
+    expect((await p.query('SELECT id FROM pets')).length).to.equal(3);
+
+    p.add("await db.createTable('a', { id: 'int' });", 'r2');
+    await p.up();
+    expect(await p.query('SELECT id FROM pets')).to.equal([{ id: 3 }]);
+    expect(await p.query("SELECT value FROM migrations_state WHERE key = '__dbmigrate_purges__'")).to.equal([{ value: '{}' }]);
+
+    // purged for good, the release can not be reverted, nothing is reverted
+    await expect(p.down()).to.reject(Error, /Release r2 can not be reverted, it purged "pets"/);
+    expect((await p.tables())).to.include('a');
+  });
+
+  lab.test('manual purges are warned about until purged', async () => {
+    const warn = sinon.spy(log, 'warn');
+    p = project();
+    p.add("await db.createTable('pets', { id: { type: 'int', primaryKey: true }, deleted_at: 'datetime' });", 'r1');
+    p.add("await db.insert('pets', [{ id: 1 }, { id: 2 }]);\n  await db.delete('pets', { id: 1 }, { mode: 'soft', column: 'deleted_at', purge: true });", undefined, 'dml');
+    p.add("await db.createTable('a', { id: 'int' });", 'r2');
+    await p.up({ deprecation: { releases: 1 } });
+    expect((await p.query('SELECT id FROM pets')).length).to.equal(2);
+    expect(warn.args.some(a => /rows of "pets" deleted in soft mode by 20261009000002-m2#2 are due/.test(a[0]))).to.be.true();
+
+    warn.resetHistory();
+    p.add("await db.purge('pets', '20261009000002-m2');", undefined, 'dml');
+    await p.up({ deprecation: { releases: 1 } });
+    expect(await p.query('SELECT id FROM pets')).to.equal([{ id: 2 }]);
+    expect(warn.args.some(a => /due for purging/.test(a[0]))).to.be.false();
+  });
+
+  lab.test('reverting a soft delete forgets its purge', async () => {
+    p = project();
+    p.add("await db.createTable('pets', { id: { type: 'int', primaryKey: true }, deleted_at: 'datetime' });", 'r1');
+    p.add("await db.insert('pets', [{ id: 1 }]);\n  await db.delete('pets', { id: 1 }, { mode: 'soft', column: 'deleted_at', purge: { releases: 1, drop: 'auto' } });", undefined, 'dml');
+    await p.up();
+    await p.down();
+    expect(await p.query("SELECT value FROM migrations_state WHERE key = '__dbmigrate_purges__'")).to.equal([{ value: '{}' }]);
+
+    p.add("await db.createTable('a', { id: 'int' });", 'r2');
+    await p.up(undefined, 1);
+    p.add("await db.delete('pets', {}, { mode: 'soft', column: 'deleted_at', purge: 'soon' });", undefined, 'dml');
+    await expect(p.up()).to.reject(Error, /takes purge: true or/);
   });
 
   lab.test('refuses what it does not know', async () => {
