@@ -280,6 +280,15 @@ function getTemplate () {
       });
     });
   });
+
+  lab.experiment('when custom template path is set', function () {
+    lab.test('should return custom template content', () => {
+      const templatePath = __filename;
+      const migration = new Template(fileName, dirName, date, Template.TemplateType.DEFAULT_JS, { 'custom-template-path': templatePath });
+      const actual = migration.getTemplate();
+      Code.expect(actual).to.contain('when custom template path is set');
+    });
+  });
 }
 
 function stubApiInstance (isModule, stubs, options, callback) {
