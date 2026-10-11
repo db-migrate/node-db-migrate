@@ -417,6 +417,35 @@ exports.down = async () => {};
     expect(await p.pets()).to.equal([]);
   });
 
+  lab.test('a job recovered by rolling back keeps its record', async () => {
+    p = project(
+      PETS,
+      DATA,
+      dml(
+        `
+  await db.update('pets', { kind: 'hound' }, { kind: 'dog' });
+  if (global.__dbmKilled) {
+    delete global.__dbmKilled;
+    throw Object.assign(new Error('killed'), { stopped: true });
+  }
+  await db.update('pets', { kind: 'carp' }, { kind: 'fish' });`,
+        ", background: true, recovery: 'rollback'"
+      )
+    );
+    await p.up();
+
+    // the job stops after its first step, its next run rolls it back
+    global.__dbmKilled = true;
+    expect((await p.work().done).done).to.equal(['20261009000003-m3']);
+    expect((await p.pets()).map(r => r.kind)).to.equal([
+      'hound', 'cat', 'carp', 'hound', 'hound', 'carp'
+    ]);
+
+    // the record of the run after the rollback reverts it
+    await p.down();
+    expect(await p.pets()).to.equal(ORIGINAL);
+  });
+
   lab.test('background needs a dml migration', async () => {
     p = project(PETS, PETS.replace('version: 2', 'version: 2, background: true'));
     await expect(p.up()).to.reject(Error, /only dml migrations/);
