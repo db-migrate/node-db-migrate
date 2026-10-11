@@ -73,6 +73,7 @@ const project = (...migrations) => {
     });
 
   return {
+    dir,
     write,
     up: (...args) => instance().up(...args),
     down: (...args) => instance().down(...args),
@@ -459,6 +460,30 @@ exports.down = async () => {};
     expect(await p.jobs()).to.equal({});
     expect(await p.pets()).to.equal(ORIGINAL);
     expect((await p.migrations()).length).to.equal(3);
+  });
+
+  lab.test('a job runs in the scope of its migration', async () => {
+    p = project(PETS, DATA);
+    fs.mkdirSync(path.join(p.dir, 'migrations', 'billing'));
+    fs.writeFileSync(
+      path.join(p.dir, 'migrations', 'billing', '20261009000010-b1.js'),
+      BACKGROUND
+    );
+    await p.up();
+    await p.up(undefined, 'billing');
+    expect((await p.jobs())['20261009000010-b1'].sc).to.equal('billing');
+
+    expect((await p.work().done).done).to.equal(['20261009000010-b1']);
+    expect(await p.migrations()).to.equal([
+      { name: '/20261009000001-m1' },
+      { name: '/20261009000002-m2' },
+      { name: 'billing/20261009000010-b1' }
+    ]);
+
+    await p.down(undefined, 'billing');
+    expect(await p.pets()).to.equal(ORIGINAL);
+
+    await expect(p.work({ scope: 'all' }).done).to.reject(Error, /work:<scope>/);
   });
 
   lab.test('background needs a dml migration', async () => {
