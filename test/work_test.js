@@ -507,6 +507,33 @@ exports.down = async () => {};
     expect(await p.pets()).to.equal(ORIGINAL);
   });
 
+  lab.test('fix --backup-state keeps the jobs and the records of dml migrations', async () => {
+    p = project(PETS, DATA, BACKGROUND);
+    await p.up();
+    const kept = async () =>
+      (await p.query(
+        "SELECT key, value FROM migrations_state WHERE key NOT LIKE '__dbmigrate_s%' AND key NOT LIKE '%-m1' ORDER BY key"
+      )).map(r => [r.key, r.key === Jobs.JOBS ? JSON.parse(r.value).jobs : r.value]);
+    const before = await kept();
+
+    const cwd = process.cwd();
+    process.chdir(p.dir);
+    try {
+      await p.instance({ 'backup-state': true }).fix();
+    } finally {
+      process.chdir(cwd);
+    }
+
+    expect(await kept()).to.equal(before);
+    fs.readdirSync(p.dir).filter(f => f.endsWith('.dbmigrate')).forEach(f =>
+      expect(f).to.match(/^migrations_state_b_\d+\.dbmigrate$/)
+    );
+
+    expect((await p.work().done).done).to.equal(['20261009000003-m3']);
+    await p.down();
+    expect(await p.pets()).to.equal(ORIGINAL);
+  });
+
   lab.test('background needs a dml migration', async () => {
     p = project(PETS, PETS.replace('version: 2', 'version: 2, background: true'));
     await expect(p.up()).to.reject(Error, /only dml migrations/);
