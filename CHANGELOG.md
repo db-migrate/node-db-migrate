@@ -1,3 +1,29 @@
+## [1.8.1](https://github.com/db-migrate/node-db-migrate/compare/v1.8.0...v1.8.1) (2026-10-11)
+
+
+### Bug Fixes
+
+* the mark of a soft delete is found as a whole ([63ecdfb](https://github.com/db-migrate/node-db-migrate/commit/63ecdfb06919fbd9502f476755170afb0e7305c7))
+* a soft delete on MySQL is refused when its mark would be cut off ([340f304](https://github.com/db-migrate/node-db-migrate/commit/340f304761ac9d93e0472d6a60b682bafa539232))
+* --non-transactional turns off the transactions of dml migrations ([eb921fd](https://github.com/db-migrate/node-db-migrate/commit/eb921fd7adf28bcf8528ab2701549b3d63520247))
+* a job recovered by rolling back keeps its record ([fed73cb](https://github.com/db-migrate/node-db-migrate/commit/fed73cb42dfafe86e5b935ed83c1cfc71cf7d832))
+* a job whose migration was recorded already is not run again ([2403a3d](https://github.com/db-migrate/node-db-migrate/commit/2403a3dc0d84e3702b830bdf61b3860b817ff4ff))
+* a job runs in the scope of its migration ([21a8e7e](https://github.com/db-migrate/node-db-migrate/commit/21a8e7e9e2cb2aafda087f740e9a22243dfeb04d))
+* work --dry-run says which jobs would run ([34c153e](https://github.com/db-migrate/node-db-migrate/commit/34c153e8508ce4ee6325baa3ee2002b84029fdd4))
+* fix --backup-state keeps the jobs and the records of dml migrations ([1df5694](https://github.com/db-migrate/node-db-migrate/commit/1df569457fabcf62f3e2194e2f7d646e9f8aed4f))
+* options of the command line and the API win over rc files ([f6607cb](https://github.com/db-migrate/node-db-migrate/commit/f6607cb316ecc5de8060e74542b696ec7769d236))
+
+
+### Upgrade notes
+
+* Options given on the command line or to an instance of the API win over
+  rc files now, rc files only replace the defaults.
+* The jobs of a scope with a `config.json` connecting a database of its own
+  run with `db-migrate work:<scope>`, or `executeWork({ scope })`.
+  `work:all` is refused.
+
+
+
 # [1.8.0](https://github.com/db-migrate/node-db-migrate/compare/v1.7.0...v1.8.0) (2026-10-10)
 
 
