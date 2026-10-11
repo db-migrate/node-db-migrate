@@ -446,6 +446,21 @@ exports.down = async () => {};
     expect(await p.pets()).to.equal(ORIGINAL);
   });
 
+  lab.test('a job whose migration was recorded already is not run again', async () => {
+    p = project(PETS, DATA, BACKGROUND);
+    await p.up();
+
+    // its worker died between recording the migration and forgetting the job
+    await p.query(
+      "INSERT INTO migrations (name, run_on) VALUES ('/20261009000003-m3', CURRENT_TIMESTAMP)"
+    );
+
+    expect((await p.work().done).done).to.equal([]);
+    expect(await p.jobs()).to.equal({});
+    expect(await p.pets()).to.equal(ORIGINAL);
+    expect((await p.migrations()).length).to.equal(3);
+  });
+
   lab.test('background needs a dml migration', async () => {
     p = project(PETS, PETS.replace('version: 2', 'version: 2, background: true'));
     await expect(p.up()).to.reject(Error, /only dml migrations/);
