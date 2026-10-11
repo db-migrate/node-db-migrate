@@ -175,6 +175,30 @@ lab.experiment('releases', { timeout: 20000 }, () => {
     expect((await p.tables())).to.include('a');
   });
 
+  lab.test('a purge takes the rows of its own soft delete only', async () => {
+    p = project();
+    p.add("await db.createTable('pets', { id: { type: 'int', primaryKey: true }, deleted_at: 'datetime' });", 'r1');
+    p.add("await db.insert('pets', [{ id: 1 }, { id: 2 }, { id: 3 }]);", undefined, 'dml');
+    // steps 1 and 10, the mark #1 is no part of #10
+    p.add(
+      "await db.delete('pets', { id: 1 }, { mode: 'soft', column: 'deleted_at', purge: { releases: 1, drop: 'auto' } });\n" +
+        "  for (let i = 0; i < 8; i++) await db.delete('pets', { id: 99 }, { mode: 'soft', column: 'deleted_at' });\n" +
+        "  await db.delete('pets', { id: 2 }, { mode: 'soft', column: 'deleted_at' });",
+      undefined,
+      'dml'
+    );
+    await p.up();
+    expect(await p.query('SELECT id, __dbmigrate__flag AS f FROM pets ORDER BY id')).to.equal([
+      { id: 1, f: '20261009000002-m2#1|del:20261009000003-m3#1' },
+      { id: 2, f: '20261009000002-m2#1|del:20261009000003-m3#10' },
+      { id: 3, f: '20261009000002-m2#1' }
+    ]);
+
+    p.add("await db.createTable('a', { id: 'int' });", 'r2');
+    await p.up();
+    expect(await p.query('SELECT id FROM pets ORDER BY id')).to.equal([{ id: 2 }, { id: 3 }]);
+  });
+
   lab.test('manual purges are warned about until purged', async () => {
     const warn = sinon.spy(log, 'warn');
     p = project();
