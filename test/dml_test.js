@@ -74,6 +74,7 @@ const project = (...migrations) => {
 
   return {
     dir,
+    instance,
     up: (...args) => instance().up(...args),
     down: (...args) => instance().down(...args),
     fix: () => instance().fix(),
@@ -322,6 +323,30 @@ lab.experiment('dml migrations', { timeout: 20000 }, () => {
     ]);
     await p.down();
     expect(await p.pets()).to.equal(ORIGINAL);
+  });
+
+  lab.test('--non-transactional turns the transactions off', async () => {
+    const counted = dml(`
+  const runSql = db.driver.runSql;
+  db.driver.runSql = function (sql, ...args) {
+    if (sql === 'BEGIN') global.__dbmBegins = (global.__dbmBegins || 0) + 1;
+    return runSql.call(this, sql, ...args);
+  };
+  await db.update('pets', { kind: 'hound' }, { kind: 'dog' });
+  db.driver.runSql = runSql;`);
+    p = project(PETS, DATA, counted);
+    await p.up(2);
+
+    try {
+      await p.instance({ 'non-transactional': true }).up();
+      expect(global.__dbmBegins).to.not.exist();
+
+      await p.down();
+      await p.up();
+      expect(global.__dbmBegins).to.be.above(0);
+    } finally {
+      delete global.__dbmBegins;
+    }
   });
 
   lab.test('only prints the statements in a dry run', async () => {
