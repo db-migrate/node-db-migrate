@@ -6,6 +6,8 @@ const os = require('os');
 const path = require('path');
 const sqlite3 = require('sqlite3');
 const DBMigrate = require('../');
+const sinon = require('sinon');
+const log = require('db-migrate-shared').log;
 const Jobs = require('../lib/jobs');
 
 const { expect } = Code;
@@ -49,8 +51,9 @@ const project = (...migrations) => {
     );
   migrations.forEach((code, i) => write(i, code));
 
-  const instance = () => {
+  const instance = (cmdOptions = {}) => {
     const dbm = DBMigrate.getInstance(true, {
+      cmdOptions,
       cwd: dir,
       env: 'dev',
       throwUncatched: true,
@@ -75,6 +78,7 @@ const project = (...migrations) => {
   return {
     dir,
     write,
+    instance,
     up: (...args) => instance().up(...args),
     down: (...args) => instance().down(...args),
     status: () => instance().status(),
@@ -484,6 +488,23 @@ exports.down = async () => {};
     expect(await p.pets()).to.equal(ORIGINAL);
 
     await expect(p.work({ scope: 'all' }).done).to.reject(Error, /work:<scope>/);
+  });
+
+  lab.test('a dry run says which jobs would run', async () => {
+    const info = sinon.spy(log, 'info');
+    p = project(PETS, DATA, BACKGROUND);
+    await p.up();
+
+    try {
+      const worker = p.instance({ 'dry-run': true }).executeWork({ interval: 10 });
+      expect(await worker.done).to.equal({ done: [], failed: [] });
+      expect(info.args.some(a => /20261009000003-m3 would run/.test(a.join(' ')))).to.be.true();
+    } finally {
+      info.restore();
+    }
+
+    expect((await p.jobs())['20261009000003-m3'].s).to.equal('queued');
+    expect(await p.pets()).to.equal(ORIGINAL);
   });
 
   lab.test('background needs a dml migration', async () => {
