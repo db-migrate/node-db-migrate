@@ -108,6 +108,24 @@ lab.experiment('learn', function () {
     ]);
   });
 
+  lab.test('should keep the options of an index to create it again', async () => {
+    const { learn, internals } = fresh();
+
+    await learn.createTable('t', { id: { type: 'int' }, y: { type: 'int' } });
+    await learn.addIndex('t', 'i1', ['y'], { unique: true, where: '"y" IS NOT NULL' });
+    await learn.addIndex('t', 'i2', ['y'], { inverted: true });
+    await learn.addIndex('t', 'i3', ['y'], { unique: true });
+
+    Code.expect(internals.schema.i.t.i1).to.equal({
+      t: 't',
+      c: ['y'],
+      u: true,
+      w: '"y" IS NOT NULL'
+    });
+    Code.expect(internals.schema.i.t.i2).to.equal({ t: 't', c: ['y'], v: true });
+    Code.expect(internals.schema.i.t.i3).to.equal({ t: 't', c: ['y'], u: true });
+  });
+
   lab.test('should point to adopt for unknown tables, columns and keys', async () => {
     const { learn } = fresh();
 
