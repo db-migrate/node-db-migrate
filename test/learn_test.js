@@ -126,6 +126,27 @@ lab.experiment('learn', function () {
     Code.expect(internals.schema.i.t.i3).to.equal({ t: 't', c: ['y'], u: true });
   });
 
+  lab.test('should keep the columns an index stores', async () => {
+    const { learn, internals } = fresh();
+
+    await learn.createTable('t', { id: { type: 'int' }, y: { type: 'int' }, z: { type: 'int' } });
+    await learn.addIndex('t', 'i1', ['y'], { storing: ['z', 'id'], where: '"z" > 0' });
+    await learn.addIndex('t', 'i2', ['y'], { unique: true, storing: 'z' });
+    await learn.addIndex('t', 'i3', ['y'], { storing: [] });
+
+    Code.expect(internals.schema.i.t.i1).to.equal({
+      t: 't',
+      c: ['y'],
+      w: '"z" > 0',
+      s: ['z', 'id']
+    });
+    Code.expect(internals.schema.i.t.i2).to.equal({ t: 't', c: ['y'], u: true, s: ['z'] });
+    Code.expect(internals.schema.i.t.i3).to.equal({ t: 't', c: ['y'] });
+    Code.expect(() => learn.addIndex('t', 'i4', ['y'], { storing: ['nope'] })).to.throw(
+      /The column "nope" of "t" is unknown/
+    );
+  });
+
   lab.test('should point to adopt for unknown tables, columns and keys', async () => {
     const { learn } = fresh();
 
