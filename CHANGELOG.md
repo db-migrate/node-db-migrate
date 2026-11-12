@@ -1,3 +1,18 @@
+## [1.8.2](https://github.com/db-migrate/node-db-migrate/compare/v1.8.1...v1.8.2) (2026-11-12)
+
+
+### Bug Fixes
+
+* an index is created again with its options ([42e4d63](https://github.com/db-migrate/node-db-migrate/commit/42e4d6338a04a436bccd33955dd898c64220247d))
+
+
+### Upgrade notes
+
+* An index created again by a revert keeps its options (unique, inverted,
+  a predicate). Indexes learned before keep what was learned then.
+
+
+
 ## [1.8.1](https://github.com/db-migrate/node-db-migrate/compare/v1.8.0...v1.8.1) (2026-10-11)
 
 
