@@ -1,3 +1,19 @@
+# [1.9.0](https://github.com/db-migrate/node-db-migrate/compare/v1.8.2...v1.9.0) (2026-11-12)
+
+
+### Features
+
+* an index keeps the columns it stores ([12870f2](https://github.com/db-migrate/node-db-migrate/commit/12870f2124438629b69d1409721991942000717c))
+
+
+### Upgrade notes
+
+* A covering index (db-migrate-cockroachdb 5.11.0, addIndex with
+  { storing }) is learned with its stored columns and created again with
+  them by a revert. Indexes learned before keep what was learned then.
+
+
+
 ## [1.8.2](https://github.com/db-migrate/node-db-migrate/compare/v1.8.1...v1.8.2) (2026-11-12)
 
 
